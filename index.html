@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mining Game - Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello World!</h1>
+        <p>This is your Mining Game Mini App</p>
+        <button id="colorButton">Change Color</button>
+    </div>
+
+    <script>
+        // Initialize Telegram Mini App
+        const telegramWebApp = window.Telegram.WebApp;
+        
+        // Expand to full screen
+        telegramWebApp.expand();
+        
+        // Set the header color to match Telegram theme
+        telegramWebApp.setHeaderColor(telegramWebApp.themeParams.secondary_bg_color);
+        
+        // Add a simple interaction
+        const colorButton = document.getElementById('colorButton');
+        const container = document.querySelector('.container');
+        
+        colorButton.addEventListener('click', () => {
+            const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+            container.style.backgroundColor = randomColor;
+            telegramWebApp.HapticFeedback.impactOccurred('medium');
+        });
+    </script>
+</body>
+</html>
