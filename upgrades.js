@@ -29,7 +29,6 @@ setInterval(function updateTick() { //checks if upgrade conditions are met.
 	}
 	if (Crusader.total < 1) {
 		$("#CrusaderUpgrade").hide();
-		$(".Crusader").removeClass("hover");
 	}
 	if (Hunter.total >= 1) {
 		$("#HunterUpgrade").show();
@@ -37,7 +36,6 @@ setInterval(function updateTick() { //checks if upgrade conditions are met.
 	}
 	if (Hunter.total < 1) {
 		$("#HunterUpgrade").hide();
-		$(".Hunter").removeClass("hover");
 	}
 	if (Redeemer.total >= 1) {
 		$("#RedeemerUpgrade").show();
@@ -45,7 +43,6 @@ setInterval(function updateTick() { //checks if upgrade conditions are met.
 	}
 	if (Redeemer.total < 1) {
 		$("#RedeemerUpgrade").hide();
-		$(".Redeemer").removeClass("hover");
 	}
 	if (Warlord.total >= 1) {
 		$("#WarlordUpgrade").show();
@@ -53,7 +50,6 @@ setInterval(function updateTick() { //checks if upgrade conditions are met.
 	}
 	if (Warlord.total < 1) {
 		$("#WarlordUpgrade").hide();
-		$(".Warlord").removeClass("hover");
 	}
 
 	rollMapCurrency();
