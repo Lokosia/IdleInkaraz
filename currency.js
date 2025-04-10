@@ -279,4 +279,97 @@ function updateHoverFlipping() {
     }
 };
 
+
+// Helper function for currency hover effects
+function addCurrencyHoverEffect(switchElement, currencyName) {
+    $(switchElement).hover(
+        function() {
+            $(`.${currencyName}Text`).addClass('mdl-color-text--blue-grey-600');
+        },
+        function() {
+            $(`.${currencyName}Text`).removeClass('mdl-color-text--blue-grey-600');
+        }
+    );
+}
+
+// Create switches when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Helper function to get proper display name
+    function getDisplayName(name) {
+        const displayNames = {
+            'Armourer': "Armourer's Scrap",
+            'Blacksmith': "Blacksmith's Whetstone",
+            'Glassblower': "Glassblower's Bauble",
+            'Jeweller': "Jeweller's Orb",
+            'GCP': "Gemcutter's Prism",
+            'Chisel': "Cartographer's Chisel",
+            'Awakener': "Awakener's Orb",
+            'Crusader': "Crusader's Exalted Orb",
+            'Hunter': "Hunter's Exalted Orb",
+            'Redeemer': "Redeemer's Exalted Orb",
+            'Warlord': "Warlord's Exalted Orb",
+            'Mirror': "Mirror of Kalandra",
+            'Alchemy': "Orb of Alchemy",
+            'Transmutation': "Orb of Transmutation",
+            'Augmentation': "Orb of Augmentation",
+            'Alteration': "Orb of Alteration",
+            'Chance': "Orb of Chance",
+            'Regret': "Orb of Regret",
+            'StackedDeck': "Stacked Deck",
+            'SimpleSextant': "Simple Sextant",
+            'PrimeSextant': "Prime Sextant",
+            'AwakenedSextant': "Awakened Sextant",
+            'SilverCoin': "Silver Coin",
+            'Scouring': "Orb of Scouring",
+            'Fusing': "Orb of Fusing",
+            'Annulment': "Orb of Annulment",
+        };
+        return displayNames[name] || `${name} Orb`;
+    }
+
+    // Create currency switch
+    function createCurrencySwitch(currency, type) {
+        const kebabCase = currency.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+        const containerId = `${kebabCase}-currency-${type}-switch-container`;
+        const container = document.getElementById(containerId);
+        
+        if (!container) {
+            console.error(`Missing container for ${currency.name}`);
+            return;
+        }
+
+        const ratio = type === 'sell' ? currency.sellRate : currency.buyRate;
+        const isExaltedType = ['Awakener', 'Crusader', 'Hunter', 'Redeemer', 'Warlord', 'Eternal', 'Mirror'].includes(currency.name);
+        const isInvertedRatio = ['Annulment', 'Divine', 'Exalted'].includes(currency.name);
+        const baseType = isExaltedType ? 'Exalted Orb' : 'Chaos Orb';
+
+        // Format ratio based on currency type
+        let formattedRatio;
+        if (isExaltedType) {
+            formattedRatio = `1:${ratio}`;
+        } else if (isInvertedRatio) {
+            formattedRatio = `1:${ratio}`;
+        } else {
+            formattedRatio = `${ratio}:1`;
+        }
+
+        const switchInstance = UISwitch.create({
+            id: `${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`,
+            text: `${getDisplayName(currency.name)} ${formattedRatio} ${baseType}`,
+            onChange: (e) => type === 'sell' ? slideSell(e.target, window[currency.name]) : slideBuy(e.target, window[currency.name]),
+            extraClasses: [`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`]
+        });
+        
+        container.appendChild(switchInstance);
+        addCurrencyHoverEffect(`.${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`, currency.name);
+    }
+
+    // Create all switches
+    currencyData.forEach(currency => {
+        if (currency.name === 'Sulphite') return;
+        createCurrencySwitch(currency, 'sell');
+        createCurrencySwitch(currency, 'buy');
+    });
+});
+
 updateHoverFlipping();
