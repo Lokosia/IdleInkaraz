@@ -19,12 +19,12 @@ class Exile {
 
 	lvlExile() {
 	if (this.level > 0 && this.level <= 99) {
-		this.exp += Math.floor((Math.random() * (25 - 15) + 15)+(this.dropRate*3)+(this.level/5));
+		this.exp += Math.floor((Math.random() * (25 - 15) + 15)+(this.dropRate*3)+(this.level/5)) * 20; // delete *100
 		while (this.exp > this.expToLevel) {
 			this.expToLevel = Math.floor((this.expToLevel*1.10)); //updates level requirement
 			this.level++;
 			if (this.rerollLevel <= 100) {
-			this.dropRate += 0.1;
+			this.dropRate += 1; // default is 0.1
 			} else {
 				this.dropRate += 0.05; //makes rerolls less efficient
 			}

@@ -73,22 +73,7 @@
 
             <div id="welcomePre">
                 <div class="mdl-grid center-items">
-                    <div
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Welcome, Exile</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <p>It's the start of a new league in Path of Exile, you decide to create a guild with the
-                                sole intention of sharing resources and growing as a team.</p>
-                            <p>Recruit Exiles, Delvers, Currency Flippers, and Crafters. Dominate the economy and
-                                upgrade your guild members.</p>
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="welcome();">
-                                Create Guild
-                            </button>
-                        </div>
-                    </div>
+                    <div id="welcome-card"></div>
                 </div>
             </div><!-- /Welcome -->
 
@@ -134,204 +119,39 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand">
                             <div class="flip hidden">
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ArmourerSellSlider"
-                                    for="ArmourerSellSlider">
-                                    <input type="checkbox" id="ArmourerSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Armourer)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Armourer's Scrap 15:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect BlacksmithSellSlider"
-                                    for="BlacksmithSellSlider">
-                                    <input type="checkbox" id="BlacksmithSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Blacksmith)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Blacksmith's Whetstone 10:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect GlassblowerSellSlider"
-                                    for="GlassblowerSellSlider">
-                                    <input type="checkbox" id="GlassblowerSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Glassblower)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Glassblower's Bauble 8:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect TransmutationSellSlider"
-                                    for="TransmutationSellSlider">
-                                    <input type="checkbox" id="TransmutationSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Transmutation)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Transmutation 16:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AugmentationSellSlider"
-                                    for="AugmentationSellSlider">
-                                    <input type="checkbox" id="AugmentationSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Augmentation)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Augmentation 5:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AlterationSellSlider"
-                                    for="AlterationSellSlider">
-                                    <input type="checkbox" id="AlterationSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Alteration)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Alteration 5:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChanceSellSlider"
-                                    for="ChanceSellSlider">
-                                    <input type="checkbox" id="ChanceSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Chance)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Chance 9:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect JewellerSellSlider"
-                                    for="JewellerSellSlider">
-                                    <input type="checkbox" id="JewellerSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Jeweller)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Jeweller's Orb 22:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChromaticSellSlider"
-                                    for="ChromaticSellSlider">
-                                    <input type="checkbox" id="ChromaticSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Chromatic)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Chromatic Orb 9:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RegretSellSlider"
-                                    for="RegretSellSlider">
-                                    <input type="checkbox" id="RegretSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Regret)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Regret 4:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect GCPSellSlider"
-                                    for="GCPSellSlider">
-                                    <input type="checkbox" id="GCPSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,GCP)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Gemcutter's Prism 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect BlessedSellSlider"
-                                    for="BlessedSellSlider">
-                                    <input type="checkbox" id="BlessedSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Blessed)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Blessed Orb 15:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RegalSellSlider"
-                                    for="RegalSellSlider">
-                                    <input type="checkbox" id="RegalSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Regal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Regal Orb 5:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect StackedDeckSellSlider"
-                                    for="StackedDeckSellSlider">
-                                    <input type="checkbox" id="StackedDeckSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,StackedDeck)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Stacked Deck 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect SilverCoinSellSlider"
-                                    for="SilverCoinSellSlider">
-                                    <input type="checkbox" id="SilverCoinSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,SilverCoin)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Silver Coin 10:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChiselSellSlider"
-                                    for="ChiselSellSlider">
-                                    <input type="checkbox" id="ChiselSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Chisel)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Cartographer's Chisel 5:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AlchemySellSlider"
-                                    for="AlchemySellSlider">
-                                    <input type="checkbox" id="AlchemySellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Alchemy)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Alchemy 8:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ScouringSellSlider"
-                                    for="ScouringSellSlider">
-                                    <input type="checkbox" id="ScouringSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Scouring)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Scouring 3:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect SimpleSextantSellSlider"
-                                    for="SimpleSextantSellSlider">
-                                    <input type="checkbox" id="SimpleSextantSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,SimpleSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Simple Sextant 3:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect PrimeSextantSellSlider"
-                                    for="PrimeSextantSellSlider">
-                                    <input type="checkbox" id="PrimeSextantSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,PrimeSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Prime Sextant 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AwakenedSextantSellSlider"
-                                    for="AwakenedSextantSellSlider">
-                                    <input type="checkbox" id="AwakenedSextantSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,AwakenedSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Awakened Sextant 1:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect FusingSellSlider"
-                                    for="FusingSellSlider">
-                                    <input type="checkbox" id="FusingSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Fusing)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Fusing 6:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect VaalSellSlider"
-                                    for="VaalSellSlider">
-                                    <input type="checkbox" id="VaalSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Vaal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Vaal Orb 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AnnulmentSellSlider"
-                                    for="AnnulmentSellSlider">
-                                    <input type="checkbox" id="AnnulmentSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Annulment)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Annulment 1:4 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect DivineSellSlider"
-                                    for="DivineSellSlider">
-                                    <input type="checkbox" id="DivineSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Divine)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Divine Orb 1:10 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ExaltedSellSlider"
-                                    for="ExaltedSellSlider">
-                                    <input type="checkbox" id="ExaltedSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Exalted)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Exalted Orb 1:125 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AwakenerSellSlider"
-                                    for="AwakenerSellSlider">
-                                    <input type="checkbox" id="AwakenerSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Awakener)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Awakener's Orb 1:10 Exalted
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect CrusaderSellSlider"
-                                    for="CrusaderSellSlider">
-                                    <input type="checkbox" id="CrusaderSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Crusader)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Crusader's Exalted Orb 1:10
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect HunterSellSlider"
-                                    for="HunterSellSlider">
-                                    <input type="checkbox" id="HunterSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Hunter)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Hunter's Exalted Orb 1:10
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RedeemerSellSlider"
-                                    for="RedeemerSellSlider">
-                                    <input type="checkbox" id="RedeemerSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Redeemer)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Redeemer's Exalted Orb 1:10
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect WarlordSellSlider"
-                                    for="WarlordSellSlider">
-                                    <input type="checkbox" id="WarlordSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Warlord)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Warlord's Exalted Orb 1:10
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect EternalSellSlider"
-                                    for="EternalSellSlider">
-                                    <input type="checkbox" id="EternalSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Eternal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Eternal Orb 1:25 Exalted
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect MirrorSellSlider"
-                                    for="MirrorSellSlider">
-                                    <input type="checkbox" id="MirrorSellSlider" class="mdl-switch__input"
-                                        oninput="slideSell(this,Mirror)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Mirror of Kalandra 1:200
-                                    Exalted Orb</label>
+                                <div id="armourer-currency-sell-switch-container" class="ArmourerSellSlider"></div>
+                                <div id="blacksmith-currency-sell-switch-container" class="BlacksmithSellSlider"></div>
+                                <div id="glassblower-currency-sell-switch-container" class="GlassblowerSellSlider"></div>
+                                <div id="transmutation-currency-sell-switch-container" class="TransmutationSellSlider"></div>
+                                <div id="augmentation-sell-switch-container" class="AugmentationSellSlider"></div>
+                                <div id="alteration-sell-switch-container" class="AlterationSellSlider"></div>
+                                <div id="chance-sell-switch-container" class="ChanceSellSlider"></div>
+                                <div id="jeweller-currency-sell-switch-container" class="JewellerSellSlider"></div>
+                                <div id="chromatic-currency-sell-switch-container" class="ChromaticSellSlider"></div>
+                                <div id="regret-currency-sell-switch-container" class="RegretSellSlider"></div>
+                                <div id="gcp-currency-sell-switch-container" class="GCPSellSlider"></div>
+                                <div id="blessed-currency-sell-switch-container" class="BlessedSellSlider"></div>
+                                <div id="regal-currency-sell-switch-container" class="RegalSellSlider"></div>
+                                <div id="stacked-deck-sell-switch-container" class="StackedDeckSellSlider"></div>
+                                <div id="silver-coin-sell-switch-container" class="SilverCoinSellSlider"></div>
+                                <div id="chisel-sell-switch-container" class="ChiselSellSlider"></div>
+                                <div id="alchemy-sell-switch-container" class="AlchemySellSlider"></div>
+                                <div id="scouring-sell-switch-container" class="ScouringSellSlider"></div>
+                                <div id="simple-sextant-sell-switch-container" class="SimpleSextantSellSlider"></div>
+                                <div id="prime-sextant-sell-switch-container" class="PrimeSextantSellSlider"></div>
+                                <div id="awakened-sextant-sell-switch-container" class="AwakenedSextantSellSlider"></div>
+                                <div id="fusing-sell-switch-container" class="FusingSellSlider"></div>
+                                <div id="vaal-currency-sell-switch-container" class="VaalSellSlider"></div>
+                                <div id="annulment-currency-sell-switch-container" class="AnnulmentSellSlider"></div> 
+                                <div id="divine-currency-sell-switch-container" class="DivineSellSlider"></div>
+                                <div id="exalted-currency-sell-switch-container" class="ExaltedSellSlider"></div>
+                                <div id="awakener-currency-sell-switch-container" class="AwakenerSellSlider"></div>
+                                <div id="crusader-currency-sell-switch-container" class="CrusaderSellSlider"></div>
+                                <div id="hunter-currency-sell-switch-container" class="HunterSellSlider"></div>
+                                <div id="redeemer-currency-sell-switch-container" class="RedeemerSellSlider"></div>
+                                <div id="warlord-currency-sell-switch-container" class="WarlordSellSlider"></div>
+                                <div id="eternal-currency-sell-switch-container" class="EternalSellSlider"></div>
+                                <div id="mirror-currency-sell-switch-container" class="MirrorSellSlider"></div>
                             </div>
 
                         </div>
@@ -392,204 +212,39 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand">
                             <div class="flip hidden">
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ArmourerBuySlider"
-                                    for="ArmourerBuySlider">
-                                    <input type="checkbox" id="ArmourerBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Armourer)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Armourer's Scrap 13:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect BlacksmithBuySlider"
-                                    for="BlacksmithBuySlider">
-                                    <input type="checkbox" id="BlacksmithBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Blacksmith)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Blacksmith's Whetstone 9:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect GlassblowerBuySlider"
-                                    for="GlassblowerBuySlider">
-                                    <input type="checkbox" id="GlassblowerBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Glassblower)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Glassblower's Bauble 7:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect TransmutationBuySlider"
-                                    for="TransmutationBuySlider">
-                                    <input type="checkbox" id="TransmutationBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Transmutation)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Transmutation 15:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AugmentationBuySlider"
-                                    for="AugmentationBuySlider">
-                                    <input type="checkbox" id="AugmentationBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Augmentation)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Augmentation 4:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AlterationBuySlider"
-                                    for="AlterationBuySlider">
-                                    <input type="checkbox" id="AlterationBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Alteration)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Alteration 4:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChanceBuySlider"
-                                    for="ChanceBuySlider">
-                                    <input type="checkbox" id="ChanceBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Chance)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Chance 8:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect JewellerBuySlider"
-                                    for="JewellerBuySlider">
-                                    <input type="checkbox" id="JewellerBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Jeweller)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Jeweller's Orb 21:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChromaticBuySlider"
-                                    for="ChromaticBuySlider">
-                                    <input type="checkbox" id="ChromaticBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Chromatic)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Chromatic Orb 8:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RegretBuySlider"
-                                    for="RegretBuySlider">
-                                    <input type="checkbox" id="RegretBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Regret)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Regret 3:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect GCPBuySlider"
-                                    for="GCPBuySlider">
-                                    <input type="checkbox" id="GCPBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,GCP)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Gemcutter's Prism 1:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect BlessedBuySlider"
-                                    for="BlessedBuySlider">
-                                    <input type="checkbox" id="BlessedBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Blessed)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Blessed Orb 14:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RegalBuySlider"
-                                    for="RegalBuySlider">
-                                    <input type="checkbox" id="RegalBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Regal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Regal Orb 4:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect StackedDeckBuySlider"
-                                    for="StackedDeckBuySlider">
-                                    <input type="checkbox" id="StackedDeckBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,StackedDeck)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Stacked Deck 1:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect SilverCoinBuySlider"
-                                    for="SilverCoinBuySlider">
-                                    <input type="checkbox" id="SilverCoinBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,SilverCoin)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Silver Coin 10:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ChiselBuySlider"
-                                    for="ChiselBuySlider">
-                                    <input type="checkbox" id="ChiselBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Chisel)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Cartographer's Chisel 4:1
-                                    Chaos Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AlchemyBuySlider"
-                                    for="AlchemyBuySlider">
-                                    <input type="checkbox" id="AlchemyBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Alchemy)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Alchemy 7:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ScouringBuySlider"
-                                    for="ScouringBuySlider">
-                                    <input type="checkbox" id="ScouringBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Scouring)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Scouring 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect SimpleSextantBuySlider"
-                                    for="SimpleSextantBuySlider">
-                                    <input type="checkbox" id="SimpleSextantBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,SimpleSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Simple Sextant 3:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect PrimeSextantBuySlider"
-                                    for="PrimeSextantBuySlider">
-                                    <input type="checkbox" id="PrimeSextantBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,PrimeSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Prime Sextant 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AwakenedSextantBuySlider"
-                                    for="AwakenedSextantBuySlider">
-                                    <input type="checkbox" id="AwakenedSextantBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,AwakenedSextant)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Awakened Sextant 1:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect FusingBuySlider"
-                                    for="FusingBuySlider">
-                                    <input type="checkbox" id="FusingBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Fusing)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Fusing 5:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect VaalBuySlider"
-                                    for="VaalBuySlider">
-                                    <input type="checkbox" id="VaalBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Vaal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Vaal Orb 2:1 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AnnulmentBuySlider"
-                                    for="AnnulmentBuySlider">
-                                    <input type="checkbox" id="AnnulmentBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Annulment)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Orb of Annulment 1:3 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect DivineBuySlider"
-                                    for="DivineBuySlider">
-                                    <input type="checkbox" id="DivineBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Divine)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Divine Orb 1:10 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect ExaltedBuySlider"
-                                    for="ExaltedBuySlider">
-                                    <input type="checkbox" id="ExaltedBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Exalted)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Exalted Orb 1:150 Chaos
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect AwakenerBuySlider"
-                                    for="AwakenerBuySlider">
-                                    <input type="checkbox" id="AwakenerBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Awakener)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Awakener's Orb 1:20 Exalted
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect CrusaderBuySlider"
-                                    for="CrusaderBuySlider">
-                                    <input type="checkbox" id="CrusaderBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Crusader)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Crusader's Exalted Orb 1:20
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect HunterBuySlider"
-                                    for="HunterBuySlider">
-                                    <input type="checkbox" id="HunterBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Hunter)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Hunter's Exalted Orb 1:20
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect RedeemerBuySlider"
-                                    for="RedeemerBuySlider">
-                                    <input type="checkbox" id="RedeemerBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Redeemer)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Redeemer's Exalted Orb 1:20
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect WarlordBuySlider"
-                                    for="WarlordBuySlider">
-                                    <input type="checkbox" id="WarlordBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Warlord)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Warlord's Exalted Orb 1:20
-                                    Exalted Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect EternalBuySlider"
-                                    for="EternalBuySlider">
-                                    <input type="checkbox" id="EternalBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Eternal)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Eternal Orb 1:50 Exalted
-                                    Orb</label>
-                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect MirrorBuySlider"
-                                    for="MirrorBuySlider">
-                                    <input type="checkbox" id="MirrorBuySlider" class="mdl-switch__input"
-                                        oninput="slideBuy(this,Mirror)">
-                                    <span class="mdl-switch__label"></span>&nbsp;&nbsp;&nbsp;Mirror of Kalandra 1:250
-                                    Exalted Orb</label>
+                                <div id="armourer-currency-buy-switch-container" class="ArmourerBuySlider"></div>
+                                <div id="blacksmith-currency-buy-switch-container" class="BlacksmithBuySlider"></div>
+                                <div id="glassblower-currency-buy-switch-container" class="GlassblowerBuySlider"></div>
+                                <div id="transmutation-currency-buy-switch-container" class="TransmutationBuySlider"></div>
+                                <div id="augmentation-currency-buy-switch-container" class="AugmentationBuySlider"></div>
+                                <div id="alteration-currency-buy-switch-container" class="AlterationBuySlider"></div>
+                                <div id="chance-buy-switch-container" class="ChanceBuySlider"></div>
+                                <div id="jeweller-buy-switch-container" class="JewellerBuySlider"></div>
+                                <div id="chromatic-buy-switch-container" class="ChromaticBuySlider"></div>
+                                <div id="regret-buy-switch-container" class="RegretBuySlider"></div>
+                                <div id="gcp-buy-switch-container" class="GCPBuySlider"></div>
+                                <div id="blessed-buy-switch-container" class="BlessedBuySlider"></div>
+                                <div id="regal-buy-switch-container" class="RegalBuySlider"></div>
+                                <div id="stacked-deck-buy-switch-container" class="StackedDeckBuySlider"></div>
+                                <div id="silver-coin-buy-switch-container" class="SilverCoinBuySlider"></div>
+                                <div id="chisel-buy-switch-container" class="ChiselBuySlider"></div>
+                                <div id="alchemy-buy-switch-container" class="AlchemyBuySlider"></div>  
+                                <div id="scouring-buy-switch-container" class="ScouringBuySlider"></div>
+                                <div id="simple-sextant-buy-switch-container" class="SimpleSextantBuySlider"></div>
+                                <div id="prime-sextant-buy-switch-container" class="PrimeSextantBuySlider"></div>
+                                <div id="awakened-sextant-buy-switch-container" class="AwakenedSextantBuySlider"></div>
+                                <div id="fusing-buy-switch-container" class="FusingBuySlider"></div>
+                                <div id="vaal-buy-switch-container" class="VaalBuySlider"></div>
+                                <div id="annulment-buy-switch-container" class="AnnulmentBuySlider"></div>
+                                <div id="divine-buy-switch-container" class="DivineBuySlider"></div>
+                                <div id="exalted-buy-switch-container" class="ExaltedBuySlider"></div>
+                                <div id="awakener-buy-switch-container" class="AwakenerBuySlider"></div>
+                                <div id="crusader-buy-switch-container" class="CrusaderBuySlider"></div>
+                                <div id="hunter-buy-switch-container" class="HunterBuySlider"></div>
+                                <div id="redeemer-buy-switch-container" class="RedeemerBuySlider"></div>
+                                <div id="warlord-buy-switch-container" class="WarlordBuySlider"></div>
+                                <div id="eternal-buy-switch-container" class="EternalBuySlider"></div>
+                                <div id="mirror-buy-switch-container" class="MirrorBuySlider"></div>
                             </div>
                         </div>
                     </div>
@@ -1576,21 +1231,29 @@
             </div>
 
         </main>
-
-        <!-- Scripts -->
-        <!-- Core -->
-        <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <!-- Game Logic -->
-        <script type="text/javascript" src="game.js"></script>
-        <script type="text/javascript" src="exiles.js"></script>
-        <script type="text/javascript" src="currency.js"></script>
-        <script type="text/javascript" src="delve.js"></script>
-        <script type="text/javascript" src="upgrades.js"></script>
-        <script type="text/javascript" src="crafting.js"></script>
-        <!-- Libraries -->
-        <script type="text/javascript" src="numeral.js"></script>
-        <!-- /Scripts -->
+    </div>
+    <!-- Scripts -->
+    <!-- Core -->
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
+    <!-- Game Logic -->
+     
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="exiles.js"></script>
+    <script type="text/javascript" src="currency.js"></script>
+    <script type="text/javascript" src="delve.js"></script>
+    <script type="text/javascript" src="upgrades.js"></script>
+    <script type="text/javascript" src="crafting.js"></script>
+    <!-- Libraries -->
+    <script type="text/javascript" src="numeral.js"></script>
+    <!-- Framework abstraction -->
+    <script src="js/config/ui-classes.js"></script>
+    <script src="js/components/buttons.js"></script>
+    <script src="js/components/cards.js"></script>
+    <script src="js/components/navigation.js"></script>
+    <script src="js/components/switches.js"></script>
+    <!-- /Scripts -->
 </body><!-- /Body -->
 
 </html><!-- Hello :) -->
