@@ -39,3 +39,5 @@ button that turns off all flips.
 clean up some functions, I feel like I got sloppy with upgrades/crafting - these functions can be condensed, lots of repitition here.
 
 add "live" market, where selling currency decrease it's price and increaase price for some other currency, and buying some currency makes it's price higher, while other currencies rates go down
+
+show how much currency each individual exile farmed

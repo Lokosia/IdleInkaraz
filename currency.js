@@ -37,6 +37,10 @@ class Currency {
         this.buyLost = buyLost ?? (this.buyRate <= 1 ? this.buyRate : 1); // how much trading currency you spend
     }
 
+    // -------------------------
+    // CURRENCY DROP METHODS
+    // -------------------------
+
     /**
      * Generates a random number for currency drop calculation
      * @returns {string} Random number between 0.0000001 and 1 with 7 decimal places
@@ -68,6 +72,10 @@ class Currency {
         }
     }
 
+    // -------------------------
+    // TRADING TOGGLE METHODS
+    // -------------------------
+
     /**
      * Activates or deactivates selling for this currency
      * @param {number} value - 1 to activate selling, 0 to deactivate
@@ -91,6 +99,10 @@ class Currency {
         }
         this.buyPercent = value;
     }
+
+    // -------------------------
+    // TRADING EXECUTION METHODS
+    // -------------------------
 
     /**
      * Executes a sell operation if selling is active
@@ -125,7 +137,7 @@ class Currency {
             }
         }
     }
-}
+    }
 
 //---Define Currency
 // Initialize data structures
@@ -162,32 +174,31 @@ CURRENCY_CONFIG.forEach(config => {
 //---Main
 
 /**
- * Processes currency drops for a specific exile character
- * @param {Object} exileName - The exile character providing drop rate bonus
+ * Generic currency operation processor that applies a method to all currencies
+ * 
+ * This function serves as a central dispatcher for applying operations across all currencies.
+ * It dynamically invokes the specified method on each currency object, passing optional
+ * parameters when provided.
+ * 
+ * @param {string} operation - The Currency method name to call on each currency
+ *                             (e.g., 'rollCurrency', 'sellCurrency', 'buyCurrency')
+ * @param {Object} [param] - Optional parameter to pass to the method
+ *                           For 'rollCurrency', this is the exile character object
+ * 
+ * @example
+ * // Process buy operations for all currencies
+ * processCurrencyOperation('buyCurrency');
+ * 
+ * // Process currency drops with a specific exile
+ * processCurrencyOperation('rollCurrency', exileData[0]);
  */
-function rollCurrencyTick(exileName) {
+function processCurrencyOperation(operation, param) {
     for (let i = 0; i < currencyData.length; i++) {
-        currencyData[i].rollCurrency(exileName);
-    }
-}
-
-/**
- * Processes selling operations for all currencies
- * Called periodically by game loop
- */
-function sellCurrencyTick() {
-    for (let i = 0; i < currencyData.length; i++) {
-        currencyData[i].sellCurrency();
-    }
-}
-
-/**
- * Processes buying operations for all currencies
- * Called periodically by game loop
- */
-function buyCurrencyTick() {
-    for (let i = 0; i < currencyData.length; i++) {
-        currencyData[i].buyCurrency();
+        if (param !== undefined) {
+            currencyData[i][operation](param);
+        } else {
+            currencyData[i][operation]();
+        }
     }
 }
 
@@ -204,11 +215,11 @@ function updateCurrencyClass() {
 setInterval(function gameTick() {
     for (let i = 0; i < exileData.length; i++) {
         if (exileData[i].dropRate > 0) {
-            rollCurrencyTick(exileData[i]);
+            processCurrencyOperation('rollCurrency', exileData[i]);
         }
     }
-    sellCurrencyTick();
-    buyCurrencyTick();
+    processCurrencyOperation('sellCurrency');
+    processCurrencyOperation('buyCurrency');
 
     updateCurrencyClass();
 }, 100);
@@ -216,27 +227,16 @@ setInterval(function gameTick() {
 //---Sliders
 
 /**
- * Handles the sell slider toggle for a currency
+ * Handles currency slider toggle for buy or sell operations
  * @param {Currency} currency - The currency being toggled
+ * @param {string} operation - Either 'sell' or 'buy'
  */
-function slideSell(currency) {
-    if (document.getElementById(currency.name + "SellSlider").checked == true) {
-        currency.sellSetCurrency(1);
-    } else {
-        currency.sellSetCurrency(0);
-    }
-}
-
-/**
- * Handles the buy slider toggle for a currency
- * @param {Currency} currency - The currency being toggled
- */
-function slideBuy(currency) {
-    if (document.getElementById(currency.name + "BuySlider").checked == true) {
-        currency.buySetCurrency(1);
-    } else {
-        currency.buySetCurrency(0);
-    }
+function toggleCurrencyOperation(currency, operation) {
+    const method = operation === 'sell' ? 'sellSetCurrency' : 'buySetCurrency';
+    const sliderId = `${currency.name}${operation.charAt(0).toUpperCase() + operation.slice(1)}Slider`;
+    const isChecked = document.getElementById(sliderId).checked;
+    
+    currency[method](isChecked ? 1 : 0);
 }
 
 /**
@@ -277,9 +277,7 @@ function createCurrencySwitch(currency, type) {
     const switchInstance = UISwitch.create({
         id: `${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`,
         text: `${getCurrencyDisplayName(currency.name)} ${formattedRatio} ${baseType}`,
-        onChange: (e) => type === 'sell'
-            ? slideSell(window[currency.name])
-            : slideBuy(window[currency.name]),
+        onChange: (e) => toggleCurrencyOperation(window[currency.name], type),
         extraClasses: [`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`]
     });
 
