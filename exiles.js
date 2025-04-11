@@ -24,7 +24,7 @@ class Exile {
 			this.expToLevel = Math.floor((this.expToLevel*1.10)); //updates level requirement
 			this.level++;
 			if (this.rerollLevel <= 100) {
-			this.dropRate += 1; // default is 0.1
+			this.dropRate += 10; // default is 0.1
 			} else {
 				this.dropRate += 0.05; //makes rerolls less efficient
 			}

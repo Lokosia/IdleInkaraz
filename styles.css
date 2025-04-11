@@ -224,6 +224,18 @@ _:-ms-input-placeholder, :root .demo-graph {
   font-weight: bold;  
 }
 
+.hover-buy-sell {
+  color: #d9ff00 !important;
+  font-weight: bold;
+  transition: color 0.15s ease-in-out;
+}
+
+.hover-trade {
+  color: #0400fd !important;
+  font-weight: bold;
+  transition: color 0.15s ease-in-out;
+}
+
 .mdl-data-table td {
   padding: 4px 6px !important;
 }
