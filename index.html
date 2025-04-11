@@ -118,42 +118,8 @@
                             <h2 class="mdl-card__title-text">Sell Currency</h2>
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand">
-                            <div class="flip hidden">
-                                <div id="armourer-currency-sell-switch-container" class="ArmourerSellSlider"></div>
-                                <div id="blacksmith-currency-sell-switch-container" class="BlacksmithSellSlider"></div>
-                                <div id="glassblower-currency-sell-switch-container" class="GlassblowerSellSlider"></div>
-                                <div id="transmutation-currency-sell-switch-container" class="TransmutationSellSlider"></div>
-                                <div id="augmentation-currency-sell-switch-container" class="AugmentationSellSlider"></div>
-                                <div id="alteration-currency-sell-switch-container" class="AlterationSellSlider"></div>
-                                <div id="chance-currency-sell-switch-container" class="ChanceSellSlider"></div>
-                                <div id="jeweller-currency-sell-switch-container" class="JewellerSellSlider"></div>
-                                <div id="chromatic-currency-sell-switch-container" class="ChromaticSellSlider"></div>
-                                <div id="regret-currency-sell-switch-container" class="RegretSellSlider"></div>
-                                <div id="gcp-currency-sell-switch-container" class="GCPSellSlider"></div>
-                                <div id="blessed-currency-sell-switch-container" class="BlessedSellSlider"></div>
-                                <div id="regal-currency-sell-switch-container" class="RegalSellSlider"></div>
-                                <div id="stacked-deck-currency-sell-switch-container" class="StackedDeckSellSlider"></div>
-                                <div id="silver-coin-currency-sell-switch-container" class="SilverCoinSellSlider"></div>
-                                <div id="chisel-currency-sell-switch-container" class="ChiselSellSlider"></div>
-                                <div id="alchemy-currency-sell-switch-container" class="AlchemySellSlider"></div>
-                                <div id="scouring-currency-sell-switch-container" class="ScouringSellSlider"></div>
-                                <div id="simple-sextant-currency-sell-switch-container" class="SimpleSextantSellSlider"></div>
-                                <div id="prime-sextant-currency-sell-switch-container" class="PrimeSextantSellSlider"></div>
-                                <div id="awakened-sextant-currency-sell-switch-container" class="AwakenedSextantSellSlider"></div>
-                                <div id="fusing-currency-sell-switch-container" class="FusingSellSlider"></div>
-                                <div id="vaal-currency-sell-switch-container" class="VaalSellSlider"></div>
-                                <div id="annulment-currency-sell-switch-container" class="AnnulmentSellSlider"></div> 
-                                <div id="divine-currency-sell-switch-container" class="DivineSellSlider"></div>
-                                <div id="exalted-currency-sell-switch-container" class="ExaltedSellSlider"></div>
-                                <div id="awakener-currency-sell-switch-container" class="AwakenerSellSlider"></div>
-                                <div id="crusader-currency-sell-switch-container" class="CrusaderSellSlider"></div>
-                                <div id="hunter-currency-sell-switch-container" class="HunterSellSlider"></div>
-                                <div id="redeemer-currency-sell-switch-container" class="RedeemerSellSlider"></div>
-                                <div id="warlord-currency-sell-switch-container" class="WarlordSellSlider"></div>
-                                <div id="eternal-currency-sell-switch-container" class="EternalSellSlider"></div>
-                                <div id="mirror-currency-sell-switch-container" class="MirrorSellSlider"></div>
+                            <div class="flip hidden" id="sellCurrencyContainer">
                             </div>
-
                         </div>
                     </div>
 
@@ -162,46 +128,7 @@
                         <div class="mdl-card__title">
                             <h2 class="mdl-card__title-text">Currency</h2>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            Armourer's Scrap: <span class="Armourer">0</span><br>
-                            Blacksmith's Whetstone: <span class="Blacksmith">Blacksmith's Whetstone: 0</span><br>
-                            Glassblower's Bauble: <span class="Glassblower">0</span><br><br>
-
-                            <span id="AscendantHover">Orb of Transmutation:</span> <span
-                                class="Transmutation">0</span><br>
-                            Orb of Augmentation: <span class="Augmentation">0</span><br>
-                            Orb of Alteration: <span class="Alteration">0</span><br>
-                            Orb of Chance: <span class="Chance">0</span><br>
-                            Jeweller's Orb: <span class="Jeweller">0</span><br>
-                            Chromatic Orb: <span class="Chromatic">0</span><br>
-                            Orb of Regret: <span class="Regret">0</span><br>
-                            Gemcutter's Prism: <span class="GCP">0</span><br>
-                            Blessed Orb: <span class="Blessed">0</span><br>
-                            Regal Orb: <span class="Regal">0</span><br>
-                            Stacked Deck: <span class="StackedDeck">0</span><br>
-                            Silver Coin: <span class="SilverCoin">0</span><br><br>
-
-                            Cartographer's Chisel: <span class="Chisel">0</span><br>
-                            Orb of Alchemy: <span class="Alchemy">0</span><br>
-                            Orb of Scouring: <span class="Scouring">0</span><br>
-                            Simple Sextant: <span class="SimpleSextant">0</span><br>
-                            Prime Sextant: <span class="PrimeSextant">0</span><br>
-                            Awakened Sextant: <span class="AwakenedSextant">0</span><br><br>
-
-                            Orb of Fusing: <span class="Fusing">0</span><br>
-                            Chaos Orb: <span class="Chaos">0</span><br>
-                            Vaal Orb: <span class="Vaal">0</span><br>
-                            Orb of Annulment: <span class="Annulment">0</span><br>
-                            Divine Orb: <span class="Divine">0</span><br>
-                            Exalted Orb: <span class="Exalted">0</span><br><br>
-
-                            Awakener's Orb: <span class="Awakener">0</span><br>
-                            Crusader's Exalted Orb: <span class="Crusader">0</span><br>
-                            Hunter's Exalted Orb: <span class="Hunter">0</span><br>
-                            Redeemer's Exalted Orb: <span class="Redeemer">0</span><br>
-                            Warlord's Exalted Orb: <span class="Warlord">0</span><br>
-                            Eternal Orb: <span class="Eternal">0</span><br>
-                            Mirror of Kalandra: <span class="Mirror">0</span><br>
+                        <div class="mdl-card__supporting-text mdl-card--expand" id="currencyDisplayContainer">
                         </div>
                     </div>
 
@@ -211,40 +138,7 @@
                             <h2 class="mdl-card__title-text">Buy Currency</h2>
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand">
-                            <div class="flip hidden">
-                                <div id="armourer-currency-buy-switch-container" class="ArmourerBuySlider"></div>
-                                <div id="blacksmith-currency-buy-switch-container" class="BlacksmithBuySlider"></div>
-                                <div id="glassblower-currency-buy-switch-container" class="GlassblowerBuySlider"></div>
-                                <div id="transmutation-currency-buy-switch-container" class="TransmutationBuySlider"></div>
-                                <div id="augmentation-currency-buy-switch-container" class="AugmentationBuySlider"></div>
-                                <div id="alteration-currency-buy-switch-container" class="AlterationBuySlider"></div>
-                                <div id="chance-currency-buy-switch-container" class="ChanceBuySlider"></div>
-                                <div id="jeweller-currency-buy-switch-container" class="JewellerBuySlider"></div>
-                                <div id="chromatic-currency-buy-switch-container" class="ChromaticBuySlider"></div>
-                                <div id="regret-currency-buy-switch-container" class="RegretBuySlider"></div>
-                                <div id="gcp-currency-buy-switch-container" class="GCPBuySlider"></div>
-                                <div id="blessed-currency-buy-switch-container" class="BlessedBuySlider"></div>
-                                <div id="regal-currency-buy-switch-container" class="RegalBuySlider"></div>
-                                <div id="stacked-deck-currency-buy-switch-container" class="StackedDeckBuySlider"></div>
-                                <div id="silver-coin-currency-buy-switch-container" class="SilverCoinBuySlider"></div>
-                                <div id="chisel-currency-buy-switch-container" class="ChiselBuySlider"></div>
-                                <div id="alchemy-currency-buy-switch-container" class="AlchemyBuySlider"></div>  
-                                <div id="scouring-currency-buy-switch-container" class="ScouringBuySlider"></div>
-                                <div id="simple-sextant-currency-buy-switch-container" class="SimpleSextantBuySlider"></div>
-                                <div id="prime-sextant-currency-buy-switch-container" class="PrimeSextantBuySlider"></div>
-                                <div id="awakened-sextant-currency-buy-switch-container" class="AwakenedSextantBuySlider"></div>
-                                <div id="fusing-currency-buy-switch-container" class="FusingBuySlider"></div>
-                                <div id="vaal-currency-buy-switch-container" class="VaalBuySlider"></div>
-                                <div id="annulment-currency-buy-switch-container" class="AnnulmentBuySlider"></div>
-                                <div id="divine-currency-buy-switch-container" class="DivineBuySlider"></div>
-                                <div id="exalted-currency-buy-switch-container" class="ExaltedBuySlider"></div>
-                                <div id="awakener-currency-buy-switch-container" class="AwakenerBuySlider"></div>
-                                <div id="crusader-currency-buy-switch-container" class="CrusaderBuySlider"></div>
-                                <div id="hunter-currency-buy-switch-container" class="HunterBuySlider"></div>
-                                <div id="redeemer-currency-buy-switch-container" class="RedeemerBuySlider"></div>
-                                <div id="warlord-currency-buy-switch-container" class="WarlordBuySlider"></div>
-                                <div id="eternal-currency-buy-switch-container" class="EternalBuySlider"></div>
-                                <div id="mirror-currency-buy-switch-container" class="MirrorBuySlider"></div>
+                            <div class="flip hidden" id="buyCurrencyContainer">
                             </div>
                         </div>
                     </div>
@@ -1113,7 +1007,7 @@
                             25 Eternal Orbs<br>500 Exalted Orbs
                             <br>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand mirrorSwordStats hidden">
+                        <div class="mdl-card mdl-card--expand mirrorSwordStats hidden">
                             Cataclysm Edge<br>
                             Jewelled Foil<br>
                             Quality: 30%<br>
@@ -1145,7 +1039,7 @@
                             30 Eternal Orbs<br>600 Exalted Orbs
                             <br>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand mirrorShieldStats hidden">
+                        <div class="mdl-card mdl-card--expand mirrorShieldStats hidden">
                             Rune Charm<br>
                             Titanium Spirit Shield<br>
                             Quality: 30%<br>
@@ -1178,7 +1072,7 @@
                             35 Eternal Orbs<br>700 Exalted Orbs
                             <br>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand mirrorChestStats hidden">
+                        <div class="mdl-card mdl-card--expand mirrorChestStats hidden">
                             Morbid Suit<br>
                             Astral Plate<br>
                             [12% to all Elemental Resistances]<br>

@@ -17,8 +17,9 @@ class Currency {
      * @param {number} [sellLost] - Override for amount of this currency lost when selling
      * @param {number} [buyGain] - Override for amount of this currency gained when buying
      * @param {number} [buyLost] - Override for amount of trading currency lost when buying
+     * @param {string} displayName - Display name of currency
      */
-    constructor(name, rate, total, sellRate, sellPercent, buyRate, buyPercent, tradingCurrency, sellGain, sellLost, buyGain, buyLost) {
+    constructor(name, rate, total, sellRate, sellPercent, buyRate, buyPercent, tradingCurrency, sellGain, sellLost, buyGain, buyLost, displayName) {
         this.name = name;
         this.rate = rate; // Keep as-is for floating point precision with very small values
         this.total = Number(total); // Convert to number for math operations
@@ -35,6 +36,8 @@ class Currency {
         // Buying trade amounts
         this.buyGain = buyGain ?? (this.buyRate <= 1 ? 1 : this.buyRate); // how much of current currency you get
         this.buyLost = buyLost ?? (this.buyRate <= 1 ? this.buyRate : 1); // how much trading currency you spend
+
+        this.displayName = displayName;
     }
 
     // -------------------------
@@ -158,7 +161,8 @@ CURRENCY_CONFIG.forEach(config => {
         config.sellGain,
         config.sellLost,
         config.buyGain,
-        config.buyLost
+        config.buyLost,
+        config.displayName
     );
     
     // Add to data array for iteration
@@ -239,70 +243,114 @@ function toggleCurrencyOperation(currency, operation) {
     currency[method](isChecked ? 1 : 0);
 }
 
-/**
- * Generic handler for slider changes (buy or sell)
- * @param {Currency} currency - The currency being toggled
- * @param {string} type - The operation type ('Sell' or 'Buy')
- */
-function handleSliderChange(currency, type) {
-    const isChecked = document.getElementById(`${currency.name}${type}Slider`).checked;
-    type === 'Sell' ? currency.sellSetCurrency(isChecked ? 1 : 0)
-        : currency.buySetCurrency(isChecked ? 1 : 0);
-}
-
-/**
- * Creates a UI switch for buying or selling a currency
- * @param {Currency} currency - The currency to create a switch for
- * @param {string} type - The switch type ('sell' or 'buy')
- */
-function createCurrencySwitch(currency, type) {
-    const kebabCase = currency.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const containerId = `${kebabCase}-currency-${type}-switch-container`;
-    const container = document.getElementById(containerId);
-
-    if (!container) {
-        console.error(`Missing container for ${currency.name}`);
-        return;
-    }
-
-    const ratio = type === 'sell' ? currency.sellRate : currency.buyRate;
-    const baseType = `${currency.tradingCurrency} Orb`;
-
-    // Format ratio based on currency type and trading direction
-    const formattedRatio = currency.tradingCurrency === 'Exalted' ||
-        ['Annulment', 'Divine', 'Exalted'].includes(currency.name)
-        ? `1:${ratio}`
-        : `${ratio}:1`;
-
-    const switchInstance = UISwitch.create({
-        id: `${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`,
-        text: `${getCurrencyDisplayName(currency.name)} ${formattedRatio} ${baseType}`,
-        onChange: (e) => toggleCurrencyOperation(window[currency.name], type),
-        extraClasses: [`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`]
-    });
-
-    container.appendChild(switchInstance);
-
-    // Add hover effect directly here
-    $(`.${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`).hover(
-        function () {
-            $(`.${currency.name}`).addClass('hover-buy-sell');
-            $(`.${currency.tradingCurrency}`).addClass('hover-trade');
-        },
-        function () {
-            $(`.${currency.name}`).removeClass('hover-buy-sell');
-            $(`.${currency.tradingCurrency}`).removeClass('hover-trade');
-        }
-    );
-}
-
 // Create switches when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
-    // Create currency switch
+    const sellCurrencyContainer = document.getElementById('sellCurrencyContainer');
+    const buyCurrencyContainer = document.getElementById('buyCurrencyContainer');
+    const currencyDisplayContainer = document.getElementById('currencyDisplayContainer');
+
     currencyData.forEach(currency => {
         if (currency.name === 'Sulphite') return;
-        createCurrencySwitch(currency, 'sell');
-        createCurrencySwitch(currency, 'buy');
+
+        // Create sell switch
+        const sellSwitch = createSwitch(currency, 'sell');
+        sellCurrencyContainer.appendChild(sellSwitch);
+
+        // Create buy switch
+        const buySwitch = createSwitch(currency, 'buy');
+        buyCurrencyContainer.appendChild(buySwitch);
+
+        // Create currency display
+        const currencyDisplay = createDisplay(currency);
+        currencyDisplayContainer.appendChild(currencyDisplay);
+    });
+
+    function createSwitch(currency, type) {
+        const kebabCase = currency.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+        const containerId = `${kebabCase}-currency-${type}-switch-container`;
+        const container = document.createElement('div');
+        container.id = containerId;
+        container.classList.add(`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`);
+
+        const ratio = type === 'sell' ? currency.sellRate : currency.buyRate;
+        const baseType = `${currency.tradingCurrency} Orb`;
+
+        // Format ratio based on currency type and trading direction
+        const formattedRatio = currency.tradingCurrency === 'Exalted' ||
+            ['Annulment', 'Divine', 'Exalted'].includes(currency.name)
+            ? `1:${ratio}`
+            : `${ratio}:1`;
+
+        const switchInstance = UISwitch.create({
+            id: `${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`,
+            text: `${currency.displayName} ${formattedRatio} ${baseType}`,
+            onChange: (e) => toggleCurrencyOperation(window[currency.name], type),
+            extraClasses: [`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`]
+        });
+
+        container.appendChild(switchInstance);
+
+        return container;
+    }
+
+    function createDisplay(currency) {
+        const container = document.createElement('div');
+        container.classList.add('currency-display');
+
+        const label = document.createElement('span');
+        label.textContent = `${currency.displayName}: `;
+
+        const value = document.createElement('span');
+        value.classList.add(currency.name);
+        value.textContent = '0';
+
+        container.appendChild(label);
+        container.appendChild(value);
+        container.appendChild(document.createElement('br'));
+
+        return container;
+    }
+    
+    // Add hover effect using event delegation
+    $('#sellCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
+        const sliderClass = $(this).attr('class');
+        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
+        const currency = currencyMap[currencyName];
+
+        if (currency) {
+            const tradingCurrency = currency.tradingCurrency;
+            $(`.${currencyName}`).addClass('hover-buy-sell');
+            $(`.${tradingCurrency}`).addClass('hover-trade');
+        }
+    }).on('mouseleave', '[class*="Slider"]', function () {
+        const sliderClass = $(this).attr('class');
+        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
+        const currency = currencyMap[currencyName];
+        if (currency) {
+            const tradingCurrency = currency.tradingCurrency;
+            $(`.${currencyName}`).removeClass('hover-buy-sell');
+            $(`.${tradingCurrency}`).removeClass('hover-trade');
+        }
+    });
+
+    $('#buyCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
+        const sliderClass = $(this).attr('class');
+        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
+        const currency = currencyMap[currencyName];
+        if (currency) {
+            const tradingCurrency = currency.tradingCurrency;
+            $(`.${currencyName}`).addClass('hover-buy-sell');
+            $(`.${tradingCurrency}`).addClass('hover-trade');
+        }
+    }).on('mouseleave', '[class*="Slider"]', function () {
+        const sliderClass = $(this).attr('class');
+        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
+        const currency = currencyMap[currencyName];
+        if (currency) {
+            const tradingCurrency = currency.tradingCurrency;
+            $(`.${currencyName}`).removeClass('hover-buy-sell');
+            $(`.${tradingCurrency}`).removeClass('hover-trade');
+        }
     });
 });
 
