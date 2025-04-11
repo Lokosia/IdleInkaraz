@@ -312,31 +312,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     // Add hover effect using event delegation
-    $('#sellCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
+    $('#sellCurrencyContainer, #buyCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
         const sliderClass = $(this).attr('class');
         const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
         const currency = currencyMap[currencyName];
 
-        if (currency) {
-            const tradingCurrency = currency.tradingCurrency;
-            $(`.${currencyName}`).addClass('hover-buy-sell');
-            $(`.${tradingCurrency}`).addClass('hover-trade');
-        }
-    }).on('mouseleave', '[class*="Slider"]', function () {
-        const sliderClass = $(this).attr('class');
-        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
-        const currency = currencyMap[currencyName];
-        if (currency) {
-            const tradingCurrency = currency.tradingCurrency;
-            $(`.${currencyName}`).removeClass('hover-buy-sell');
-            $(`.${tradingCurrency}`).removeClass('hover-trade');
-        }
-    });
-
-    $('#buyCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
-        const sliderClass = $(this).attr('class');
-        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
-        const currency = currencyMap[currencyName];
         if (currency) {
             const tradingCurrency = currency.tradingCurrency;
             $(`.${currencyName}`).addClass('hover-buy-sell');
