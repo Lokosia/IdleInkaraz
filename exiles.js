@@ -699,7 +699,7 @@ Singularity = new Exile('Singularity','0','0','525','0','0','0','0'); //flipper
 Artificer = new Exile('Artificer','0','0','525','0','0','0','0'); //crafter
 
 setInterval (function gameTick() {
-	let tempLevel = 0;
+	let tempLevel = 250;
 	for (let i = 0; i < exileData.length; i++) {
 		if (exileData[i].level >= 1) {
         	exileData[i].updateExileClass();

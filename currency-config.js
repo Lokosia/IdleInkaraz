@@ -1,0 +1,175 @@
+// Currency configuration data
+
+// Base currency configuration with all trading parameters
+const CURRENCY_CONFIG = [
+    { name: 'Transmutation', rate: 0.0020831, sellRate: 16, buyRate: 15, tradingCurrency: 'Chaos' },
+    { name: 'Armourer', rate: 0.0020827, sellRate: 15, buyRate: 14, tradingCurrency: 'Chaos' },
+    { name: 'Blacksmith', rate: 0.0011095, sellRate: 10, buyRate: 9, tradingCurrency: 'Chaos' },
+    { name: 'Augmentation', rate: 0.0010328, sellRate: 5, buyRate: 4, tradingCurrency: 'Chaos' },
+    { name: 'Alteration', rate: 0.0005508, sellRate: 5, buyRate: 4, tradingCurrency: 'Chaos' },
+    { name: 'Chance', rate: 0.0005508, sellRate: 9, buyRate: 8, tradingCurrency: 'Chaos' },
+    { name: 'Jeweller', rate: 0.0005508, sellRate: 22, buyRate: 21, tradingCurrency: 'Chaos' },
+    { name: 'Chromatic', rate: 0.0005508, sellRate: 9, buyRate: 8, tradingCurrency: 'Chaos' },
+    { name: 'Fusing', rate: 0.0003443, sellRate: 6, buyRate: 5, tradingCurrency: 'Chaos' },
+    { name: 'Alchemy', rate: 0.0002754, sellRate: 8, buyRate: 7, tradingCurrency: 'Chaos' },
+    { name: 'Chisel', rate: 0.0002754, sellRate: 5, buyRate: 4, tradingCurrency: 'Chaos' },
+    { name: 'Chaos', rate: 0.0001652, sellRate: 1, buyRate: 1, tradingCurrency: 'Chaos' },
+    { name: 'Scouring', rate: 0.0001377, sellRate: 3, buyRate: 2, tradingCurrency: 'Chaos' },
+    { name: 'Vaal', rate: 0.0000689, sellRate: 2, buyRate: 2, tradingCurrency: 'Chaos' },
+    { name: 'Regret', rate: 0.0000689, sellRate: 4, buyRate: 3, tradingCurrency: 'Chaos' },
+    { name: 'Glassblower', rate: 0.0000682, sellRate: 8, buyRate: 7, tradingCurrency: 'Chaos' },
+    { name: 'GCP', rate: 0.0000275, sellRate: 2, buyRate: 1, tradingCurrency: 'Chaos' },
+    { name: 'Blessed', rate: 0.0000275, sellRate: 15, buyRate: 14, tradingCurrency: 'Chaos' },
+    { name: 'Regal', rate: 0.0000207, sellRate: 5, buyRate: 4, tradingCurrency: 'Chaos' },
+    { 
+        name: 'Exalted', 
+        rate: 0.0000055, 
+        sellRate: 125, 
+        buyRate: 150, 
+        tradingCurrency: 'Chaos',
+        sellGain: 125,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 150
+    },
+    { 
+        name: 'Divine', 
+        rate: 0.0000034, 
+        sellRate: 10, 
+        buyRate: 10, 
+        tradingCurrency: 'Chaos',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 10 
+    },
+    { 
+        name: 'Eternal', 
+        rate: 0.0000003, 
+        sellRate: 25, 
+        buyRate: 50, 
+        tradingCurrency: 'Exalted',
+        sellGain: 25,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 50
+    },
+    { 
+        name: 'Mirror', 
+        rate: 0.0000001, 
+        sellRate: 200, 
+        buyRate: 250, 
+        tradingCurrency: 'Exalted',
+        sellGain: 200,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 250
+    },
+    { name: 'StackedDeck', rate: 0.0002000, sellRate: 2, buyRate: 1, tradingCurrency: 'Chaos' },
+    { name: 'SilverCoin', rate: 0.0002000, sellRate: 11, buyRate: 10, tradingCurrency: 'Chaos' },
+    { 
+        name: 'Annulment', 
+        rate: 0.0000075, 
+        sellRate: 4, 
+        buyRate: 5, 
+        tradingCurrency: 'Chaos',
+        sellGain: 4,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 5
+    },
+    { name: 'SimpleSextant', rate: 0.0001650, sellRate: 3, buyRate: 3, tradingCurrency: 'Chaos' },
+    { name: 'PrimeSextant', rate: 0.0000650, sellRate: 2, buyRate: 2, tradingCurrency: 'Chaos' },
+    { name: 'AwakenedSextant', rate: 0.0000350, sellRate: 1, buyRate: 1, tradingCurrency: 'Chaos' },
+    { 
+        name: 'Awakener', 
+        rate: 0.0000002, 
+        sellRate: 10, 
+        buyRate: 20, 
+        tradingCurrency: 'Exalted',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 20
+    },
+    { 
+        name: 'Crusader', 
+        rate: 0.0000002, 
+        sellRate: 10, 
+        buyRate: 20, 
+        tradingCurrency: 'Exalted',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 20
+    },
+    { 
+        name: 'Hunter', 
+        rate: 0.0000002, 
+        sellRate: 10, 
+        buyRate: 20, 
+        tradingCurrency: 'Exalted',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 20
+    },
+    { 
+        name: 'Redeemer', 
+        rate: 0.0000002, 
+        sellRate: 10, 
+        buyRate: 20, 
+        tradingCurrency: 'Exalted',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 20
+    },
+    { 
+        name: 'Warlord', 
+        rate: 0.0000002, 
+        sellRate: 10, 
+        buyRate: 20, 
+        tradingCurrency: 'Exalted',
+        sellGain: 10,
+        sellLost: 1,
+        buyGain: 1,
+        buyLost: 20
+    },
+    { name: 'Sulphite', rate: 0.0000650, sellRate: 0, buyRate: 0, tradingCurrency: 'None' },
+];
+
+// Currency display names mapping
+const CURRENCY_DISPLAY_NAMES = {
+    'Armourer': "Armourer's Scrap",
+    'Blacksmith': "Blacksmith's Whetstone",
+    'Glassblower': "Glassblower's Bauble",
+    'Jeweller': "Jeweller's Orb",
+    'GCP': "Gemcutter's Prism",
+    'Chisel': "Cartographer's Chisel",
+    'Awakener': "Awakener's Orb",
+    'Crusader': "Crusader's Exalted Orb",
+    'Hunter': "Hunter's Exalted Orb",
+    'Redeemer': "Redeemer's Exalted Orb",
+    'Warlord': "Warlord's Exalted Orb",
+    'Mirror': "Mirror of Kalandra",
+    'Alchemy': "Orb of Alchemy",
+    'Transmutation': "Orb of Transmutation",
+    'Augmentation': "Orb of Augmentation",
+    'Alteration': "Orb of Alteration",
+    'Chance': "Orb of Chance",
+    'Regret': "Orb of Regret",
+    'StackedDeck': "Stacked Deck",
+    'SimpleSextant': "Simple Sextant",
+    'PrimeSextant': "Prime Sextant",
+    'AwakenedSextant': "Awakened Sextant",
+    'SilverCoin': "Silver Coin",
+    'Scouring': "Orb of Scouring",
+    'Fusing': "Orb of Fusing",
+    'Annulment': "Orb of Annulment",
+};
+
+// Helper function to get proper currency display name
+function getCurrencyDisplayName(name) {
+    return CURRENCY_DISPLAY_NAMES[name] || `${name} Orb`;
+}
