@@ -56,7 +56,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Upgrade ' + this.name + ' gear to Magic rarity',
                         '+0.1 (' + this.name + ')',
                         '10 Transmutation<br>10 Augmentation'
@@ -78,7 +77,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Roll ' + this.name + ' flasks',
                         '+0.2 (' + this.name + ')',
                         '50 Augmentation<br>50 Alteration'
@@ -100,7 +98,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Roll ' + this.name + ' gear',
                         '+0.2 (' + this.name + ')',
                         '100 Augmentation<br>100 Alteration'
@@ -121,7 +118,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         '20% quality ' + this.name + ' weapon',
                         '+0.2 (' + this.name + ')',
                         '20 Blacksmith'
@@ -143,7 +139,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         '20% quality ' + this.name + ' gear',
                         '+0.2 (' + this.name + ')',
                         '200 Armourer'
@@ -164,7 +159,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Upgrade ' + this.name + ' gear to Rare rarity',
                         '+0.3 (' + this.name + ')',
                         '10 Regal'
@@ -185,7 +179,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy upgrades for ' + this.name + ' gear',
                         '+0.4 (' + this.name + ')',
                         '30 Chaos'
@@ -206,7 +199,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy jewels for ' + this.name + ' gear',
                         '+0.4 (' + this.name + ')',
                         '50 Chaos'
@@ -226,7 +218,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Blessed implicits for ' + this.name + ' gear',
                         '+0.4 (' + this.name + ')',
                         '30 Blessed'
@@ -247,7 +238,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy upgrades for ' + this.name + ' gear',
                         '+0.5 (' + this.name + ')',
                         '100 Chaos'
@@ -268,7 +258,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Enchant ' + this.name + ' gloves',
                         '+0.5 (' + this.name + ')',
                         '150 Chance<br>15 Regret'
@@ -290,7 +279,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Enchant ' + this.name + ' boots',
                         '+0.5 (' + this.name + ')',
                         '400 Chance<br>40 Regret'
@@ -311,7 +299,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         '20% quality ' + this.name + ' flasks',
                         '+0.5 (' + this.name + ')',
                         '50 Glassblower'
@@ -333,7 +320,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Anoint ' + this.name + ' amulet',
                         '+0.6 (' + this.name + ')',
                         '50 Chaos<br>1 Exalted'
@@ -355,7 +341,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy upgrades for ' + this.name + ' gear',
                         '+0.6 (' + this.name + ')',
                         '250 Chaos'
@@ -376,7 +361,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy unique flasks for ' + this.name,
                         '+0.7 (' + this.name + ')',
                         '200 Chaos<br>2 Exalted'
@@ -397,7 +381,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Divine ' + this.name + ' gear',
                         '+0.7 (' + this.name + ')',
                         '10 Divine'
@@ -419,7 +402,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy upgrades for ' + this.name + ' gear',
                         '+0.8 (' + this.name + ')',
                         '3 Exalted'
@@ -440,7 +422,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Enchant ' + this.name + ' helmet',
                         '+0.9 (' + this.name + ')',
                         '2500 Chance<br>250 Regret'
@@ -462,7 +443,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Exalt ' + this.name + ' gear',
                         '+1.0 (' + this.name + ')',
                         '10 Exalted'
@@ -484,7 +464,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Craft explode chest for ' + this.name,
                         '+1.5 (' + this.name + ')',
                         '5 Exalted<br>1 Awakener'
@@ -505,7 +484,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy Watchers Eye for ' + this.name,
                         '+1.5 (' + this.name + ')',
                         '50 Exalted'
@@ -526,7 +504,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Buy Headhunter for ' + this.name,
                         '+2.0 (' + this.name + ')',
                         '150 Exalted'
@@ -546,7 +523,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Mirror gear for ' + this.name,
                         '+2.5 (' + this.name + ')',
                         '30 Exalted<br>1 Mirror'
@@ -567,7 +543,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Gear',
-                        this.name + ' Gear',
                         'Mirror gear for ' + this.name,
                         '+2.5 (' + this.name + ')',
                         this.gear + ' Exalted<br>1 Mirror'
@@ -581,7 +556,7 @@ class Exile {
 
     };
 
-	lvlLinks() {
+    lvlLinks() {
         if (this.links == 0) { //4L
             if (Fusing.total >= 10 && Jeweller.total >= 10) {
                 Fusing.total -= 10;
@@ -592,7 +567,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Colour ' + this.name + ' links',
                         '+0.5 (' + this.name + ')',
                         '100 Chromatic'
@@ -615,7 +589,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Upgrade ' + this.name + ' links to 5L',
                         '+0.6 (' + this.name + ')',
                         '150 Jeweller<br>150 Fusing'
@@ -637,7 +610,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Upgrade ' + this.name + ' links to 6L',
                         '+1.0 (' + this.name + ')',
                         '1500 Jeweller<br>1500 Fusing'
@@ -659,7 +631,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Corrupt ' + this.name + ' gear to +1 gems',
                         '+1.5 (' + this.name + ')',
                         '50 Vaal'
@@ -682,7 +653,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         '20% quality ' + this.name + ' gems',
                         '+1.5 (' + this.name + ')',
                         '120 GCP'
@@ -704,7 +674,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Corrupt ' + this.name + ' gems to +1',
                         '+1.5 (' + this.name + ')',
                         '100 Vaal'
@@ -726,7 +695,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Double corrupt ' + this.name + ' gems to +1/23%',
                         '+2.0 (' + this.name + ')',
                         '150 Vaal'
@@ -747,7 +715,6 @@ class Exile {
                     generateUpgradeHTML(
                         this.name,
                         'Links',
-                        this.name + ' Links',
                         'Double corrupt ' + this.name + ' gear to +4 gems',
                         '+2.5 (' + this.name + ')',
                         '200 Vaal'
@@ -842,13 +809,15 @@ class Exile {
  * Generates HTML for upgrade buttons and descriptions
  * @param {string} exile - The exile name
  * @param {string} upgradeType - The type of upgrade (e.g., 'Gear', 'Links')
- * @param {string} buttonText - Text to display on the button
  * @param {string} description - Description of the upgrade
  * @param {string} benefit - The benefit gained from the upgrade
  * @param {string} requirements - The requirements for the upgrade
  * @returns {string} The generated HTML
  */
-function generateUpgradeHTML(exile, upgradeType, buttonText, description, benefit, requirements) {
+function generateUpgradeHTML(exile, upgradeType, description, benefit, requirements) {
+    // Generate button text from exile name and upgradeType
+    const buttonText = exile + ' ' + upgradeType;
+    
     return `
         <td class="mdl-data-table__cell--non-numeric">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" 
@@ -861,6 +830,7 @@ function generateUpgradeHTML(exile, upgradeType, buttonText, description, benefi
         <td class="mdl-data-table__cell--non-numeric">${requirements}</td>
     `;
 }
+
 //---Define Exiles
 var exileData = [
 	Ascendant = new Exile('Ascendant', '0', '0', '525', '0', '0', '0', '0'),
