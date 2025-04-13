@@ -63,7 +63,7 @@ class Exile {
 					'10 Transmutation<br>10 Augmentation'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Transmutation", "Augmentation");
+				this.setupHover("Gear", "Transmutation", "Augmentation");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -85,7 +85,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Transmutation").removeClass("hover");
-				this.hoverGear("Alteration", "Augmentation");
+				this.setupHover("Gear", "Alteration", "Augmentation");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -106,7 +106,7 @@ class Exile {
 					'100 Augmentation<br>100 Alteration'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Alteration", "Augmentation");
+				this.setupHover("Gear", "Alteration", "Augmentation");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -129,7 +129,7 @@ class Exile {
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Alteration").removeClass("hover");
 				$(".Augmentation").removeClass("hover");
-				this.hoverGear("Blacksmith");
+				this.setupHover("Gear", "Blacksmith");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -150,7 +150,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Blacksmith").removeClass("hover");
-				this.hoverGear("Armourer");
+				this.setupHover("Gear", "Armourer");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -171,7 +171,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Armourer").removeClass("hover");
-				this.hoverGear("Regal");
+				this.setupHover("Gear", "Regal");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -192,7 +192,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Regal").removeClass("hover");
-				this.hoverGear("Chaos");
+				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -212,7 +212,7 @@ class Exile {
 					'50 Chaos'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Chaos");
+				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -233,7 +233,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Chaos").removeClass("hover");
-				this.hoverGear("Blessed");
+				this.setupHover("Gear", "Blessed");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -254,7 +254,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Blessed").removeClass("hover");
-				this.hoverGear("Chaos");
+				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -275,7 +275,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Chaos").removeClass("hover");
-				this.hoverGear("Regret", "Chance");
+				this.setupHover("Gear", "Regret", "Chance");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -296,7 +296,7 @@ class Exile {
 					'400 Chance<br>40 Regret'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Regret", "Chance");
+				this.setupHover("Gear", "Regret", "Chance");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -319,7 +319,7 @@ class Exile {
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Regret").removeClass("hover");
 				$(".Chance").removeClass("hover");
-				this.hoverGear("Glassblower");
+				this.setupHover("Gear", "Glassblower");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -340,7 +340,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Glassblower").removeClass("hover");
-				this.hoverGear("Exalted", "Chaos");
+				this.setupHover("Gear", "Exalted", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -362,7 +362,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Exalted").removeClass("hover");
-				this.hoverGear("Chaos");
+				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -382,7 +382,7 @@ class Exile {
 					'200 Chaos<br>2 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Exalted", "Chaos");
+				this.setupHover("Gear", "Exalted", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -405,7 +405,7 @@ class Exile {
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Exalted").removeClass("hover");
 				$(".Chaos").removeClass("hover");
-				this.hoverGear("Divine");
+				this.setupHover("Gear", "Divine");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -426,7 +426,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Divine").removeClass("hover");
-				this.hoverGear("Exalted");
+				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -447,7 +447,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Exalted").removeClass("hover");
-				this.hoverGear("Regret", "Chance");
+				this.setupHover("Gear", "Regret", "Chance");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -470,7 +470,7 @@ class Exile {
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Chance").removeClass("hover");
 				$(".Regret").removeClass("hover");
-				this.hoverGear("Exalted");
+				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -490,7 +490,7 @@ class Exile {
 					'5 Exalted<br>1 Awakener'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Exalted", "Awakener");
+				this.setupHover("Gear", "Exalted", "Awakener");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -512,7 +512,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Gear upgraded!");
 				$(".Awakener").removeClass("hover");
-				this.hoverGear("Exalted");
+				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -532,7 +532,7 @@ class Exile {
 					'150 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Exalted");
+				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -552,7 +552,7 @@ class Exile {
 					'30 Exalted<br>1 Mirror'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				this.hoverGear("Exalted", "Mirror");
+				this.setupHover("Gear", "Exalted", "Mirror");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -599,7 +599,7 @@ class Exile {
 				SnackBar(this.name + " Links upgraded!");
 				$(".Fusing").removeClass("hover");
 				$(".Jeweller").removeClass("hover");
-				this.hoverLinks("Chromatic");
+				this.setupHover("Links", "Chromatic");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "4L";
 			} else {
 				SnackBar("Requirements not met.");
@@ -621,7 +621,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Links upgraded!");
 				$(".Chromatic").removeClass("hover");
-				this.hoverLinks("Jeweller", "Fusing");
+				this.setupHover("Links", "Jeweller", "Fusing");
 			} else {
 				SnackBar("Requirements not met.");
 			}
@@ -642,7 +642,7 @@ class Exile {
 					'1500 Jeweller<br>1500 Fusing'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				this.hoverLinks("Jeweller", "Fusing");
+				this.setupHover("Links", "Jeweller", "Fusing");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "5L";
 			} else {
 				SnackBar("Requirements not met.");
@@ -666,7 +666,7 @@ class Exile {
 				SnackBar(this.name + " Links upgraded!");
 				$(".Fusing").removeClass("hover");
 				$(".Jeweller").removeClass("hover");
-				this.hoverLinks("Vaal");
+				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L";
 			} else {
 				SnackBar("Requirements not met.");
@@ -688,7 +688,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Links upgraded!");
 				$(".Vaal").removeClass("hover");
-				this.hoverLinks("GCP");
+				this.setupHover("Links", "GCP");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1 Gems)";
 			} else {
 				SnackBar("Requirements not met.");
@@ -710,7 +710,7 @@ class Exile {
 				);
 				SnackBar(this.name + " Links upgraded!");
 				$(".GCP").removeClass("hover");
-				this.hoverLinks("Vaal");
+				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1/20% Gems)";
 			} else {
 				SnackBar("Requirements not met.");
@@ -731,7 +731,7 @@ class Exile {
 					'150 Vaal'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				this.hoverLinks("Vaal");
+				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/20% Gems)";
 			} else {
 				SnackBar("Requirements not met.");
@@ -752,7 +752,7 @@ class Exile {
 					'200 Vaal'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				this.hoverLinks("Vaal");
+				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/23% Gems)";
 			} else {
 				SnackBar("Requirements not met.");
@@ -798,8 +798,8 @@ class Exile {
 		);
 		document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + this.dropRate.toFixed(1);
 		document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
-		this.hoverGear("Transmutation", "Augmentation");
-		this.hoverLinks("Jeweller", "Fusing");
+		this.setupHover("Gear", "Transmutation", "Augmentation");
+		this.setupHover("Links", "Jeweller", "Fusing");
 	};
 
 	rerollExile() {
@@ -812,31 +812,29 @@ class Exile {
 		document.getElementsByClassName(this.name + 'Reroll')[0].innerHTML = '(+' + this.rerollLevel + ')';
 	};
 
-	hoverGear(a, b) {
-		$('#' + this.name + 'GearUpgrade').off('mouseenter mouseleave');
-		$('#' + this.name + 'GearUpgrade').hover(
-			function () {
-				$("." + a).addClass('hover');
-				$("." + b).addClass('hover');
-			}, function () {
-				$("." + a).removeClass('hover');
-				$("." + b).removeClass('hover');
-			}
-		);
-	};
-
-	hoverLinks(c, d) {
-		$('#' + this.name + 'LinksUpgrade').off('mouseenter mouseleave');
-		$('#' + this.name + 'LinksUpgrade').hover(
-			function () {
-				$("." + c).addClass('hover');
-				$("." + d).addClass('hover');
-			}, function () {
-				$("." + c).removeClass('hover');
-				$("." + d).removeClass('hover');
-			}
-		);
-	};
+	/**
+     * Sets up hover effects for upgrade elements, highlighting the required currencies
+     * @param {string} upgradeType - Type of upgrade ('Gear' or 'Links')
+     * @param {string} firstCurrency - First currency to highlight
+     * @param {string} secondCurrency - Second currency to highlight (optional)
+     */
+    setupHover(upgradeType, firstCurrency, secondCurrency = null) {
+        $(`#${this.name}${upgradeType}Upgrade`).off('mouseenter mouseleave');
+        $(`#${this.name}${upgradeType}Upgrade`).hover(
+            function() {
+                $(`.${firstCurrency}`).addClass('hover');
+                if (secondCurrency) {
+                    $(`.${secondCurrency}`).addClass('hover');
+                }
+            }, 
+            function() {
+                $(`.${firstCurrency}`).removeClass('hover');
+                if (secondCurrency) {
+                    $(`.${secondCurrency}`).removeClass('hover');
+                }
+            }
+        );
+    }
 }
 
 /**
