@@ -52,14 +52,12 @@ class Exile {
                 Augmentation.total -= 5;
                 this.dropRate += 0.1;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Upgrade ' + this.name + ' gear to Magic rarity',
-                        '+0.1 (' + this.name + ')',
-                        '10 Transmutation<br>10 Augmentation'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Upgrade ' + this.name + ' gear to Magic rarity',
+                    '+0.1 (' + this.name + ')',
+                    '10 Transmutation<br>10 Augmentation'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Transmutation", "Augmentation");
@@ -73,14 +71,12 @@ class Exile {
                 Augmentation.total -= 10;
                 this.dropRate += 0.1;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Roll ' + this.name + ' flasks',
-                        '+0.2 (' + this.name + ')',
-                        '50 Augmentation<br>50 Alteration'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Roll ' + this.name + ' flasks',
+                    '+0.2 (' + this.name + ')',
+                    '50 Augmentation<br>50 Alteration'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Transmutation").removeClass("hover");
@@ -94,14 +90,12 @@ class Exile {
                 Augmentation.total -= 50;
                 this.dropRate += 0.2;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Roll ' + this.name + ' gear',
-                        '+0.2 (' + this.name + ')',
-                        '100 Augmentation<br>100 Alteration'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Roll ' + this.name + ' gear',
+                    '+0.2 (' + this.name + ')',
+                    '100 Augmentation<br>100 Alteration'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Alteration", "Augmentation");
@@ -114,14 +108,12 @@ class Exile {
                 Augmentation.total -= 100;
                 this.dropRate += 0.2;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        '20% quality ' + this.name + ' weapon',
-                        '+0.2 (' + this.name + ')',
-                        '20 Blacksmith'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    '20% quality ' + this.name + ' weapon',
+                    '+0.2 (' + this.name + ')',
+                    '20 Blacksmith'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Alteration").removeClass("hover");
@@ -135,14 +127,12 @@ class Exile {
                 Blacksmith.total -= 20;
                 this.dropRate += 0.2;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        '20% quality ' + this.name + ' gear',
-                        '+0.2 (' + this.name + ')',
-                        '200 Armourer'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    '20% quality ' + this.name + ' gear',
+                    '+0.2 (' + this.name + ')',
+                    '200 Armourer'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Blacksmith").removeClass("hover");
@@ -155,14 +145,12 @@ class Exile {
                 Armourer.total -= 200;
                 this.dropRate += 0.2;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Upgrade ' + this.name + ' gear to Rare rarity',
-                        '+0.3 (' + this.name + ')',
-                        '10 Regal'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Upgrade ' + this.name + ' gear to Rare rarity',
+                    '+0.3 (' + this.name + ')',
+                    '10 Regal'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Armourer").removeClass("hover");
@@ -175,14 +163,12 @@ class Exile {
                 Regal.total -= 10;
                 this.dropRate += 0.3;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy upgrades for ' + this.name + ' gear',
-                        '+0.4 (' + this.name + ')',
-                        '30 Chaos'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy upgrades for ' + this.name + ' gear',
+                    '+0.4 (' + this.name + ')',
+                    '30 Chaos'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Regal").removeClass("hover");
@@ -195,14 +181,12 @@ class Exile {
                 Chaos.total -= 30;
                 this.dropRate += 0.4;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy jewels for ' + this.name + ' gear',
-                        '+0.4 (' + this.name + ')',
-                        '50 Chaos'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy jewels for ' + this.name + ' gear',
+                    '+0.4 (' + this.name + ')',
+                    '50 Chaos'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Chaos");
@@ -214,14 +198,12 @@ class Exile {
                 Chaos.total -= 50;
                 this.dropRate += 0.4;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Blessed implicits for ' + this.name + ' gear',
-                        '+0.4 (' + this.name + ')',
-                        '30 Blessed'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Blessed implicits for ' + this.name + ' gear',
+                    '+0.4 (' + this.name + ')',
+                    '30 Blessed'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Chaos").removeClass("hover");
@@ -234,14 +216,12 @@ class Exile {
                 Blessed.total -= 30;
                 this.dropRate += 0.4;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy upgrades for ' + this.name + ' gear',
-                        '+0.5 (' + this.name + ')',
-                        '100 Chaos'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy upgrades for ' + this.name + ' gear',
+                    '+0.5 (' + this.name + ')',
+                    '100 Chaos'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Blessed").removeClass("hover");
@@ -254,14 +234,12 @@ class Exile {
                 Chaos.total -= 100;
                 this.dropRate += 0.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Enchant ' + this.name + ' gloves',
-                        '+0.5 (' + this.name + ')',
-                        '150 Chance<br>15 Regret'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Enchant ' + this.name + ' gloves',
+                    '+0.5 (' + this.name + ')',
+                    '150 Chance<br>15 Regret'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Chaos").removeClass("hover");
@@ -275,14 +253,12 @@ class Exile {
                 Chance.total -= 150;
                 this.dropRate += 0.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Enchant ' + this.name + ' boots',
-                        '+0.5 (' + this.name + ')',
-                        '400 Chance<br>40 Regret'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Enchant ' + this.name + ' boots',
+                    '+0.5 (' + this.name + ')',
+                    '400 Chance<br>40 Regret'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Regret", "Chance");
@@ -295,14 +271,12 @@ class Exile {
                 Chance.total -= 400;
                 this.dropRate += 0.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        '20% quality ' + this.name + ' flasks',
-                        '+0.5 (' + this.name + ')',
-                        '50 Glassblower'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    '20% quality ' + this.name + ' flasks',
+                    '+0.5 (' + this.name + ')',
+                    '50 Glassblower'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Regret").removeClass("hover");
@@ -316,14 +290,12 @@ class Exile {
                 Glassblower.total -= 50;
                 this.dropRate += 0.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Anoint ' + this.name + ' amulet',
-                        '+0.6 (' + this.name + ')',
-                        '50 Chaos<br>1 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Anoint ' + this.name + ' amulet',
+                    '+0.6 (' + this.name + ')',
+                    '50 Chaos<br>1 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Glassblower").removeClass("hover");
@@ -337,14 +309,12 @@ class Exile {
                 Chaos.total -= 50;
                 this.dropRate += 0.6;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy upgrades for ' + this.name + ' gear',
-                        '+0.6 (' + this.name + ')',
-                        '250 Chaos'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy upgrades for ' + this.name + ' gear',
+                    '+0.6 (' + this.name + ')',
+                    '250 Chaos'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Exalted").removeClass("hover");
@@ -357,14 +327,12 @@ class Exile {
                 Chaos.total -= 250;
                 this.dropRate += 0.6;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy unique flasks for ' + this.name,
-                        '+0.7 (' + this.name + ')',
-                        '200 Chaos<br>2 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy unique flasks for ' + this.name,
+                    '+0.7 (' + this.name + ')',
+                    '200 Chaos<br>2 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Exalted", "Chaos");
@@ -377,14 +345,12 @@ class Exile {
                 Chaos.total -= 200;
                 this.dropRate += 0.7;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Divine ' + this.name + ' gear',
-                        '+0.7 (' + this.name + ')',
-                        '10 Divine'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Divine ' + this.name + ' gear',
+                    '+0.7 (' + this.name + ')',
+                    '10 Divine'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Exalted").removeClass("hover");
@@ -398,14 +364,12 @@ class Exile {
                 Divine.total -= 10;
                 this.dropRate += 0.7;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy upgrades for ' + this.name + ' gear',
-                        '+0.8 (' + this.name + ')',
-                        '3 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy upgrades for ' + this.name + ' gear',
+                    '+0.8 (' + this.name + ')',
+                    '3 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Divine").removeClass("hover");
@@ -418,14 +382,12 @@ class Exile {
                 Exalted.total -= 3;
                 this.dropRate += 0.8;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Enchant ' + this.name + ' helmet',
-                        '+0.9 (' + this.name + ')',
-                        '2500 Chance<br>250 Regret'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Enchant ' + this.name + ' helmet',
+                    '+0.9 (' + this.name + ')',
+                    '2500 Chance<br>250 Regret'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Exalted").removeClass("hover");
@@ -439,14 +401,12 @@ class Exile {
                 Chance.total -= 2500;
                 this.dropRate += 0.9;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Exalt ' + this.name + ' gear',
-                        '+1.0 (' + this.name + ')',
-                        '10 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Exalt ' + this.name + ' gear',
+                    '+1.0 (' + this.name + ')',
+                    '10 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Chance").removeClass("hover");
@@ -460,14 +420,12 @@ class Exile {
                 Exalted.total -= 10;
                 this.dropRate += 1;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Craft explode chest for ' + this.name,
-                        '+1.5 (' + this.name + ')',
-                        '5 Exalted<br>1 Awakener'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Craft explode chest for ' + this.name,
+                    '+1.5 (' + this.name + ')',
+                    '5 Exalted<br>1 Awakener'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Exalted", "Awakener");
@@ -480,14 +438,12 @@ class Exile {
                 Awakener.total -= 1;
                 this.dropRate += 1.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy Watchers Eye for ' + this.name,
-                        '+1.5 (' + this.name + ')',
-                        '50 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy Watchers Eye for ' + this.name,
+                    '+1.5 (' + this.name + ')',
+                    '50 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 $(".Awakener").removeClass("hover");
@@ -500,14 +456,12 @@ class Exile {
                 Exalted.total -= 50;
                 this.dropRate += 1.5;
                 this.gear++;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Buy Headhunter for ' + this.name,
-                        '+2.0 (' + this.name + ')',
-                        '150 Exalted'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Buy Headhunter for ' + this.name,
+                    '+2.0 (' + this.name + ')',
+                    '150 Exalted'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Exalted");
@@ -519,14 +473,12 @@ class Exile {
                 Exalted.total -= 150;
                 this.dropRate += 2;
                 this.gear += 7; //so that the loop for mirrors works
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Mirror gear for ' + this.name,
-                        '+2.5 (' + this.name + ')',
-                        '30 Exalted<br>1 Mirror'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Mirror gear for ' + this.name,
+                    '+2.5 (' + this.name + ')',
+                    '30 Exalted<br>1 Mirror'
                 );
                 SnackBar(this.name + " Gear upgraded!");
                 this.hoverGear("Exalted", "Mirror");
@@ -539,14 +491,12 @@ class Exile {
                 Mirror.total -= 1;
                 this.dropRate += 2.5;
                 this.gear += 10;
-                $('#' + this.name + 'GearUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Gear',
-                        'Mirror gear for ' + this.name,
-                        '+2.5 (' + this.name + ')',
-                        this.gear + ' Exalted<br>1 Mirror'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Gear',
+                    'Mirror gear for ' + this.name,
+                    '+2.5 (' + this.name + ')',
+                    this.gear + ' Exalted<br>1 Mirror'
                 );
                 SnackBar(this.name + " Gear upgraded!");
             } else {
@@ -563,14 +513,12 @@ class Exile {
                 Jeweller.total -= 10;
                 this.dropRate += 0.5;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Colour ' + this.name + ' links',
-                        '+0.5 (' + this.name + ')',
-                        '100 Chromatic'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Colour ' + this.name + ' links',
+                    '+0.5 (' + this.name + ')',
+                    '100 Chromatic'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 $(".Fusing").removeClass("hover");
@@ -585,14 +533,12 @@ class Exile {
                 Chromatic.total -= 100;
                 this.dropRate += 0.5;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Upgrade ' + this.name + ' links to 5L',
-                        '+0.6 (' + this.name + ')',
-                        '150 Jeweller<br>150 Fusing'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Upgrade ' + this.name + ' links to 5L',
+                    '+0.6 (' + this.name + ')',
+                    '150 Jeweller<br>150 Fusing'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 $(".Chromatic").removeClass("hover");
@@ -606,14 +552,12 @@ class Exile {
                 Jeweller.total -= 150;
                 this.dropRate += 0.6;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Upgrade ' + this.name + ' links to 6L',
-                        '+1.0 (' + this.name + ')',
-                        '1500 Jeweller<br>1500 Fusing'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Upgrade ' + this.name + ' links to 6L',
+                    '+1.0 (' + this.name + ')',
+                    '1500 Jeweller<br>1500 Fusing'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 this.hoverLinks("Jeweller", "Fusing");
@@ -627,14 +571,12 @@ class Exile {
                 Jeweller.total -= 1500;
                 this.dropRate += 1;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Corrupt ' + this.name + ' gear to +1 gems',
-                        '+1.5 (' + this.name + ')',
-                        '50 Vaal'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Corrupt ' + this.name + ' gear to +1 gems',
+                    '+1.5 (' + this.name + ')',
+                    '50 Vaal'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 $(".Fusing").removeClass("hover");
@@ -649,14 +591,12 @@ class Exile {
                 Vaal.total -= 50;
                 this.dropRate += 1.5;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        '20% quality ' + this.name + ' gems',
-                        '+1.5 (' + this.name + ')',
-                        '120 GCP'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    '20% quality ' + this.name + ' gems',
+                    '+1.5 (' + this.name + ')',
+                    '120 GCP'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 $(".Vaal").removeClass("hover");
@@ -670,14 +610,12 @@ class Exile {
                 GCP.total -= 120;
                 this.dropRate += 1.5;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Corrupt ' + this.name + ' gems to +1',
-                        '+1.5 (' + this.name + ')',
-                        '100 Vaal'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Corrupt ' + this.name + ' gems to +1',
+                    '+1.5 (' + this.name + ')',
+                    '100 Vaal'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 $(".GCP").removeClass("hover");
@@ -691,14 +629,12 @@ class Exile {
                 Vaal.total -= 100;
                 this.dropRate += 1.5;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Double corrupt ' + this.name + ' gems to +1/23%',
-                        '+2.0 (' + this.name + ')',
-                        '150 Vaal'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Double corrupt ' + this.name + ' gems to +1/23%',
+                    '+2.0 (' + this.name + ')',
+                    '150 Vaal'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 this.hoverLinks("Vaal");
@@ -711,14 +647,12 @@ class Exile {
                 Vaal.total -= 150;
                 this.dropRate += 2;
                 this.links++;
-                $('#' + this.name + 'LinksUpgrade').html(
-                    generateUpgradeHTML(
-                        this.name,
-                        'Links',
-                        'Double corrupt ' + this.name + ' gear to +4 gems',
-                        '+2.5 (' + this.name + ')',
-                        '200 Vaal'
-                    )
+                generateUpgradeHTML(
+                    this.name,
+                    'Links',
+                    'Double corrupt ' + this.name + ' gear to +4 gems',
+                    '+2.5 (' + this.name + ')',
+                    '200 Vaal'
                 );
                 SnackBar(this.name + " Links upgraded!");
                 this.hoverLinks("Vaal");
@@ -806,19 +740,18 @@ class Exile {
 }
 
 /**
- * Generates HTML for upgrade buttons and descriptions
+ * Generates and updates HTML for upgrade buttons and descriptions
  * @param {string} exile - The exile name
  * @param {string} upgradeType - The type of upgrade (e.g., 'Gear', 'Links')
  * @param {string} description - Description of the upgrade
  * @param {string} benefit - The benefit gained from the upgrade
- * @param {string} requirements - The requirements for the upgrade
- * @returns {string} The generated HTML
+ * @param {string} requirements - The requirements text
  */
 function generateUpgradeHTML(exile, upgradeType, description, benefit, requirements) {
     // Generate button text from exile name and upgradeType
     const buttonText = exile + ' ' + upgradeType;
     
-    return `
+    const html = `
         <td class="mdl-data-table__cell--non-numeric">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" 
                     onclick="buy${upgradeType}(${exile});">
@@ -829,6 +762,9 @@ function generateUpgradeHTML(exile, upgradeType, description, benefit, requireme
         <td class="mdl-data-table__cell--non-numeric">${benefit}</td>
         <td class="mdl-data-table__cell--non-numeric">${requirements}</td>
     `;
+    
+    // Update the HTML content directly
+    $(`#${exile}${upgradeType}Upgrade`).html(html);
 }
 
 //---Define Exiles
