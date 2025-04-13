@@ -84,7 +84,6 @@ class Exile {
 					'50 Augmentation<br>50 Alteration'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Transmutation").removeClass("hover");
 				this.setupHover("Gear", "Alteration", "Augmentation");
 			} else {
 				SnackBar("Requirements not met.");
@@ -127,8 +126,6 @@ class Exile {
 					'20 Blacksmith'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Alteration").removeClass("hover");
-				$(".Augmentation").removeClass("hover");
 				this.setupHover("Gear", "Blacksmith");
 			} else {
 				SnackBar("Requirements not met.");
@@ -149,7 +146,6 @@ class Exile {
 					'200 Armourer'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Blacksmith").removeClass("hover");
 				this.setupHover("Gear", "Armourer");
 			} else {
 				SnackBar("Requirements not met.");
@@ -170,7 +166,6 @@ class Exile {
 					'10 Regal'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Armourer").removeClass("hover");
 				this.setupHover("Gear", "Regal");
 			} else {
 				SnackBar("Requirements not met.");
@@ -191,7 +186,6 @@ class Exile {
 					'30 Chaos'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Regal").removeClass("hover");
 				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
@@ -232,7 +226,6 @@ class Exile {
 					'30 Blessed'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Chaos").removeClass("hover");
 				this.setupHover("Gear", "Blessed");
 			} else {
 				SnackBar("Requirements not met.");
@@ -253,7 +246,6 @@ class Exile {
 					'100 Chaos'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Blessed").removeClass("hover");
 				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
@@ -274,7 +266,6 @@ class Exile {
 					'150 Chance<br>15 Regret'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Chaos").removeClass("hover");
 				this.setupHover("Gear", "Regret", "Chance");
 			} else {
 				SnackBar("Requirements not met.");
@@ -317,8 +308,6 @@ class Exile {
 					'50 Glassblower'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Regret").removeClass("hover");
-				$(".Chance").removeClass("hover");
 				this.setupHover("Gear", "Glassblower");
 			} else {
 				SnackBar("Requirements not met.");
@@ -339,7 +328,6 @@ class Exile {
 					'50 Chaos<br>1 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Glassblower").removeClass("hover");
 				this.setupHover("Gear", "Exalted", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
@@ -361,7 +349,6 @@ class Exile {
 					'250 Chaos'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Exalted").removeClass("hover");
 				this.setupHover("Gear", "Chaos");
 			} else {
 				SnackBar("Requirements not met.");
@@ -403,8 +390,6 @@ class Exile {
 					'10 Divine'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Exalted").removeClass("hover");
-				$(".Chaos").removeClass("hover");
 				this.setupHover("Gear", "Divine");
 			} else {
 				SnackBar("Requirements not met.");
@@ -425,7 +410,6 @@ class Exile {
 					'3 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Divine").removeClass("hover");
 				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
@@ -446,7 +430,6 @@ class Exile {
 					'2500 Chance<br>250 Regret'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Exalted").removeClass("hover");
 				this.setupHover("Gear", "Regret", "Chance");
 			} else {
 				SnackBar("Requirements not met.");
@@ -468,8 +451,6 @@ class Exile {
 					'10 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Chance").removeClass("hover");
-				$(".Regret").removeClass("hover");
 				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
@@ -511,7 +492,6 @@ class Exile {
 					'50 Exalted'
 				);
 				SnackBar(this.name + " Gear upgraded!");
-				$(".Awakener").removeClass("hover");
 				this.setupHover("Gear", "Exalted");
 			} else {
 				SnackBar("Requirements not met.");
@@ -597,8 +577,6 @@ class Exile {
 					'100 Chromatic'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				$(".Fusing").removeClass("hover");
-				$(".Jeweller").removeClass("hover");
 				this.setupHover("Links", "Chromatic");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "4L";
 			} else {
@@ -620,7 +598,6 @@ class Exile {
 					'150 Jeweller<br>150 Fusing'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				$(".Chromatic").removeClass("hover");
 				this.setupHover("Links", "Jeweller", "Fusing");
 			} else {
 				SnackBar("Requirements not met.");
@@ -664,8 +641,6 @@ class Exile {
 					'50 Vaal'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				$(".Fusing").removeClass("hover");
-				$(".Jeweller").removeClass("hover");
 				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L";
 			} else {
@@ -687,7 +662,6 @@ class Exile {
 					'120 GCP'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				$(".Vaal").removeClass("hover");
 				this.setupHover("Links", "GCP");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1 Gems)";
 			} else {
@@ -709,7 +683,6 @@ class Exile {
 					'100 Vaal'
 				);
 				SnackBar(this.name + " Links upgraded!");
-				$(".GCP").removeClass("hover");
 				this.setupHover("Links", "Vaal");
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1/20% Gems)";
 			} else {
@@ -766,7 +739,6 @@ class Exile {
 				this.dropRate += 2.5;
 				this.links++;
 				SnackBar(this.name + " Links upgrades completed!");
-				$(".Vaal").removeClass("hover");
 				$('#' + this.name + 'LinksUpgrade').remove();
 				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+5/23% Gems)";
 			} else {
@@ -819,6 +791,9 @@ class Exile {
      * @param {string} secondCurrency - Second currency to highlight (optional)
      */
     setupHover(upgradeType, firstCurrency, secondCurrency = null) {
+        // First, remove ALL hover classes from any currency
+        $(".hover").removeClass("hover");
+        
         $(`#${this.name}${upgradeType}Upgrade`).off('mouseenter mouseleave');
         $(`#${this.name}${upgradeType}Upgrade`).hover(
             function() {
