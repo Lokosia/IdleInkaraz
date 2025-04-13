@@ -46,634 +46,734 @@ class Exile {
 	};
 
 	lvlGear() {
-        if (this.gear == 0) { //Magic flasks
-            if (Transmutation.total >= 5 && Augmentation.total >= 5) {
-                Transmutation.total -= 5;
-                Augmentation.total -= 5;
-                this.dropRate += 0.1;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Upgrade ' + this.name + ' gear to Magic rarity',
-                    '+0.1 (' + this.name + ')',
-                    '10 Transmutation<br>10 Augmentation'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Transmutation", "Augmentation");
+		if (this.gear == 0) { //Magic flasks
+			const requirements = [
+				{ currency: Transmutation, amount: 5 },
+				{ currency: Augmentation, amount: 5 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.1;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Upgrade ' + this.name + ' gear to Magic rarity',
+					'+0.1 (' + this.name + ')',
+					'10 Transmutation<br>10 Augmentation'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Transmutation", "Augmentation");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 1) { //Magic items
+			const requirements = [
+				{ currency: Transmutation, amount: 10 },
+				{ currency: Augmentation, amount: 10 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.1;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Roll ' + this.name + ' flasks',
+					'+0.2 (' + this.name + ')',
+					'50 Augmentation<br>50 Alteration'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Transmutation").removeClass("hover");
+				this.hoverGear("Alteration", "Augmentation");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 2) { //roll magic flasks
+			const requirements = [
+				{ currency: Alteration, amount: 50 },
+				{ currency: Augmentation, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.2;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Roll ' + this.name + ' gear',
+					'+0.2 (' + this.name + ')',
+					'100 Augmentation<br>100 Alteration'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Alteration", "Augmentation");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 3) { //roll magic gear
+			const requirements = [
+				{ currency: Alteration, amount: 100 },
+				{ currency: Augmentation, amount: 100 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.2;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'20% quality ' + this.name + ' weapon',
+					'+0.2 (' + this.name + ')',
+					'20 Blacksmith'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Alteration").removeClass("hover");
+				$(".Augmentation").removeClass("hover");
+				this.hoverGear("Blacksmith");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 4) { //20% weapon
+			const requirements = [
+				{ currency: Blacksmith, amount: 20 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.2;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'20% quality ' + this.name + ' gear',
+					'+0.2 (' + this.name + ')',
+					'200 Armourer'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Blacksmith").removeClass("hover");
+				this.hoverGear("Armourer");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 5) { //20% gear
+			const requirements = [
+				{ currency: Armourer, amount: 200 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.2;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Upgrade ' + this.name + ' gear to Rare rarity',
+					'+0.3 (' + this.name + ')',
+					'10 Regal'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Armourer").removeClass("hover");
+				this.hoverGear("Regal");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 6) { //regal gear to rare
+			const requirements = [
+				{ currency: Regal, amount: 10 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.3;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy upgrades for ' + this.name + ' gear',
+					'+0.4 (' + this.name + ')',
+					'30 Chaos'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Regal").removeClass("hover");
+				this.hoverGear("Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 7) { //upgrade gear
+			const requirements = [
+				{ currency: Chaos, amount: 30 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.4;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy jewels for ' + this.name + ' gear',
+					'+0.4 (' + this.name + ')',
+					'50 Chaos'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 8) { //upgrade jewels
+			const requirements = [
+				{ currency: Chaos, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.4;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Blessed implicits for ' + this.name + ' gear',
+					'+0.4 (' + this.name + ')',
+					'30 Blessed'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Chaos").removeClass("hover");
+				this.hoverGear("Blessed");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 9) { //bless
+			const requirements = [
+				{ currency: Blessed, amount: 30 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.4;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy upgrades for ' + this.name + ' gear',
+					'+0.5 (' + this.name + ')',
+					'100 Chaos'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Blessed").removeClass("hover");
+				this.hoverGear("Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 10) { //upgrade gear
+			const requirements = [
+				{ currency: Chaos, amount: 100 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Enchant ' + this.name + ' gloves',
+					'+0.5 (' + this.name + ')',
+					'150 Chance<br>15 Regret'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Chaos").removeClass("hover");
+				this.hoverGear("Regret", "Chance");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 11) { //glove enchant
+			const requirements = [
+				{ currency: Regret, amount: 15 },
+				{ currency: Chance, amount: 150 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Enchant ' + this.name + ' boots',
+					'+0.5 (' + this.name + ')',
+					'400 Chance<br>40 Regret'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Regret", "Chance");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 12) { //boot enchant
+			const requirements = [
+				{ currency: Regret, amount: 40 },
+				{ currency: Chance, amount: 400 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'20% quality ' + this.name + ' flasks',
+					'+0.5 (' + this.name + ')',
+					'50 Glassblower'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Regret").removeClass("hover");
+				$(".Chance").removeClass("hover");
+				this.hoverGear("Glassblower");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 13) { //20% flasks
+			const requirements = [
+				{ currency: Glassblower, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Anoint ' + this.name + ' amulet',
+					'+0.6 (' + this.name + ')',
+					'50 Chaos<br>1 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Glassblower").removeClass("hover");
+				this.hoverGear("Exalted", "Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 14) { //anoint
+			const requirements = [
+				{ currency: Exalted, amount: 1 },
+				{ currency: Chaos, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.6;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy upgrades for ' + this.name + ' gear',
+					'+0.6 (' + this.name + ')',
+					'250 Chaos'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Exalted").removeClass("hover");
+				this.hoverGear("Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 15) { //gear upgrades
+			const requirements = [
+				{ currency: Chaos, amount: 250 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.6;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy unique flasks for ' + this.name,
+					'+0.7 (' + this.name + ')',
+					'200 Chaos<br>2 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Exalted", "Chaos");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 16) { //unique flasks
+			const requirements = [
+				{ currency: Exalted, amount: 2 },
+				{ currency: Chaos, amount: 200 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.7;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Divine ' + this.name + ' gear',
+					'+0.7 (' + this.name + ')',
+					'10 Divine'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Exalted").removeClass("hover");
+				$(".Chaos").removeClass("hover");
+				this.hoverGear("Divine");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 17) { //divine
+			const requirements = [
+				{ currency: Divine, amount: 10 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.7;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy upgrades for ' + this.name + ' gear',
+					'+0.8 (' + this.name + ')',
+					'3 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Divine").removeClass("hover");
+				this.hoverGear("Exalted");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 18) { //gear upgrades
+			const requirements = [
+				{ currency: Exalted, amount: 3 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.8;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Enchant ' + this.name + ' helmet',
+					'+0.9 (' + this.name + ')',
+					'2500 Chance<br>250 Regret'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Exalted").removeClass("hover");
+				this.hoverGear("Regret", "Chance");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 19) { //helm enchant
+			const requirements = [
+				{ currency: Regret, amount: 250 },
+				{ currency: Chance, amount: 2500 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.9;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Exalt ' + this.name + ' gear',
+					'+1.0 (' + this.name + ')',
+					'10 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Chance").removeClass("hover");
+				$(".Regret").removeClass("hover");
+				this.hoverGear("Exalted");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 20) { //ex gear
+			const requirements = [
+				{ currency: Exalted, amount: 10 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Craft explode chest for ' + this.name,
+					'+1.5 (' + this.name + ')',
+					'5 Exalted<br>1 Awakener'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Exalted", "Awakener");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 21) { //explode chest
+			const requirements = [
+				{ currency: Exalted, amount: 5 },
+				{ currency: Awakener, amount: 1 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy Watchers Eye for ' + this.name,
+					'+1.5 (' + this.name + ')',
+					'50 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				$(".Awakener").removeClass("hover");
+				this.hoverGear("Exalted");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 22) { //watchers eye
+			const requirements = [
+				{ currency: Exalted, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1.5;
+				this.gear++;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Buy Headhunter for ' + this.name,
+					'+2.0 (' + this.name + ')',
+					'150 Exalted'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Exalted");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear == 23) { //headhunter
+			const requirements = [
+				{ currency: Exalted, amount: 150 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 2;
+				this.gear += 7; //so that the loop for mirrors works
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Mirror gear for ' + this.name,
+					'+2.5 (' + this.name + ')',
+					'30 Exalted<br>1 Mirror'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+				this.hoverGear("Exalted", "Mirror");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.gear >= 24) { //mirror loop
+			const requirements = [
+				{ currency: Exalted, amount: this.gear },
+				{ currency: Mirror, amount: 1 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 2.5;
+				this.gear += 10;
+				generateUpgradeHTML(
+					this.name,
+					'Gear',
+					'Mirror gear for ' + this.name,
+					'+2.5 (' + this.name + ')',
+					this.gear + ' Exalted<br>1 Mirror'
+				);
+				SnackBar(this.name + " Gear upgraded!");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		}
+	};
 
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 1) { //Magic items
-            if (Transmutation.total >= 10 && Augmentation.total >= 10) {
-                Transmutation.total -= 10;
-                Augmentation.total -= 10;
-                this.dropRate += 0.1;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Roll ' + this.name + ' flasks',
-                    '+0.2 (' + this.name + ')',
-                    '50 Augmentation<br>50 Alteration'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Transmutation").removeClass("hover");
-                this.hoverGear("Alteration", "Augmentation");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 2) { //roll magic flasks
-            if (Alteration.total >= 50 && Augmentation.total >= 50) {
-                Alteration.total -= 50;
-                Augmentation.total -= 50;
-                this.dropRate += 0.2;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Roll ' + this.name + ' gear',
-                    '+0.2 (' + this.name + ')',
-                    '100 Augmentation<br>100 Alteration'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Alteration", "Augmentation");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 3) { //roll magic gear
-            if (Alteration.total >= 100 && Augmentation.total >= 100) {
-                Alteration.total -= 100;
-                Augmentation.total -= 100;
-                this.dropRate += 0.2;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    '20% quality ' + this.name + ' weapon',
-                    '+0.2 (' + this.name + ')',
-                    '20 Blacksmith'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Alteration").removeClass("hover");
-                $(".Augmentation").removeClass("hover");
-                this.hoverGear("Blacksmith");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 4) { //20% weapon
-            if (Blacksmith.total >= 20) {
-                Blacksmith.total -= 20;
-                this.dropRate += 0.2;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    '20% quality ' + this.name + ' gear',
-                    '+0.2 (' + this.name + ')',
-                    '200 Armourer'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Blacksmith").removeClass("hover");
-                this.hoverGear("Armourer");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 5) { //20% gear
-            if (Armourer.total >= 200) {
-                Armourer.total -= 200;
-                this.dropRate += 0.2;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Upgrade ' + this.name + ' gear to Rare rarity',
-                    '+0.3 (' + this.name + ')',
-                    '10 Regal'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Armourer").removeClass("hover");
-                this.hoverGear("Regal");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 6) { //regal gear to rare
-            if (Regal.total >= 10) {
-                Regal.total -= 10;
-                this.dropRate += 0.3;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy upgrades for ' + this.name + ' gear',
-                    '+0.4 (' + this.name + ')',
-                    '30 Chaos'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Regal").removeClass("hover");
-                this.hoverGear("Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 7) { //upgrade gear
-            if (Chaos.total >= 30) {
-                Chaos.total -= 30;
-                this.dropRate += 0.4;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy jewels for ' + this.name + ' gear',
-                    '+0.4 (' + this.name + ')',
-                    '50 Chaos'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 8) { //upgrade jewels
-            if (Chaos.total >= 50) {
-                Chaos.total -= 50;
-                this.dropRate += 0.4;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Blessed implicits for ' + this.name + ' gear',
-                    '+0.4 (' + this.name + ')',
-                    '30 Blessed'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Chaos").removeClass("hover");
-                this.hoverGear("Blessed");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 9) { //bless
-            if (Blessed.total >= 30) {
-                Blessed.total -= 30;
-                this.dropRate += 0.4;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy upgrades for ' + this.name + ' gear',
-                    '+0.5 (' + this.name + ')',
-                    '100 Chaos'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Blessed").removeClass("hover");
-                this.hoverGear("Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 10) { //upgrade gear
-            if (Chaos.total >= 100) {
-                Chaos.total -= 100;
-                this.dropRate += 0.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Enchant ' + this.name + ' gloves',
-                    '+0.5 (' + this.name + ')',
-                    '150 Chance<br>15 Regret'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Chaos").removeClass("hover");
-                this.hoverGear("Regret", "Chance");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 11) { //glove enchant
-            if (Regret.total >= 15 && Chance.total >= 150) {
-                Regret.total -= 15;
-                Chance.total -= 150;
-                this.dropRate += 0.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Enchant ' + this.name + ' boots',
-                    '+0.5 (' + this.name + ')',
-                    '400 Chance<br>40 Regret'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Regret", "Chance");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 12) { //boot enchant
-            if (Regret.total >= 40 && Chance.total >= 400) {
-                Regret.total -= 40;
-                Chance.total -= 400;
-                this.dropRate += 0.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    '20% quality ' + this.name + ' flasks',
-                    '+0.5 (' + this.name + ')',
-                    '50 Glassblower'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Regret").removeClass("hover");
-                $(".Chance").removeClass("hover");
-                this.hoverGear("Glassblower");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 13) { //20% flasks
-            if (Glassblower.total >= 50) {
-                Glassblower.total -= 50;
-                this.dropRate += 0.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Anoint ' + this.name + ' amulet',
-                    '+0.6 (' + this.name + ')',
-                    '50 Chaos<br>1 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Glassblower").removeClass("hover");
-                this.hoverGear("Exalted", "Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 14) { //anoint
-            if (Exalted.total >= 1 && Chaos.total >= 50) {
-                Exalted.total -= 1;
-                Chaos.total -= 50;
-                this.dropRate += 0.6;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy upgrades for ' + this.name + ' gear',
-                    '+0.6 (' + this.name + ')',
-                    '250 Chaos'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Exalted").removeClass("hover");
-                this.hoverGear("Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 15) { //gear upgrades
-            if (Chaos.total >= 250) {
-                Chaos.total -= 250;
-                this.dropRate += 0.6;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy unique flasks for ' + this.name,
-                    '+0.7 (' + this.name + ')',
-                    '200 Chaos<br>2 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Exalted", "Chaos");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 16) { //unique flasks
-            if (Exalted.total >= 2 && Chaos.total >= 200) {
-                Exalted.total -= 2;
-                Chaos.total -= 200;
-                this.dropRate += 0.7;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Divine ' + this.name + ' gear',
-                    '+0.7 (' + this.name + ')',
-                    '10 Divine'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Exalted").removeClass("hover");
-                $(".Chaos").removeClass("hover");
-                this.hoverGear("Divine");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 17) { //divine
-            if (Divine.total >= 10) {
-                Divine.total -= 10;
-                this.dropRate += 0.7;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy upgrades for ' + this.name + ' gear',
-                    '+0.8 (' + this.name + ')',
-                    '3 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Divine").removeClass("hover");
-                this.hoverGear("Exalted");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 18) { //gear upgrades
-            if (Exalted.total >= 3) {
-                Exalted.total -= 3;
-                this.dropRate += 0.8;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Enchant ' + this.name + ' helmet',
-                    '+0.9 (' + this.name + ')',
-                    '2500 Chance<br>250 Regret'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Exalted").removeClass("hover");
-                this.hoverGear("Regret", "Chance");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 19) { //helm enchant
-            if (Regret.total >= 250 && Chance.total >= 2500) {
-                Regret.total -= 250;
-                Chance.total -= 2500;
-                this.dropRate += 0.9;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Exalt ' + this.name + ' gear',
-                    '+1.0 (' + this.name + ')',
-                    '10 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Chance").removeClass("hover");
-                $(".Regret").removeClass("hover");
-                this.hoverGear("Exalted");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 20) { //ex gear
-            if (Exalted.total >= 10) {
-                Exalted.total -= 10;
-                this.dropRate += 1;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Craft explode chest for ' + this.name,
-                    '+1.5 (' + this.name + ')',
-                    '5 Exalted<br>1 Awakener'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Exalted", "Awakener");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 21) { //explode chest
-            if (Exalted.total >= 5 && Awakener.total >= 1) {
-                Exalted.total -= 5;
-                Awakener.total -= 1;
-                this.dropRate += 1.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy Watchers Eye for ' + this.name,
-                    '+1.5 (' + this.name + ')',
-                    '50 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                $(".Awakener").removeClass("hover");
-                this.hoverGear("Exalted");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 22) { //watchers eye
-            if (Exalted.total >= 50) {
-                Exalted.total -= 50;
-                this.dropRate += 1.5;
-                this.gear++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Buy Headhunter for ' + this.name,
-                    '+2.0 (' + this.name + ')',
-                    '150 Exalted'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Exalted");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear == 23) { //headhunter
-            if (Exalted.total >= 150) {
-                Exalted.total -= 150;
-                this.dropRate += 2;
-                this.gear += 7; //so that the loop for mirrors works
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Mirror gear for ' + this.name,
-                    '+2.5 (' + this.name + ')',
-                    '30 Exalted<br>1 Mirror'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-                this.hoverGear("Exalted", "Mirror");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.gear >= 24) { //mirror loop
-            if (Exalted.total >= this.gear && Mirror.total >= 1) {
-                Exalted.total -= this.gear;
-                Mirror.total -= 1;
-                this.dropRate += 2.5;
-                this.gear += 10;
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    'Mirror gear for ' + this.name,
-                    '+2.5 (' + this.name + ')',
-                    this.gear + ' Exalted<br>1 Mirror'
-                );
-                SnackBar(this.name + " Gear upgraded!");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        }
-
-    };
-
-    lvlLinks() {
-        if (this.links == 0) { //4L
-            if (Fusing.total >= 10 && Jeweller.total >= 10) {
-                Fusing.total -= 10;
-                Jeweller.total -= 10;
-                this.dropRate += 0.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Colour ' + this.name + ' links',
-                    '+0.5 (' + this.name + ')',
-                    '100 Chromatic'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                $(".Fusing").removeClass("hover");
-                $(".Jeweller").removeClass("hover");
-                this.hoverLinks("Chromatic");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "4L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 1) { //chromatics
-            if (Chromatic.total >= 100) {
-                Chromatic.total -= 100;
-                this.dropRate += 0.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Upgrade ' + this.name + ' links to 5L',
-                    '+0.6 (' + this.name + ')',
-                    '150 Jeweller<br>150 Fusing'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                $(".Chromatic").removeClass("hover");
-                this.hoverLinks("Jeweller", "Fusing");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 2) { //5L
-            if (Fusing.total >= 150 && Jeweller.total >= 150) {
-                Fusing.total -= 150;
-                Jeweller.total -= 150;
-                this.dropRate += 0.6;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Upgrade ' + this.name + ' links to 6L',
-                    '+1.0 (' + this.name + ')',
-                    '1500 Jeweller<br>1500 Fusing'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.hoverLinks("Jeweller", "Fusing");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "5L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 3) { //6L
-            if (Fusing.total >= 1500 && Jeweller.total >= 1500) {
-                Fusing.total -= 1500;
-                Jeweller.total -= 1500;
-                this.dropRate += 1;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Corrupt ' + this.name + ' gear to +1 gems',
-                    '+1.5 (' + this.name + ')',
-                    '50 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                $(".Fusing").removeClass("hover");
-                $(".Jeweller").removeClass("hover");
-                this.hoverLinks("Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 4) { //+1 gems
-            if (Vaal.total >= 50) {
-                Vaal.total -= 50;
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    '20% quality ' + this.name + ' gems',
-                    '+1.5 (' + this.name + ')',
-                    '120 GCP'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                $(".Vaal").removeClass("hover");
-                this.hoverLinks("GCP");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1 Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 5) { //20% gems
-            if (GCP.total >= 120) {
-                GCP.total -= 120;
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Corrupt ' + this.name + ' gems to +1',
-                    '+1.5 (' + this.name + ')',
-                    '100 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                $(".GCP").removeClass("hover");
-                this.hoverLinks("Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1/20% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 6) { //+2 gems
-            if (Vaal.total >= 100) {
-                Vaal.total -= 100;
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Double corrupt ' + this.name + ' gems to +1/23%',
-                    '+2.0 (' + this.name + ')',
-                    '150 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.hoverLinks("Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/20% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 7) { //+2/23% gems
-            if (Vaal.total >= 150) {
-                Vaal.total -= 150;
-                this.dropRate += 2;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Double corrupt ' + this.name + ' gear to +4 gems',
-                    '+2.5 (' + this.name + ')',
-                    '200 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.hoverLinks("Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/23% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 8) { //+5/23% gems
-            if (Vaal.total >= 200) {
-                Vaal.total -= 200;
-                this.dropRate += 2.5;
-                this.links++;
-                SnackBar(this.name + " Links upgrades completed!");
-                $(".Vaal").removeClass("hover");
-                $('#' + this.name + 'LinksUpgrade').remove();
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+5/23% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        }
-    };
+	lvlLinks() {
+		if (this.links == 0) { //4L
+			const requirements = [
+				{ currency: Fusing, amount: 10 },
+				{ currency: Jeweller, amount: 10 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Colour ' + this.name + ' links',
+					'+0.5 (' + this.name + ')',
+					'100 Chromatic'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				$(".Fusing").removeClass("hover");
+				$(".Jeweller").removeClass("hover");
+				this.hoverLinks("Chromatic");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "4L";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 1) { //chromatics
+			const requirements = [
+				{ currency: Chromatic, amount: 100 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.5;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Upgrade ' + this.name + ' links to 5L',
+					'+0.6 (' + this.name + ')',
+					'150 Jeweller<br>150 Fusing'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				$(".Chromatic").removeClass("hover");
+				this.hoverLinks("Jeweller", "Fusing");
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 2) { //5L
+			const requirements = [
+				{ currency: Fusing, amount: 150 },
+				{ currency: Jeweller, amount: 150 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 0.6;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Upgrade ' + this.name + ' links to 6L',
+					'+1.0 (' + this.name + ')',
+					'1500 Jeweller<br>1500 Fusing'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				this.hoverLinks("Jeweller", "Fusing");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "5L";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 3) { //6L
+			const requirements = [
+				{ currency: Fusing, amount: 1500 },
+				{ currency: Jeweller, amount: 1500 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Corrupt ' + this.name + ' gear to +1 gems',
+					'+1.5 (' + this.name + ')',
+					'50 Vaal'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				$(".Fusing").removeClass("hover");
+				$(".Jeweller").removeClass("hover");
+				this.hoverLinks("Vaal");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 4) { //+1 gems
+			const requirements = [
+				{ currency: Vaal, amount: 50 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1.5;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'20% quality ' + this.name + ' gems',
+					'+1.5 (' + this.name + ')',
+					'120 GCP'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				$(".Vaal").removeClass("hover");
+				this.hoverLinks("GCP");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1 Gems)";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 5) { //20% gems
+			const requirements = [
+				{ currency: GCP, amount: 120 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1.5;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Corrupt ' + this.name + ' gems to +1',
+					'+1.5 (' + this.name + ')',
+					'100 Vaal'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				$(".GCP").removeClass("hover");
+				this.hoverLinks("Vaal");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1/20% Gems)";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 6) { //+2 gems
+			const requirements = [
+				{ currency: Vaal, amount: 100 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 1.5;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Double corrupt ' + this.name + ' gems to +1/23%',
+					'+2.0 (' + this.name + ')',
+					'150 Vaal'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				this.hoverLinks("Vaal");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/20% Gems)";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 7) { //+2/23% gems
+			const requirements = [
+				{ currency: Vaal, amount: 150 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 2;
+				this.links++;
+				generateUpgradeHTML(
+					this.name,
+					'Links',
+					'Double corrupt ' + this.name + ' gear to +4 gems',
+					'+2.5 (' + this.name + ')',
+					'200 Vaal'
+				);
+				SnackBar(this.name + " Links upgraded!");
+				this.hoverLinks("Vaal");
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/23% Gems)";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		} else if (this.links == 8) { //+5/23% gems
+			const requirements = [
+				{ currency: Vaal, amount: 200 }
+			];
+			if (checkRequirements(requirements)) {
+				deductCosts(requirements);
+				this.dropRate += 2.5;
+				this.links++;
+				SnackBar(this.name + " Links upgrades completed!");
+				$(".Vaal").removeClass("hover");
+				$('#' + this.name + 'LinksUpgrade').remove();
+				document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+5/23% Gems)";
+			} else {
+				SnackBar("Requirements not met.");
+			}
+		}
+	};
 
 	recruitExile() {
 		this.level += 1;
@@ -765,6 +865,40 @@ function generateUpgradeHTML(exile, upgradeType, description, benefit, requireme
     
     // Update the HTML content directly
     $(`#${exile}${upgradeType}Upgrade`).html(html);
+}
+
+/**
+ * Checks if all currency requirements are met.
+ * @param {Array<Object>} requirements - An array of requirement objects, e.g., [{ currency: Transmutation, amount: 5 }, { currency: Augmentation, amount: 5 }]
+ * @returns {boolean} - True if all requirements are met, false otherwise.
+ */
+function checkRequirements(requirements) {
+    for (const req of requirements) {
+        // Ensure the currency object exists and has a 'total' property
+        if (!req.currency || typeof req.currency.total === 'undefined') {
+            console.error("Invalid currency object in requirements:", req);
+            return false; // Invalid requirement definition
+        }
+        if (req.currency.total < req.amount) {
+            return false; // Not enough of this currency
+        }
+    }
+    return true; // All requirements met
+}
+
+/**
+ * Deducts currency costs based on the requirements array.
+ * Assumes checkRequirements has already passed.
+ * @param {Array<Object>} requirements - An array of requirement objects, e.g., [{ currency: Transmutation, amount: 5 }, { currency: Augmentation, amount: 5 }]
+ */
+function deductCosts(requirements) {
+    for (const req of requirements) {
+        if (req.currency && typeof req.currency.total !== 'undefined') {
+            req.currency.total -= req.amount;
+        } else {
+             console.error("Attempted to deduct invalid currency:", req);
+        }
+    }
 }
 
 //---Define Exiles
