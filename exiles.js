@@ -338,125 +338,137 @@ class Exile {
     };
 
     lvlGear() {
-        // Get the current upgrade configuration (either from gearUpgrades array or generated for mirror upgrades)
-        let currentUpgrade, nextUpgrade;
-        
-        if (this.gear >= 0 && this.gear <= 23) {
-            // Standard upgrades from the predefined array
-            const currentIndex = this.gearUpgrades.findIndex(upgrade => upgrade.level === this.gear);
-            if (currentIndex === -1) return; // Safety check
-            
-            currentUpgrade = this.gearUpgrades[currentIndex];
-            
-            // Check if this is the Headhunter upgrade (level 23)
-            if (this.gear === 23) {
-                // For the Headhunter upgrade, the next will be a mirror upgrade
-                nextUpgrade = currentUpgrade; // Temporary - will be overwritten after applying the upgrade
-            } else {
-                nextUpgrade = this.gearUpgrades[currentIndex + 1];
-            }
-        } else if (this.gear >= 24) {
-            // Mirror upgrade path
-            currentUpgrade = getMirrorUpgrade(this.gear);
-            nextUpgrade = getMirrorUpgrade(this.gear + (currentUpgrade.specialIncrement || 1));
+        this.upgradeExile('Gear', this.getNextGearUpgrade.bind(this), this.applyGearUpgrade.bind(this));
+    }
+
+    lvlLinks() {
+        this.upgradeExile('Links', this.getNextLinksUpgrade.bind(this), this.applyLinksUpgrade.bind(this));
+    }
+
+    /**
+ * Gets the next gear upgrade based on current gear level
+ * @param {number} level - Current gear level
+ * @param {Array} upgrades - Array of available upgrades 
+ * @returns {Object} The next upgrade object
+ */
+    getNextGearUpgrade(level, upgrades) {
+        if (level >= 0 && level <= 23) {
+            const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
+            if (currentIndex === -1) return null;
+            return upgrades[currentIndex];
+        } else if (level >= 24) {
+            return getMirrorUpgrade(level);
         }
-        
-        // If we have a valid upgrade, process it
-        if (currentUpgrade && checkRequirements(currentUpgrade.requirements)) {
-            // Apply the upgrade
-            deductCosts(currentUpgrade.requirements);
-            this.dropRate += currentUpgrade.benefit;
-            
-            // Increment by special amount or default 1
-            const incrementAmount = currentUpgrade.specialIncrement || 1;
-            this.gear += incrementAmount;
-            
-            // Special handling for transition from standard to mirror upgrades
-            if (this.gear >= 24) {
-                // We're now in mirror territory - generate the first mirror upgrade
-                nextUpgrade = getMirrorUpgrade(this.gear);
-            }
-            
-            // If there's a next upgrade, generate HTML for it
+        return null;
+    }
+
+    /**
+     * Gets the next links upgrade based on current links level
+     * @param {number} level - Current links level
+     * @param {Array} upgrades - Array of available upgrades
+     * @returns {Object} The next upgrade object
+     */
+    getNextLinksUpgrade(level, upgrades) {
+        const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
+        if (currentIndex === -1) return null;
+        return upgrades[currentIndex];
+    }
+
+    /**
+     * Apply gear-specific upgrade effects
+     * @param {Object} upgrade - The upgrade configuration object
+     */
+    applyGearUpgrade(upgrade) {
+        this.dropRate += upgrade.benefit;
+    }
+
+    /**
+     * Apply links-specific upgrade effects
+     * @param {Object} upgrade - The upgrade configuration object  
+     */
+    applyLinksUpgrade(upgrade) {
+        this.dropRate += upgrade.benefit;
+
+        // Update the display text for the links
+        document.getElementsByClassName(this.name + 'Links')[0].innerHTML = upgrade.displayValue;
+
+        // If this was the final upgrade, remove the upgrade button
+        if (upgrade.finalUpgrade) {
+            SnackBar(this.name + " Links upgrades completed!");
+            $('#' + this.name + 'LinksUpgrade').remove();
+        }
+    }
+
+    /**
+ * Generic method to manage upgrades based on the specified upgrade type
+ * @param {string} upgradeType - Type of upgrade ('Gear' or 'Links')
+ * @param {function} getNextUpgrade - Function to determine the next upgrade
+ * @param {function} applyUpgrade - Function to apply the upgrade effects
+ */
+    upgradeExile(upgradeType, getNextUpgrade, applyUpgrade) {
+        // Get property name for this upgrade type (e.g., 'gear' or 'links')
+        const propertyName = upgradeType.toLowerCase();
+
+        // Get the current level of this upgrade type
+        const currentLevel = this[propertyName];
+
+        // Get upgrades array name (e.g., 'gearUpgrades' or 'linksUpgrades')
+        const upgradesArrayName = propertyName + 'Upgrades';
+
+        // Get the current upgrade
+        const currentUpgrade = getNextUpgrade(currentLevel, this[upgradesArrayName]);
+
+        if (!currentUpgrade) return;
+
+        // Process the upgrade
+        const success = processUpgrade(currentUpgrade, (upgrade) => {
+            // Apply the specific effects for this upgrade type
+            applyUpgrade(upgrade);
+
+            // Update the level for this upgrade type
+            this[propertyName] += upgrade.specialIncrement || 1;
+
+            // Get the next upgrade
+            const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
+
+            // If there's a next upgrade, update the UI
             if (nextUpgrade) {
-                // Generate next upgrade's requirements text from its requirements array
-                const requirementsText = nextUpgrade.requirements
-                    .map(req => `${req.amount} ${req.currency.name}`)
-                    .join('<br>');
-                
-                // Generate HTML for the next upgrade
-                generateUpgradeHTML(
-                    this.name,
-                    'Gear',
-                    nextUpgrade.description.replace('{name}', this.name),
-                    `+${nextUpgrade.benefit} (${this.name})`,
-                    requirementsText
-                );
-                
-                // Extract currency names for hover effects directly from next upgrade's requirements
-                const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
-                
-                // Set up hover effects for next upgrade
-                this.setupHover("Gear", ...hoverCurrencies);
+                this.updateUpgradeUI(upgradeType, nextUpgrade);
             }
-            
-            SnackBar(this.name + " Gear upgraded!");
-        } else {
+
+            SnackBar(this.name + " " + upgradeType + " upgraded!");
+        });
+
+        if (!success) {
             SnackBar("Requirements not met.");
         }
     }
 
-    lvlLinks() {
-        // Get the current upgrade configuration
-        const currentIndex = this.linksUpgrades.findIndex(upgrade => upgrade.level === this.links);
-        if (currentIndex === -1) return; // Safety check
-        
-        const currentUpgrade = this.linksUpgrades[currentIndex];
-        
-        // Check if requirements are met
-        if (checkRequirements(currentUpgrade.requirements)) {
-            // Apply the upgrade
-            deductCosts(currentUpgrade.requirements);
-            this.dropRate += currentUpgrade.benefit;
-            this.links++;
-            
-            // Update the display text for the links
-            document.getElementsByClassName(this.name + 'Links')[0].innerHTML = currentUpgrade.displayValue;
-            
-            // If this was the final upgrade, remove the upgrade button
-            if (currentUpgrade.finalUpgrade) {
-                SnackBar(this.name + " Links upgrades completed!");
-                $('#' + this.name + 'LinksUpgrade').remove();
-                return;
-            }
-            
-            // Get the next upgrade
-            const nextUpgrade = this.linksUpgrades[currentIndex + 1];
-            
-            // Generate requirements text for the next upgrade
-            const requirementsText = nextUpgrade.requirements
-                .map(req => `${req.amount} ${req.currency.name}`)
-                .join('<br>');
-            
-            // Generate HTML for the next upgrade
-            generateUpgradeHTML(
-                this.name,
-                'Links',
-                nextUpgrade.description.replace('{name}', this.name),
-                `+${nextUpgrade.benefit} (${this.name})`,
-                requirementsText
-            );
-            
-            // Extract currency names for hover effects directly from next upgrade's requirements
-            const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
-            
-            // Set up hover effects for next upgrade
-            this.setupHover("Links", ...hoverCurrencies);
-            
-            SnackBar(this.name + " Links upgraded!");
-        } else {
-            SnackBar("Requirements not met.");
-        }
+    /**
+     * Updates the UI for an upgrade
+     * @param {string} upgradeType - Type of upgrade ('Gear' or 'Links')
+     * @param {Object} nextUpgrade - The next upgrade configuration
+     */
+    updateUpgradeUI(upgradeType, nextUpgrade) {
+        // Generate requirements text 
+        const requirementsText = nextUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+
+        // Generate HTML
+        generateUpgradeHTML(
+            this.name,
+            upgradeType,
+            nextUpgrade.description.replace('{name}', this.name),
+            `+${nextUpgrade.benefit} (${this.name})`,
+            requirementsText
+        );
+
+        // Extract currency names for hover effects
+        const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
+
+        // Set up hover effects
+        this.setupHover(upgradeType, ...hoverCurrencies);
     }
 
     recruitExile() {
@@ -476,7 +488,7 @@ class Exile {
         const linksRequirementsText = firstLinksUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
-        
+
         $("#UpgradeGearTable").append(
             '<tr id="' + this.name + 'GearUpgrade">' +
             '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" onclick="buyGear(' + this.name + ');">' + this.name + ' Gear' + '</button></td>' +
@@ -499,7 +511,7 @@ class Exile {
         // Setup hover effects for both gear and links
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
         const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
-        
+
         this.setupHover("Gear", ...gearCurrencies);
         this.setupHover("Links", ...linksCurrencies);
     };
@@ -540,6 +552,21 @@ class Exile {
             }
         );
     }
+}
+
+/**
+ * Processes an upgrade for an exile, handling requirements checking, cost deduction and benefit application
+ * @param {Object} upgrade - The upgrade configuration object
+ * @param {function} onSuccess - Callback to execute if upgrade is successful
+ * @returns {boolean} - Whether the upgrade was successful
+ */
+function processUpgrade(upgrade, onSuccess) {
+    if (checkRequirements(upgrade.requirements)) {
+        deductCosts(upgrade.requirements);
+        onSuccess(upgrade);
+        return true;
+    }
+    return false;
 }
 
 /**
