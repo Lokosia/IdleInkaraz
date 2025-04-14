@@ -40,7 +40,7 @@ class Exile {
                     { currency: Alteration, amount: 50 },
                     { currency: Augmentation, amount: 50 }
                 ],
-                benefit: 0.1,
+                benefit: 0.2,
                 description: "Roll {name} flasks"
             },
             {
@@ -73,7 +73,7 @@ class Exile {
                 requirements: [
                     { currency: Regal, amount: 10 }
                 ],
-                benefit: 0.2,
+                benefit: 0.3,
                 description: "Upgrade {name} gear to Rare rarity"
             },
             {
@@ -81,7 +81,7 @@ class Exile {
                 requirements: [
                     { currency: Chaos, amount: 30 }
                 ],
-                benefit: 0.3,
+                benefit: 0.4,
                 description: "Buy upgrades for {name} gear"
             },
             {
@@ -105,7 +105,7 @@ class Exile {
                 requirements: [
                     { currency: Chaos, amount: 100 }
                 ],
-                benefit: 0.4,
+                benefit: 0.5,
                 description: "Buy upgrades for {name} gear"
             },
             {
@@ -140,7 +140,7 @@ class Exile {
                     { currency: Exalted, amount: 1 },
                     { currency: Chaos, amount: 50 }
                 ],
-                benefit: 0.5,
+                benefit: 0.6,
                 description: "Anoint {name} amulet"
             },
             {
@@ -157,7 +157,7 @@ class Exile {
                     { currency: Exalted, amount: 2 },
                     { currency: Chaos, amount: 200 }
                 ],
-                benefit: 0.6,
+                benefit: 0.7,
                 description: "Buy unique flasks for {name}"
             },
             {
@@ -173,7 +173,7 @@ class Exile {
                 requirements: [
                     { currency: Exalted, amount: 3 }
                 ],
-                benefit: 0.7,
+                benefit: 0.8,
                 description: "Buy upgrades for {name} gear"
             },
             {
@@ -182,7 +182,7 @@ class Exile {
                     { currency: Regret, amount: 250 },
                     { currency: Chance, amount: 2500 }
                 ],
-                benefit: 0.8,
+                benefit: 0.9,
                 description: "Enchant {name} helmet"
             },
             {
@@ -190,7 +190,7 @@ class Exile {
                 requirements: [
                     { currency: Exalted, amount: 10 }
                 ],
-                benefit: 0.9,
+                benefit: 1,
                 description: "Exalt {name} gear"
             },
             {
@@ -199,7 +199,7 @@ class Exile {
                     { currency: Exalted, amount: 5 },
                     { currency: Awakener, amount: 1 }
                 ],
-                benefit: 1,
+                benefit: 1,5,
                 description: "Craft explode chest for {name}"
             },
             {
@@ -215,7 +215,7 @@ class Exile {
                 requirements: [
                     { currency: Exalted, amount: 150 }
                 ],
-                benefit: 1.5,
+                benefit: 2,
                 specialIncrement: 7,
                 description: "Buy Headhunter for {name}"
             }
