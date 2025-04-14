@@ -468,19 +468,27 @@ class Exile {
     }
 
     /**
-     * Apply links-specific upgrade effects
-     * @param {Object} upgrade - The upgrade configuration object  
-     */
+    * Apply links-specific upgrade effects
+    * @param {Object} upgrade - The upgrade configuration object  
+    */
     applyLinksUpgrade(upgrade) {
         this.dropRate += upgrade.benefit;
 
         // Update the display text for the links
         document.getElementsByClassName(this.name + 'Links')[0].innerHTML = upgrade.displayValue;
 
-        // If this was the final upgrade, remove the upgrade button
+        // If this was the final upgrade, remove the upgrade button and clean up hover effects
         if (upgrade.finalUpgrade) {
-            SnackBar(this.name + " Links upgrades completed!");
+            // First, manually remove any hover classes that might be present
+            $(".hover").removeClass("hover");
+
+            // Remove event handlers before removing the element from the DOM
+            $(`#${this.name}LinksUpgrade`).off('mouseenter mouseleave');
+
+            // Now remove the element
             $('#' + this.name + 'LinksUpgrade').remove();
+
+            SnackBar(this.name + " Links upgrades completed!");
         }
     }
 
@@ -737,7 +745,7 @@ var exileData = ExileFactory.createAllExiles();
 setInterval(function gameTick() {
     let tempLevel = 1000;
     let tempDropRate = upgradeDropRate;
-    
+
     for (let i = 0; i < exileData.length; i++) {
         const exile = exileData[i];
 
@@ -759,7 +767,7 @@ setInterval(function gameTick() {
 
     totalLevel = tempLevel;
     dropRate = tempDropRate;
-    
+
     document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(totalLevel).format('0,0');
     document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(dropRate).format('0,0.0');
 
