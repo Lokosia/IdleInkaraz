@@ -4,6 +4,378 @@ var dropRate = 0;
 var playTime = 0;
 var snackBarTimer = 0;
 
+// Factory for creating and managing exiles
+const ExileFactory = {
+    // Default upgrade data
+    gearUpgrades: [
+        {
+            level: 0,  // First upgrade, applied at gear level 0
+            requirements: [
+                { currency: Transmutation, amount: 5 },
+                { currency: Augmentation, amount: 5 }
+            ],
+            benefit: 0.1,
+            description: "Upgrade {name} flasks to Magic rarity"
+        },
+        {
+            level: 1,
+            requirements: [
+                { currency: Transmutation, amount: 10 },
+                { currency: Augmentation, amount: 10 }
+            ],
+            benefit: 0.1,
+            description: "Upgrade {name} gear to Magic rarity"
+        },
+        {
+            level: 2,
+            requirements: [
+                { currency: Alteration, amount: 50 },
+                { currency: Augmentation, amount: 50 }
+            ],
+            benefit: 0.2,
+            description: "Roll {name} flasks"
+        },
+        {
+            level: 3,
+            requirements: [
+                { currency: Alteration, amount: 100 },
+                { currency: Augmentation, amount: 100 }
+            ],
+            benefit: 0.2,
+            description: "Roll {name} gear"
+        },
+        {
+            level: 4,
+            requirements: [
+                { currency: Blacksmith, amount: 20 }
+            ],
+            benefit: 0.2,
+            description: "20% quality {name} weapon"
+        },
+        {
+            level: 5,
+            requirements: [
+                { currency: Armourer, amount: 200 }
+            ],
+            benefit: 0.2,
+            description: "20% quality {name} gear"
+        },
+        {
+            level: 6,
+            requirements: [
+                { currency: Regal, amount: 10 }
+            ],
+            benefit: 0.3,
+            description: "Upgrade {name} gear to Rare rarity"
+        },
+        {
+            level: 7,
+            requirements: [
+                { currency: Chaos, amount: 30 }
+            ],
+            benefit: 0.4,
+            description: "Buy upgrades for {name} gear"
+        },
+        {
+            level: 8,
+            requirements: [
+                { currency: Chaos, amount: 50 }
+            ],
+            benefit: 0.4,
+            description: "Buy jewels for {name} gear"
+        },
+        {
+            level: 9,
+            requirements: [
+                { currency: Blessed, amount: 30 }
+            ],
+            benefit: 0.4,
+            description: "Blessed implicits for {name} gear"
+        },
+        {
+            level: 10,
+            requirements: [
+                { currency: Chaos, amount: 100 }
+            ],
+            benefit: 0.5,
+            description: "Buy upgrades for {name} gear"
+        },
+        {
+            level: 11,
+            requirements: [
+                { currency: Regret, amount: 15 },
+                { currency: Chance, amount: 150 }
+            ],
+            benefit: 0.5,
+            description: "Enchant {name} gloves"
+        },
+        {
+            level: 12,
+            requirements: [
+                { currency: Regret, amount: 40 },
+                { currency: Chance, amount: 400 }
+            ],
+            benefit: 0.5,
+            description: "Enchant {name} boots"
+        },
+        {
+            level: 13,
+            requirements: [
+                { currency: Glassblower, amount: 50 }
+            ],
+            benefit: 0.5,
+            description: "20% quality {name} flasks"
+        },
+        {
+            level: 14,
+            requirements: [
+                { currency: Exalted, amount: 1 },
+                { currency: Chaos, amount: 50 }
+            ],
+            benefit: 0.6,
+            description: "Anoint {name} amulet"
+        },
+        {
+            level: 15,
+            requirements: [
+                { currency: Chaos, amount: 250 }
+            ],
+            benefit: 0.6,
+            description: "Buy upgrades for {name} gear"
+        },
+        {
+            level: 16,
+            requirements: [
+                { currency: Exalted, amount: 2 },
+                { currency: Chaos, amount: 200 }
+            ],
+            benefit: 0.7,
+            description: "Buy unique flasks for {name}"
+        },
+        {
+            level: 17,
+            requirements: [
+                { currency: Divine, amount: 10 }
+            ],
+            benefit: 0.7,
+            description: "Divine {name} gear"
+        },
+        {
+            level: 18,
+            requirements: [
+                { currency: Exalted, amount: 3 }
+            ],
+            benefit: 0.8,
+            description: "Buy upgrades for {name} gear"
+        },
+        {
+            level: 19,
+            requirements: [
+                { currency: Regret, amount: 250 },
+                { currency: Chance, amount: 2500 }
+            ],
+            benefit: 0.9,
+            description: "Enchant {name} helmet"
+        },
+        {
+            level: 20,
+            requirements: [
+                { currency: Exalted, amount: 10 }
+            ],
+            benefit: 1,
+            description: "Exalt {name} gear"
+        },
+        {
+            level: 21,
+            requirements: [
+                { currency: Exalted, amount: 5 },
+                { currency: Awakener, amount: 1 }
+            ],
+            benefit: 1.5,
+            description: "Craft explode chest for {name}"
+        },
+        {
+            level: 22,
+            requirements: [
+                { currency: Exalted, amount: 50 }
+            ],
+            benefit: 1.5,
+            description: "Buy Watchers Eye for {name}"
+        },
+        {
+            level: 23,
+            requirements: [
+                { currency: Exalted, amount: 150 }
+            ],
+            benefit: 2,
+            specialIncrement: 7,
+            description: "Buy Headhunter for {name}"
+        }
+    ],
+
+    linksUpgrades: [
+        {
+            level: 0,
+            requirements: [
+                { currency: Fusing, amount: 10 },
+                { currency: Jeweller, amount: 10 }
+            ],
+            benefit: 0.5,
+            displayValue: "4L",
+            description: "Upgrade {name} links to 4L"
+        },
+        {
+            level: 1,
+            requirements: [
+                { currency: Chromatic, amount: 100 }
+            ],
+            benefit: 0.5,
+            displayValue: "4L",
+            description: "Colour {name} links"
+        },
+        {
+            level: 2,
+            requirements: [
+                { currency: Fusing, amount: 150 },
+                { currency: Jeweller, amount: 150 }
+            ],
+            benefit: 0.6,
+            displayValue: "5L",
+            description: "Upgrade {name} links to 5L"
+        },
+        {
+            level: 3,
+            requirements: [
+                { currency: Fusing, amount: 1500 },
+                { currency: Jeweller, amount: 1500 }
+            ],
+            benefit: 1.0,
+            displayValue: "6L",
+            description: "Upgrade {name} links to 6L"
+        },
+        {
+            level: 4,
+            requirements: [
+                { currency: Vaal, amount: 50 }
+            ],
+            benefit: 1.5,
+            displayValue: "6L (+1 Gems)",
+            description: "Corrupt {name} gear to +1 gems"
+        },
+        {
+            level: 5,
+            requirements: [
+                { currency: GCP, amount: 120 }
+            ],
+            benefit: 1.5,
+            displayValue: "6L (+1/20% Gems)",
+            description: "20% quality {name} gems"
+        },
+        {
+            level: 6,
+            requirements: [
+                { currency: Vaal, amount: 100 }
+            ],
+            benefit: 1.5,
+            displayValue: "6L (+2/20% Gems)",
+            description: "Corrupt {name} gems to +1"
+        },
+        {
+            level: 7,
+            requirements: [
+                { currency: Vaal, amount: 150 }
+            ],
+            benefit: 2.0,
+            displayValue: "6L (+2/23% Gems)",
+            description: "Double corrupt {name} gems to +1/23%"
+        },
+        {
+            level: 8,
+            requirements: [
+                { currency: Vaal, amount: 200 }
+            ],
+            benefit: 2.5,
+            displayValue: "6L (+5/23% Gems)",
+            description: "Double corrupt {name} gear to +4 gems",
+            finalUpgrade: true
+        }
+    ],
+
+    // Base method to create exiles
+    createExile(name, levelRequirement = 0, specialRequirement = null, customGearUpgrades = null, customLinksUpgrades = null) {
+        const exile = new Exile(
+            name,
+            '0', // level
+            '0', // exp
+            '525', // expToLevel
+            '0', // dropRate
+            '0', // gear
+            '0', // links
+            '0', // rerollLevel
+            levelRequirement,
+            specialRequirement
+        );
+
+        // Allow optional custom upgrades
+        if (customGearUpgrades) {
+            exile.gearUpgrades = customGearUpgrades;
+        }
+
+        if (customLinksUpgrades) {
+            exile.linksUpgrades = customLinksUpgrades;
+        }
+
+        return exile;
+    },
+
+    // Helper for special exiles
+    createSpecialExile(name, levelRequirement, specialReqType, specialReqValue) {
+        return this.createExile(name, levelRequirement, [specialReqType, specialReqValue]);
+    },
+
+    // Create all standard exiles
+    createStandardExiles() {
+        return [
+            Ascendant = this.createExile('Ascendant'),
+            Slayer = this.createExile('Slayer', 35),
+            Gladiator = this.createExile('Gladiator', 450),
+            Champion = this.createExile('Champion', 1455),
+            Assassin = this.createExile('Assassin', 65),
+            Saboteur = this.createExile('Saboteur', 580),
+            Trickster = this.createExile('Trickster', 1675),
+            Juggernaut = this.createExile('Juggernaut', 110),
+            Berserker = this.createExile('Berserker', 725),
+            Chieftain = this.createExile('Chieftain', 1910),
+            Necromancer = this.createExile('Necromancer', 170),
+            Elementalist = this.createExile('Elementalist', 885),
+            Occultist = this.createExile('Occultist', 2160),
+            Deadeye = this.createExile('Deadeye', 245),
+            Raider = this.createExile('Raider', 1060),
+            Pathfinder = this.createExile('Pathfinder', 2425),
+            Inquisitor = this.createExile('Inquisitor', 335),
+            Hierophant = this.createExile('Hierophant', 1250),
+            Guardian = this.createExile('Guardian', 2715),
+        ];
+    },
+
+    // Create special exiles
+    createSpecialExiles() {
+        return [
+            Melvin = this.createSpecialExile('Melvin', 500, 'delveStashTab', 1),
+            Singularity = this.createSpecialExile('Singularity', 250, 'currencyStashTab', 1),
+            Artificer = this.createSpecialExile('Artificer', 1000, 'quadStashTab', 1),
+        ];
+    },
+
+    // Create all exiles at once
+    createAllExiles() {
+        return [
+            ...this.createStandardExiles(),
+            ...this.createSpecialExiles()
+        ];
+    }
+};
+
 //---Define Class
 class Exile {
     constructor(name, level, exp, expToLevel, dropRate, gear, links, rerollLevel, levelRequirement = 0, specialRequirement = null) {
@@ -17,298 +389,9 @@ class Exile {
         this.rerollLevel = Number(rerollLevel);
         this.levelRequirement = levelRequirement; // Required total level to recruit
         this.specialRequirement = specialRequirement; // Special requirement for certain exiles
-        this.gearUpgrades = [
-            {
-                level: 0,  // First upgrade, applied at gear level 0
-                requirements: [
-                    { currency: Transmutation, amount: 5 },
-                    { currency: Augmentation, amount: 5 }
-                ],
-                benefit: 0.1,
-                description: "Upgrade {name} flasks to Magic rarity"
-            },
-            {
-                level: 1,
-                requirements: [
-                    { currency: Transmutation, amount: 10 },
-                    { currency: Augmentation, amount: 10 }
-                ],
-                benefit: 0.1,
-                description: "Upgrade {name} gear to Magic rarity"
-            },
-            {
-                level: 2,
-                requirements: [
-                    { currency: Alteration, amount: 50 },
-                    { currency: Augmentation, amount: 50 }
-                ],
-                benefit: 0.2,
-                description: "Roll {name} flasks"
-            },
-            {
-                level: 3,
-                requirements: [
-                    { currency: Alteration, amount: 100 },
-                    { currency: Augmentation, amount: 100 }
-                ],
-                benefit: 0.2,
-                description: "Roll {name} gear"
-            },
-            {
-                level: 4,
-                requirements: [
-                    { currency: Blacksmith, amount: 20 }
-                ],
-                benefit: 0.2,
-                description: "20% quality {name} weapon"
-            },
-            {
-                level: 5,
-                requirements: [
-                    { currency: Armourer, amount: 200 }
-                ],
-                benefit: 0.2,
-                description: "20% quality {name} gear"
-            },
-            {
-                level: 6,
-                requirements: [
-                    { currency: Regal, amount: 10 }
-                ],
-                benefit: 0.3,
-                description: "Upgrade {name} gear to Rare rarity"
-            },
-            {
-                level: 7,
-                requirements: [
-                    { currency: Chaos, amount: 30 }
-                ],
-                benefit: 0.4,
-                description: "Buy upgrades for {name} gear"
-            },
-            {
-                level: 8,
-                requirements: [
-                    { currency: Chaos, amount: 50 }
-                ],
-                benefit: 0.4,
-                description: "Buy jewels for {name} gear"
-            },
-            {
-                level: 9,
-                requirements: [
-                    { currency: Blessed, amount: 30 }
-                ],
-                benefit: 0.4,
-                description: "Blessed implicits for {name} gear"
-            },
-            {
-                level: 10,
-                requirements: [
-                    { currency: Chaos, amount: 100 }
-                ],
-                benefit: 0.5,
-                description: "Buy upgrades for {name} gear"
-            },
-            {
-                level: 11,
-                requirements: [
-                    { currency: Regret, amount: 15 },
-                    { currency: Chance, amount: 150 }
-                ],
-                benefit: 0.5,
-                description: "Enchant {name} gloves"
-            },
-            {
-                level: 12,
-                requirements: [
-                    { currency: Regret, amount: 40 },
-                    { currency: Chance, amount: 400 }
-                ],
-                benefit: 0.5,
-                description: "Enchant {name} boots"
-            },
-            {
-                level: 13,
-                requirements: [
-                    { currency: Glassblower, amount: 50 }
-                ],
-                benefit: 0.5,
-                description: "20% quality {name} flasks"
-            },
-            {
-                level: 14,
-                requirements: [
-                    { currency: Exalted, amount: 1 },
-                    { currency: Chaos, amount: 50 }
-                ],
-                benefit: 0.6,
-                description: "Anoint {name} amulet"
-            },
-            {
-                level: 15,
-                requirements: [
-                    { currency: Chaos, amount: 250 }
-                ],
-                benefit: 0.6,
-                description: "Buy upgrades for {name} gear"
-            },
-            {
-                level: 16,
-                requirements: [
-                    { currency: Exalted, amount: 2 },
-                    { currency: Chaos, amount: 200 }
-                ],
-                benefit: 0.7,
-                description: "Buy unique flasks for {name}"
-            },
-            {
-                level: 17,
-                requirements: [
-                    { currency: Divine, amount: 10 }
-                ],
-                benefit: 0.7,
-                description: "Divine {name} gear"
-            },
-            {
-                level: 18,
-                requirements: [
-                    { currency: Exalted, amount: 3 }
-                ],
-                benefit: 0.8,
-                description: "Buy upgrades for {name} gear"
-            },
-            {
-                level: 19,
-                requirements: [
-                    { currency: Regret, amount: 250 },
-                    { currency: Chance, amount: 2500 }
-                ],
-                benefit: 0.9,
-                description: "Enchant {name} helmet"
-            },
-            {
-                level: 20,
-                requirements: [
-                    { currency: Exalted, amount: 10 }
-                ],
-                benefit: 1,
-                description: "Exalt {name} gear"
-            },
-            {
-                level: 21,
-                requirements: [
-                    { currency: Exalted, amount: 5 },
-                    { currency: Awakener, amount: 1 }
-                ],
-                benefit: 1.5,
-                description: "Craft explode chest for {name}"
-            },
-            {
-                level: 22,
-                requirements: [
-                    { currency: Exalted, amount: 50 }
-                ],
-                benefit: 1.5,
-                description: "Buy Watchers Eye for {name}"
-            },
-            {
-                level: 23,
-                requirements: [
-                    { currency: Exalted, amount: 150 }
-                ],
-                benefit: 2,
-                specialIncrement: 7,
-                description: "Buy Headhunter for {name}"
-            }
-        ];
-        this.linksUpgrades = [
-            {
-                level: 0,
-                requirements: [
-                    { currency: Fusing, amount: 10 },
-                    { currency: Jeweller, amount: 10 }
-                ],
-                benefit: 0.5,
-                displayValue: "4L",
-                description: "Upgrade {name} links to 4L"
-            },
-            {
-                level: 1,
-                requirements: [
-                    { currency: Chromatic, amount: 100 }
-                ],
-                benefit: 0.5,
-                displayValue: "4L",
-                description: "Colour {name} links"
-            },
-            {
-                level: 2,
-                requirements: [
-                    { currency: Fusing, amount: 150 },
-                    { currency: Jeweller, amount: 150 }
-                ],
-                benefit: 0.6,
-                displayValue: "5L",
-                description: "Upgrade {name} links to 5L"
-            },
-            {
-                level: 3,
-                requirements: [
-                    { currency: Fusing, amount: 1500 },
-                    { currency: Jeweller, amount: 1500 }
-                ],
-                benefit: 1.0,
-                displayValue: "6L",
-                description: "Upgrade {name} links to 6L"
-            },
-            {
-                level: 4,
-                requirements: [
-                    { currency: Vaal, amount: 50 }
-                ],
-                benefit: 1.5,
-                displayValue: "6L (+1 Gems)",
-                description: "Corrupt {name} gear to +1 gems"
-            },
-            {
-                level: 5,
-                requirements: [
-                    { currency: GCP, amount: 120 }
-                ],
-                benefit: 1.5,
-                displayValue: "6L (+1/20% Gems)",
-                description: "20% quality {name} gems"
-            },
-            {
-                level: 6,
-                requirements: [
-                    { currency: Vaal, amount: 100 }
-                ],
-                benefit: 1.5,
-                displayValue: "6L (+2/20% Gems)",
-                description: "Corrupt {name} gems to +1"
-            },
-            {
-                level: 7,
-                requirements: [
-                    { currency: Vaal, amount: 150 }
-                ],
-                benefit: 2.0,
-                displayValue: "6L (+2/23% Gems)",
-                description: "Double corrupt {name} gems to +1/23%"
-            },
-            {
-                level: 8,
-                requirements: [
-                    { currency: Vaal, amount: 200 }
-                ],
-                benefit: 2.5,
-                displayValue: "6L (+5/23% Gems)",
-                description: "Double corrupt {name} gear to +4 gems",
-                finalUpgrade: true
-            }
-        ];
+        // Use the upgrades defined in the factory by default
+        this.gearUpgrades = ExileFactory.gearUpgrades;
+        this.linksUpgrades = ExileFactory.linksUpgrades;
     }
 
     lvlExile() {
@@ -649,56 +732,35 @@ function getMirrorUpgrade(gearLevel) {
 }
 
 //---Define Exiles
-//---Define Exiles
-var exileData = [
-    Ascendant = new Exile('Ascendant', '0', '0', '525', '0', '0', '0', '0', 0),
-    Slayer = new Exile('Slayer', '0', '0', '525', '0', '0', '0', '0', 35),
-    Gladiator = new Exile('Gladiator', '0', '0', '525', '0', '0', '0', '0', 450),
-    Champion = new Exile('Champion', '0', '0', '525', '0', '0', '0', '0', 1455),
-    Assassin = new Exile('Assassin', '0', '0', '525', '0', '0', '0', '0', 65),
-    Saboteur = new Exile('Saboteur', '0', '0', '525', '0', '0', '0', '0', 580),
-    Trickster = new Exile('Trickster', '0', '0', '525', '0', '0', '0', '0', 1675),
-    Juggernaut = new Exile('Juggernaut', '0', '0', '525', '0', '0', '0', '0', 110),
-    Berserker = new Exile('Berserker', '0', '0', '525', '0', '0', '0', '0', 725),
-    Chieftain = new Exile('Chieftain', '0', '0', '525', '0', '0', '0', '0', 1910),
-    Necromancer = new Exile('Necromancer', '0', '0', '525', '0', '0', '0', '0', 170),
-    Elementalist = new Exile('Elementalist', '0', '0', '525', '0', '0', '0', '0', 885),
-    Occultist = new Exile('Occultist', '0', '0', '525', '0', '0', '0', '0', 2160),
-    Deadeye = new Exile('Deadeye', '0', '0', '525', '0', '0', '0', '0', 245),
-    Raider = new Exile('Raider', '0', '0', '525', '0', '0', '0', '0', 1060),
-    Pathfinder = new Exile('Pathfinder', '0', '0', '525', '0', '0', '0', '0', 2425),
-    Inquisitor = new Exile('Inquisitor', '0', '0', '525', '0', '0', '0', '0', 335),
-    Hierophant = new Exile('Hierophant', '0', '0', '525', '0', '0', '0', '0', 1250),
-    Guardian = new Exile('Guardian', '0', '0', '525', '0', '0', '0', '0', 2715),
-    Melvin = new Exile('Melvin', '0', '0', '525', '0', '0', '0', '0', 500, ['delveStashTab', 1]),
-    // Special exiles with unique behavior
-    Singularity = new Exile('Singularity', '0', '0', '525', '0', '0', '0', '0', 250, ['currencyStashTab', 1]),
-    Artificer = new Exile('Artificer', '0', '0', '525', '0', '0', '0', '0', 1000, ['quadStashTab', 1]),
-];
-
+var exileData = ExileFactory.createAllExiles();
 
 setInterval(function gameTick() {
     let tempLevel = 1000;
+    let tempDropRate = upgradeDropRate;
+    
     for (let i = 0; i < exileData.length; i++) {
         const exile = exileData[i];
-        
+
         if (exile.level >= 1) {
             // Skip updateExileClass for special exiles
             if (exile.name !== 'Singularity' && exile.name !== 'Artificer') {
                 exile.updateExileClass();
+                // Only add dropRate from standard exiles
+                tempDropRate += exile.dropRate;
             } else {
                 // Still update their levels for total level calculation without UI updates
                 exile.lvlExile();
             }
         }
-        
+
         tempLevel += exile.level;
         tempLevel += exile.rerollLevel;
     }
 
     totalLevel = tempLevel;
+    dropRate = tempDropRate;
+    
     document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(totalLevel).format('0,0');
-    dropRate = upgradeDropRate + Ascendant.dropRate + Slayer.dropRate + Gladiator.dropRate + Champion.dropRate + Assassin.dropRate + Saboteur.dropRate + Trickster.dropRate + Juggernaut.dropRate + Berserker.dropRate + Chieftain.dropRate + Necromancer.dropRate + Occultist.dropRate + Elementalist.dropRate + Deadeye.dropRate + Raider.dropRate + Pathfinder.dropRate + Inquisitor.dropRate + Hierophant.dropRate + Guardian.dropRate + Melvin.dropRate;
     document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(dropRate).format('0,0.0');
 
     snackBarTimer -= 100;
@@ -752,108 +814,3 @@ function recruitExile(exileName) {
     // Regular exile recruitment
     exile.recruitExile();
 }
-
-// Factory for creating and managing exiles
-const ExileFactory = {
-  // Default upgrade data
-  gearUpgrades: [
-    {
-      level: 0,
-      requirements: [
-        { currency: Transmutation, amount: 5 },
-        { currency: Augmentation, amount: 5 }
-      ],
-      benefit: 0.1,
-      description: "Upgrade {name} flasks to Magic rarity"
-    },
-    // ... keep all existing gear upgrades
-  ],
-  
-  linksUpgrades: [
-    {
-      level: 0,
-      requirements: [
-        { currency: Fusing, amount: 10 },
-        { currency: Jeweller, amount: 10 }
-      ],
-      benefit: 0.5,
-      displayValue: "4L",
-      description: "Upgrade {name} links to 4L"
-    },
-    // ... keep all existing links upgrades
-  ],
-  
-  // Base method to create exiles
-  createExile(name, levelRequirement = 0, specialRequirement = null, customGearUpgrades = null, customLinksUpgrades = null) {
-    const exile = new Exile(
-      name, 
-      '0', // level
-      '0', // exp
-      '525', // expToLevel
-      '0', // dropRate
-      '0', // gear
-      '0', // links
-      '0', // rerollLevel
-      levelRequirement,
-      specialRequirement
-    );
-    
-    // Allow optional custom upgrades
-    if (customGearUpgrades) {
-      exile.gearUpgrades = customGearUpgrades;
-    }
-    
-    if (customLinksUpgrades) {
-      exile.linksUpgrades = customLinksUpgrades;
-    }
-    
-    return exile;
-  },
-  
-  // Helper for special exiles
-  createSpecialExile(name, levelRequirement, specialReqType, specialReqValue) {
-    return this.createExile(name, levelRequirement, [specialReqType, specialReqValue]);
-  },
-  
-  // Create all standard exiles
-  createStandardExiles() {
-    return [
-      Ascendant = this.createExile('Ascendant'),
-      Slayer = this.createExile('Slayer', 35),
-      Gladiator = this.createExile('Gladiator', 450),
-      Champion = this.createExile('Champion', 1455),
-      Assassin = this.createExile('Assassin', 65),
-      Saboteur = this.createExile('Saboteur', 580),
-      Trickster = this.createExile('Trickster', 1675),
-      Juggernaut = this.createExile('Juggernaut', 110),
-      Berserker = this.createExile('Berserker', 725),
-      Chieftain = this.createExile('Chieftain', 1910),
-      Necromancer = this.createExile('Necromancer', 170),
-      Elementalist = this.createExile('Elementalist', 885),
-      Occultist = this.createExile('Occultist', 2160),
-      Deadeye = this.createExile('Deadeye', 245),
-      Raider = this.createExile('Raider', 1060),
-      Pathfinder = this.createExile('Pathfinder', 2425),
-      Inquisitor = this.createExile('Inquisitor', 335),
-      Hierophant = this.createExile('Hierophant', 1250),
-      Guardian = this.createExile('Guardian', 2715),
-    ];
-  },
-  
-  // Create special exiles
-  createSpecialExiles() {
-    return [
-      Melvin = this.createSpecialExile('Melvin', 500, 'delveStashTab', 1),
-      Singularity = this.createSpecialExile('Singularity', 250, 'currencyStashTab', 1),
-      Artificer = this.createSpecialExile('Artificer', 1000, 'quadStashTab', 1),
-    ];
-  },
-  
-  // Create all exiles at once
-  createAllExiles() {
-    return [
-      ...this.createStandardExiles(),
-      ...this.createSpecialExiles()
-    ];
-  }
-};
