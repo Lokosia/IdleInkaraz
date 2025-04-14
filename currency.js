@@ -341,8 +341,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function initTestMode() {
     // Set initial currency values for testing
     currencyMap['StackedDeck'].total = 5;
-    currencyMap['Chaos'].total = 100;
-    currencyMap['Exalted'].total = 2;
+    currencyMap['Chaos'].total = 100000;
+    currencyMap['Exalted'].total = 20000;
     
     console.log('Test mode initialized with starting currencies');
 }
