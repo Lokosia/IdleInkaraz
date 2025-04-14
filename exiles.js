@@ -220,6 +220,93 @@ class Exile {
                 description: "Buy Headhunter for {name}"
             }
         ];
+        this.linksUpgrades = [
+            {
+                level: 0,
+                requirements: [
+                    { currency: Fusing, amount: 10 },
+                    { currency: Jeweller, amount: 10 }
+                ],
+                benefit: 0.5,
+                displayValue: "4L",
+                description: "Upgrade {name} links to 4L"
+            },
+            {
+                level: 1,
+                requirements: [
+                    { currency: Chromatic, amount: 100 }
+                ],
+                benefit: 0.5,
+                displayValue: "4L",
+                description: "Colour {name} links"
+            },
+            {
+                level: 2,
+                requirements: [
+                    { currency: Fusing, amount: 150 },
+                    { currency: Jeweller, amount: 150 }
+                ],
+                benefit: 0.6,
+                displayValue: "5L",
+                description: "Upgrade {name} links to 5L"
+            },
+            {
+                level: 3,
+                requirements: [
+                    { currency: Fusing, amount: 1500 },
+                    { currency: Jeweller, amount: 1500 }
+                ],
+                benefit: 1.0,
+                displayValue: "6L",
+                description: "Upgrade {name} links to 6L"
+            },
+            {
+                level: 4,
+                requirements: [
+                    { currency: Vaal, amount: 50 }
+                ],
+                benefit: 1.5,
+                displayValue: "6L (+1 Gems)",
+                description: "Corrupt {name} gear to +1 gems"
+            },
+            {
+                level: 5,
+                requirements: [
+                    { currency: GCP, amount: 120 }
+                ],
+                benefit: 1.5,
+                displayValue: "6L (+1/20% Gems)",
+                description: "20% quality {name} gems"
+            },
+            {
+                level: 6,
+                requirements: [
+                    { currency: Vaal, amount: 100 }
+                ],
+                benefit: 1.5,
+                displayValue: "6L (+2/20% Gems)",
+                description: "Corrupt {name} gems to +1"
+            },
+            {
+                level: 7,
+                requirements: [
+                    { currency: Vaal, amount: 150 }
+                ],
+                benefit: 2.0,
+                displayValue: "6L (+2/23% Gems)",
+                description: "Double corrupt {name} gems to +1/23%"
+            },
+            {
+                level: 8,
+                requirements: [
+                    { currency: Vaal, amount: 200 }
+                ],
+                benefit: 2.5,
+                displayValue: "6L (+5/23% Gems)",
+                description: "Double corrupt {name} gear to +4 gems",
+                finalUpgrade: true
+            }
+        ];
     }
 
     lvlExile() {
@@ -320,192 +407,57 @@ class Exile {
     }
 
     lvlLinks() {
-        if (this.links == 0) { //4L
-            const requirements = [
-                { currency: Fusing, amount: 10 },
-                { currency: Jeweller, amount: 10 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 0.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Colour ' + this.name + ' links',
-                    '+0.5 (' + this.name + ')',
-                    '100 Chromatic'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Chromatic");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "4L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 1) { //chromatics
-            const requirements = [
-                { currency: Chromatic, amount: 100 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 0.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Upgrade ' + this.name + ' links to 5L',
-                    '+0.6 (' + this.name + ')',
-                    '150 Jeweller<br>150 Fusing'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Jeweller", "Fusing");
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 2) { //5L
-            const requirements = [
-                { currency: Fusing, amount: 150 },
-                { currency: Jeweller, amount: 150 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 0.6;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Upgrade ' + this.name + ' links to 6L',
-                    '+1.0 (' + this.name + ')',
-                    '1500 Jeweller<br>1500 Fusing'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Jeweller", "Fusing");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "5L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 3) { //6L
-            const requirements = [
-                { currency: Fusing, amount: 1500 },
-                { currency: Jeweller, amount: 1500 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 1;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Corrupt ' + this.name + ' gear to +1 gems',
-                    '+1.5 (' + this.name + ')',
-                    '50 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 4) { //+1 gems
-            const requirements = [
-                { currency: Vaal, amount: 50 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    '20% quality ' + this.name + ' gems',
-                    '+1.5 (' + this.name + ')',
-                    '120 GCP'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "GCP");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1 Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 5) { //20% gems
-            const requirements = [
-                { currency: GCP, amount: 120 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Corrupt ' + this.name + ' gems to +1',
-                    '+1.5 (' + this.name + ')',
-                    '100 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+1/20% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 6) { //+2 gems
-            const requirements = [
-                { currency: Vaal, amount: 100 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 1.5;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Double corrupt ' + this.name + ' gems to +1/23%',
-                    '+2.0 (' + this.name + ')',
-                    '150 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/20% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 7) { //+2/23% gems
-            const requirements = [
-                { currency: Vaal, amount: 150 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 2;
-                this.links++;
-                generateUpgradeHTML(
-                    this.name,
-                    'Links',
-                    'Double corrupt ' + this.name + ' gear to +4 gems',
-                    '+2.5 (' + this.name + ')',
-                    '200 Vaal'
-                );
-                SnackBar(this.name + " Links upgraded!");
-                this.setupHover("Links", "Vaal");
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+2/23% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
-            }
-        } else if (this.links == 8) { //+5/23% gems
-            const requirements = [
-                { currency: Vaal, amount: 200 }
-            ];
-            if (checkRequirements(requirements)) {
-                deductCosts(requirements);
-                this.dropRate += 2.5;
-                this.links++;
+        // Get the current upgrade configuration
+        const currentIndex = this.linksUpgrades.findIndex(upgrade => upgrade.level === this.links);
+        if (currentIndex === -1) return; // Safety check
+        
+        const currentUpgrade = this.linksUpgrades[currentIndex];
+        
+        // Check if requirements are met
+        if (checkRequirements(currentUpgrade.requirements)) {
+            // Apply the upgrade
+            deductCosts(currentUpgrade.requirements);
+            this.dropRate += currentUpgrade.benefit;
+            this.links++;
+            
+            // Update the display text for the links
+            document.getElementsByClassName(this.name + 'Links')[0].innerHTML = currentUpgrade.displayValue;
+            
+            // If this was the final upgrade, remove the upgrade button
+            if (currentUpgrade.finalUpgrade) {
                 SnackBar(this.name + " Links upgrades completed!");
                 $('#' + this.name + 'LinksUpgrade').remove();
-                document.getElementsByClassName(this.name + 'Links')[0].innerHTML = "6L (+5/23% Gems)";
-            } else {
-                SnackBar("Requirements not met.");
+                return;
             }
+            
+            // Get the next upgrade
+            const nextUpgrade = this.linksUpgrades[currentIndex + 1];
+            
+            // Generate requirements text for the next upgrade
+            const requirementsText = nextUpgrade.requirements
+                .map(req => `${req.amount} ${req.currency.name}`)
+                .join('<br>');
+            
+            // Generate HTML for the next upgrade
+            generateUpgradeHTML(
+                this.name,
+                'Links',
+                nextUpgrade.description.replace('{name}', this.name),
+                `+${nextUpgrade.benefit} (${this.name})`,
+                requirementsText
+            );
+            
+            // Extract currency names for hover effects directly from next upgrade's requirements
+            const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
+            
+            // Set up hover effects for next upgrade
+            this.setupHover("Links", ...hoverCurrencies);
+            
+            SnackBar(this.name + " Links upgraded!");
+        } else {
+            SnackBar("Requirements not met.");
         }
-    };
+    }
 
     recruitExile() {
         this.level += 1;
@@ -519,6 +471,12 @@ class Exile {
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
 
+        // Get the first links upgrade directly from linksUpgrades
+        const firstLinksUpgrade = this.linksUpgrades[0];
+        const linksRequirementsText = firstLinksUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+        
         $("#UpgradeGearTable").append(
             '<tr id="' + this.name + 'GearUpgrade">' +
             '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" onclick="buyGear(' + this.name + ');">' + this.name + ' Gear' + '</button></td>' +
@@ -530,15 +488,20 @@ class Exile {
         $("#UpgradeLinksTable").append(
             '<tr id="' + this.name + 'LinksUpgrade">' +
             '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" onclick="buyLinks(' + this.name + ');">' + this.name + ' Links</button></td>' +
-            '<td class="mdl-data-table__cell--non-numeric">Upgrade ' + this.name + ' links to 4L</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">+0.5 (' + this.name + ')</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">10 Jeweller<br>10 Fusing</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', this.name) + '</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + this.name + ')</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
             '</tr>'
         );
         document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + this.dropRate.toFixed(1);
         document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
-        this.setupHover("Gear", "Transmutation", "Augmentation");
-        this.setupHover("Links", "Jeweller", "Fusing");
+
+        // Setup hover effects for both gear and links
+        const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
+        const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
+        
+        this.setupHover("Gear", ...gearCurrencies);
+        this.setupHover("Links", ...linksCurrencies);
     };
 
     rerollExile() {
