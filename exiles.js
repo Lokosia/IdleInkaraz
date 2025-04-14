@@ -6,7 +6,7 @@ var snackBarTimer = 0;
 
 //---Define Class
 class Exile {
-    constructor(name, level, exp, expToLevel, dropRate, gear, links, rerollLevel) {
+    constructor(name, level, exp, expToLevel, dropRate, gear, links, rerollLevel, levelRequirement = 0, specialRequirement = null) {
         this.name = name;
         this.level = Number(level);
         this.exp = Number(exp);
@@ -15,6 +15,8 @@ class Exile {
         this.gear = Number(gear);
         this.links = Number(links);
         this.rerollLevel = Number(rerollLevel);
+        this.levelRequirement = levelRequirement; // Required total level to recruit
+        this.specialRequirement = specialRequirement; // Special requirement for certain exiles
         this.gearUpgrades = [
             {
                 level: 0,  // First upgrade, applied at gear level 0
@@ -647,39 +649,51 @@ function getMirrorUpgrade(gearLevel) {
 }
 
 //---Define Exiles
+//---Define Exiles
 var exileData = [
-    Ascendant = new Exile('Ascendant', '0', '0', '525', '0', '0', '0', '0'),
-    Slayer = new Exile('Slayer', '0', '0', '525', '0', '0', '0', '0'),
-    Gladiator = new Exile('Gladiator', '0', '0', '525', '0', '0', '0', '0'),
-    Champion = new Exile('Champion', '0', '0', '525', '0', '0', '0', '0'),
-    Assassin = new Exile('Assassin', '0', '0', '525', '0', '0', '0', '0'),
-    Saboteur = new Exile('Saboteur', '0', '0', '525', '0', '0', '0', '0'),
-    Trickster = new Exile('Trickster', '0', '0', '525', '0', '0', '0', '0'),
-    Juggernaut = new Exile('Juggernaut', '0', '0', '525', '0', '0', '0', '0'),
-    Berserker = new Exile('Berserker', '0', '0', '525', '0', '0', '0', '0'),
-    Chieftain = new Exile('Chieftain', '0', '0', '525', '0', '0', '0', '0'),
-    Necromancer = new Exile('Necromancer', '0', '0', '525', '0', '0', '0', '0'),
-    Elementalist = new Exile('Elementalist', '0', '0', '525', '0', '0', '0', '0'),
-    Occultist = new Exile('Occultist', '0', '0', '525', '0', '0', '0', '0'),
-    Deadeye = new Exile('Deadeye', '0', '0', '525', '0', '0', '0', '0'),
-    Raider = new Exile('Raider', '0', '0', '525', '0', '0', '0', '0'),
-    Pathfinder = new Exile('Pathfinder', '0', '0', '525', '0', '0', '0', '0'),
-    Inquisitor = new Exile('Inquisitor', '0', '0', '525', '0', '0', '0', '0'),
-    Hierophant = new Exile('Hierophant', '0', '0', '525', '0', '0', '0', '0'),
-    Guardian = new Exile('Guardian', '0', '0', '525', '0', '0', '0', '0'),
-    Melvin = new Exile('Melvin', '0', '0', '525', '0', '0', '0', '0'),
+    Ascendant = new Exile('Ascendant', '0', '0', '525', '0', '0', '0', '0', 0),
+    Slayer = new Exile('Slayer', '0', '0', '525', '0', '0', '0', '0', 35),
+    Gladiator = new Exile('Gladiator', '0', '0', '525', '0', '0', '0', '0', 450),
+    Champion = new Exile('Champion', '0', '0', '525', '0', '0', '0', '0', 1455),
+    Assassin = new Exile('Assassin', '0', '0', '525', '0', '0', '0', '0', 65),
+    Saboteur = new Exile('Saboteur', '0', '0', '525', '0', '0', '0', '0', 580),
+    Trickster = new Exile('Trickster', '0', '0', '525', '0', '0', '0', '0', 1675),
+    Juggernaut = new Exile('Juggernaut', '0', '0', '525', '0', '0', '0', '0', 110),
+    Berserker = new Exile('Berserker', '0', '0', '525', '0', '0', '0', '0', 725),
+    Chieftain = new Exile('Chieftain', '0', '0', '525', '0', '0', '0', '0', 1910),
+    Necromancer = new Exile('Necromancer', '0', '0', '525', '0', '0', '0', '0', 170),
+    Elementalist = new Exile('Elementalist', '0', '0', '525', '0', '0', '0', '0', 885),
+    Occultist = new Exile('Occultist', '0', '0', '525', '0', '0', '0', '0', 2160),
+    Deadeye = new Exile('Deadeye', '0', '0', '525', '0', '0', '0', '0', 245),
+    Raider = new Exile('Raider', '0', '0', '525', '0', '0', '0', '0', 1060),
+    Pathfinder = new Exile('Pathfinder', '0', '0', '525', '0', '0', '0', '0', 2425),
+    Inquisitor = new Exile('Inquisitor', '0', '0', '525', '0', '0', '0', '0', 335),
+    Hierophant = new Exile('Hierophant', '0', '0', '525', '0', '0', '0', '0', 1250),
+    Guardian = new Exile('Guardian', '0', '0', '525', '0', '0', '0', '0', 2715),
+    Melvin = new Exile('Melvin', '0', '0', '525', '0', '0', '0', '0', 500, ['delveStashTab', 1]),
+    // Special exiles with unique behavior
+    Singularity = new Exile('Singularity', '0', '0', '525', '0', '0', '0', '0', 250, ['currencyStashTab', 1]),
+    Artificer = new Exile('Artificer', '0', '0', '525', '0', '0', '0', '0', 1000, ['quadStashTab', 1]),
 ];
-Singularity = new Exile('Singularity', '0', '0', '525', '0', '0', '0', '0'); //flipper
-Artificer = new Exile('Artificer', '0', '0', '525', '0', '0', '0', '0'); //crafter
+
 
 setInterval(function gameTick() {
-    let tempLevel = 250;
+    let tempLevel = 1000;
     for (let i = 0; i < exileData.length; i++) {
-        if (exileData[i].level >= 1) {
-            exileData[i].updateExileClass();
+        const exile = exileData[i];
+        
+        if (exile.level >= 1) {
+            // Skip updateExileClass for special exiles
+            if (exile.name !== 'Singularity' && exile.name !== 'Artificer') {
+                exile.updateExileClass();
+            } else {
+                // Still update their levels for total level calculation without UI updates
+                exile.lvlExile();
+            }
         }
-        tempLevel += exileData[i].level;
-        tempLevel += exileData[i].rerollLevel;
+        
+        tempLevel += exile.level;
+        tempLevel += exile.rerollLevel;
     }
 
     totalLevel = tempLevel;
@@ -693,192 +707,79 @@ setInterval(function gameTick() {
 }, 100);
 
 //---Unlocking Exiles
-//---Ascendant
-function recruitAscendant() {
-    if (totalLevel >= 0) {
-        Ascendant.recruitExile();
+/**
+ * Unified function to recruit any exile
+ * @param {string} exileName - Name of the exile to recruit
+ */
+function recruitExile(exileName) {
+    // Find the exile by name
+    const exile = exileData.find(e => e.name === exileName);
+    if (!exile) {
+        console.error(`Exile ${exileName} not found`);
+        return;
     }
-}
-//---Slayer
-function recruitSlayer() {
-    if (totalLevel >= 35) {
-        Slayer.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Assassin
-function recruitAssassin() {
-    if (totalLevel >= 65) {
-        Assassin.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Juggernaut
-function recruitJuggernaut() {
-    if (totalLevel >= 110) {
-        Juggernaut.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Necromancer
-function recruitNecromancer() {
-    if (totalLevel >= 170) {
-        Necromancer.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Deadeye
-function recruitDeadeye() {
 
-    if (totalLevel >= 245) {
-        Deadeye.recruitExile();
-    } else {
+    // Check level requirement
+    if (totalLevel < exile.levelRequirement) {
         SnackBar("Requirements not met.");
+        return;
     }
-}
-//---Inquisitor
-function recruitInquisitor() {
-    if (totalLevel >= 335) {
-        Inquisitor.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
+
+    // Check special requirement if any
+    if (exile.specialRequirement) {
+        let [reqType, reqValue] = exile.specialRequirement;
+        if (window[reqType] !== reqValue) {
+            SnackBar("Requirements not met.");
+            return;
+        }
     }
-}
-//---Gladiator
-function recruitGladiator() {
-    if (totalLevel >= 450) {
-        Gladiator.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Saboteur
-function recruitSaboteur() {
-    if (totalLevel >= 580) {
-        Saboteur.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Berserker
-function recruitBerserker() {
-    if (totalLevel >= 725) {
-        Berserker.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Elementalist
-function recruitElementalist() {
-    if (totalLevel >= 885) {
-        Elementalist.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Raider
-function recruitRaider() {
-    if (totalLevel >= 1060) {
-        Raider.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Hierophant
-function recruitHierophant() {
-    if (totalLevel >= 1250) {
-        Hierophant.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Champion
-function recruitChampion() {
-    if (totalLevel >= 1455) {
-        Champion.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Trickster
-function recruitTrickster() {
-    if (totalLevel >= 1675) {
-        Trickster.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Chieftain
-function recruitChieftain() {
-    if (totalLevel >= 1910) {
-        Chieftain.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Occultist
-function recruitOccultist() {
-    if (totalLevel >= 2160) {
-        Occultist.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Pathfinder
-function recruitPathfinder() {
-    if (totalLevel >= 2425) {
-        Pathfinder.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---Guardian
-function recruitGuardian() {
-    if (totalLevel >= 2715) {
-        Guardian.recruitExile();
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-//---The Singulatiry
-function recruitSingularity() {
-    if (totalLevel >= 250 && currencyStashTab == 1) {
-        Singularity.level++;
+
+    // Handle special cases for certain exiles
+    if (exileName === 'Singularity') {
+        exile.level++;
         $(".SingularityHide").remove();
         $(".SingularityBuy").remove();
         $('.flip').removeClass('hidden');
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-
-//---Delvin' Melvin
-function recruitMelvin() {
-    if (totalLevel >= 500 && delveStashTab == 1) {
-        Melvin.recruitExile();
-        $(".MelvinHide").remove();
-        $(".MelvinBuy").remove();
-        $("#delveLoader").removeClass("hidden");
-    } else {
-        SnackBar("Requirements not met.");
-    }
-}
-
-//---The Artificer
-function recruitArtificer() {
-    if (totalLevel >= 1000 && quadStashTab == 1) {
-        Artificer.level++;
+        return;
+    } else if (exileName === 'Artificer') {
+        exile.level++;
         $(".ArtificerHide").remove();
         $(".ArtificerBuy").remove();
         $(".craft").show();
-    } else {
-        SnackBar("Requirements not met.");
+        return;
     }
+
+    // Regular exile recruitment
+    exile.recruitExile();
 }
+
+
+// Remove all individual recruitXXX functions and replace with:
+
+//---Unlocking Exiles
+// These wrapper functions remain for backward compatibility with HTML onclick handlers
+function recruitAscendant() { recruitExile('Ascendant'); }
+function recruitSlayer() { recruitExile('Slayer'); }
+function recruitGladiator() { recruitExile('Gladiator'); }
+function recruitChampion() { recruitExile('Champion'); }
+function recruitAssassin() { recruitExile('Assassin'); }
+function recruitSaboteur() { recruitExile('Saboteur'); }
+function recruitTrickster() { recruitExile('Trickster'); }
+function recruitJuggernaut() { recruitExile('Juggernaut'); }
+function recruitBerserker() { recruitExile('Berserker'); }
+function recruitChieftain() { recruitExile('Chieftain'); }
+function recruitNecromancer() { recruitExile('Necromancer'); }
+function recruitElementalist() { recruitExile('Elementalist'); }
+function recruitOccultist() { recruitExile('Occultist'); }
+function recruitDeadeye() { recruitExile('Deadeye'); }
+function recruitRaider() { recruitExile('Raider'); }
+function recruitPathfinder() { recruitExile('Pathfinder'); }
+function recruitInquisitor() { recruitExile('Inquisitor'); }
+function recruitHierophant() { recruitExile('Hierophant'); }
+function recruitGuardian() { recruitExile('Guardian'); }
+function recruitMelvin() { recruitExile('Melvin'); }
+function recruitSingularity() { recruitExile('Singularity'); }
+function recruitArtificer() { recruitExile('Artificer'); }
 
 function buyReroll(name) {
     name.rerollExile();
