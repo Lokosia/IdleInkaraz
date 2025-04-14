@@ -199,7 +199,7 @@ class Exile {
                     { currency: Exalted, amount: 5 },
                     { currency: Awakener, amount: 1 }
                 ],
-                benefit: 1,5,
+                benefit: 1.5,
                 description: "Craft explode chest for {name}"
             },
             {
