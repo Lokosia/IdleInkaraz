@@ -175,28 +175,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //----------------------------------Start Functions
 gameStart();
-
-//---File Handling
-// window.setInterval(function saveGame() {
-//    localStorage['goeSaveCurrency'] = btoa(JSON.stringify(Currency));
-//    localStorage['goeSaveExile'] = btoa(JSON.stringify(Exile));
-// }, 30000);
-// function saveGameManual() {
-//    localStorage['goeSaveCurrency'] = btoa(JSON.stringify(Currency));
-//    localStorage['goeSaveExile'] = btoa(JSON.stringify(Exile));
-// }
-
-// function load_game() {
-//     if (!localStorage['goeSave']) return;
-//     var goeSaveCurrency = JSON.parse(atob(localStorage['goeSaveCurrency']));
-//     var goeSaveExiles = JSON.parse(atob(localStorage['goeSaveExiles']));
-//     Currency = goeSaveCurrency;
-//     Exiles = goeSaveExiles;
-// //update all info on screen
- 
-// }
-
-// function delete_game() {
-//     localStorage.clear();
-//     window.location.reload();
-// }

@@ -313,7 +313,7 @@ class Exile {
 
     lvlExile() {
         if (this.level > 0 && this.level <= 99) {
-            this.exp += Math.floor((Math.random() * (25 - 15) + 15) + (this.dropRate * 3) + (this.level / 5)); // delete *100
+            this.exp += Math.floor((Math.random() * (25 - 15) + 15) + (this.dropRate * 3) + (this.level / 5)) * 1000; // delete *100
             while (this.exp > this.expToLevel) {
                 this.expToLevel = Math.floor((this.expToLevel * 1.10)); //updates level requirement
                 this.level++;
@@ -752,34 +752,6 @@ function recruitExile(exileName) {
     // Regular exile recruitment
     exile.recruitExile();
 }
-
-
-// Remove all individual recruitXXX functions and replace with:
-
-//---Unlocking Exiles
-// These wrapper functions remain for backward compatibility with HTML onclick handlers
-function recruitAscendant() { recruitExile('Ascendant'); }
-function recruitSlayer() { recruitExile('Slayer'); }
-function recruitGladiator() { recruitExile('Gladiator'); }
-function recruitChampion() { recruitExile('Champion'); }
-function recruitAssassin() { recruitExile('Assassin'); }
-function recruitSaboteur() { recruitExile('Saboteur'); }
-function recruitTrickster() { recruitExile('Trickster'); }
-function recruitJuggernaut() { recruitExile('Juggernaut'); }
-function recruitBerserker() { recruitExile('Berserker'); }
-function recruitChieftain() { recruitExile('Chieftain'); }
-function recruitNecromancer() { recruitExile('Necromancer'); }
-function recruitElementalist() { recruitExile('Elementalist'); }
-function recruitOccultist() { recruitExile('Occultist'); }
-function recruitDeadeye() { recruitExile('Deadeye'); }
-function recruitRaider() { recruitExile('Raider'); }
-function recruitPathfinder() { recruitExile('Pathfinder'); }
-function recruitInquisitor() { recruitExile('Inquisitor'); }
-function recruitHierophant() { recruitExile('Hierophant'); }
-function recruitGuardian() { recruitExile('Guardian'); }
-function recruitMelvin() { recruitExile('Melvin'); }
-function recruitSingularity() { recruitExile('Singularity'); }
-function recruitArtificer() { recruitExile('Artificer'); }
 
 function buyReroll(name) {
     name.rerollExile();
