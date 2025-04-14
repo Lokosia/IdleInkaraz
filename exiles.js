@@ -753,6 +753,107 @@ function recruitExile(exileName) {
     exile.recruitExile();
 }
 
-function buyReroll(name) {
-    name.rerollExile();
-}
+// Factory for creating and managing exiles
+const ExileFactory = {
+  // Default upgrade data
+  gearUpgrades: [
+    {
+      level: 0,
+      requirements: [
+        { currency: Transmutation, amount: 5 },
+        { currency: Augmentation, amount: 5 }
+      ],
+      benefit: 0.1,
+      description: "Upgrade {name} flasks to Magic rarity"
+    },
+    // ... keep all existing gear upgrades
+  ],
+  
+  linksUpgrades: [
+    {
+      level: 0,
+      requirements: [
+        { currency: Fusing, amount: 10 },
+        { currency: Jeweller, amount: 10 }
+      ],
+      benefit: 0.5,
+      displayValue: "4L",
+      description: "Upgrade {name} links to 4L"
+    },
+    // ... keep all existing links upgrades
+  ],
+  
+  // Base method to create exiles
+  createExile(name, levelRequirement = 0, specialRequirement = null, customGearUpgrades = null, customLinksUpgrades = null) {
+    const exile = new Exile(
+      name, 
+      '0', // level
+      '0', // exp
+      '525', // expToLevel
+      '0', // dropRate
+      '0', // gear
+      '0', // links
+      '0', // rerollLevel
+      levelRequirement,
+      specialRequirement
+    );
+    
+    // Allow optional custom upgrades
+    if (customGearUpgrades) {
+      exile.gearUpgrades = customGearUpgrades;
+    }
+    
+    if (customLinksUpgrades) {
+      exile.linksUpgrades = customLinksUpgrades;
+    }
+    
+    return exile;
+  },
+  
+  // Helper for special exiles
+  createSpecialExile(name, levelRequirement, specialReqType, specialReqValue) {
+    return this.createExile(name, levelRequirement, [specialReqType, specialReqValue]);
+  },
+  
+  // Create all standard exiles
+  createStandardExiles() {
+    return [
+      Ascendant = this.createExile('Ascendant'),
+      Slayer = this.createExile('Slayer', 35),
+      Gladiator = this.createExile('Gladiator', 450),
+      Champion = this.createExile('Champion', 1455),
+      Assassin = this.createExile('Assassin', 65),
+      Saboteur = this.createExile('Saboteur', 580),
+      Trickster = this.createExile('Trickster', 1675),
+      Juggernaut = this.createExile('Juggernaut', 110),
+      Berserker = this.createExile('Berserker', 725),
+      Chieftain = this.createExile('Chieftain', 1910),
+      Necromancer = this.createExile('Necromancer', 170),
+      Elementalist = this.createExile('Elementalist', 885),
+      Occultist = this.createExile('Occultist', 2160),
+      Deadeye = this.createExile('Deadeye', 245),
+      Raider = this.createExile('Raider', 1060),
+      Pathfinder = this.createExile('Pathfinder', 2425),
+      Inquisitor = this.createExile('Inquisitor', 335),
+      Hierophant = this.createExile('Hierophant', 1250),
+      Guardian = this.createExile('Guardian', 2715),
+    ];
+  },
+  
+  // Create special exiles
+  createSpecialExiles() {
+    return [
+      Melvin = this.createSpecialExile('Melvin', 500, 'delveStashTab', 1),
+      Singularity = this.createSpecialExile('Singularity', 250, 'currencyStashTab', 1),
+      Artificer = this.createSpecialExile('Artificer', 1000, 'quadStashTab', 1),
+    ];
+  },
+  
+  // Create all exiles at once
+  createAllExiles() {
+    return [
+      ...this.createStandardExiles(),
+      ...this.createSpecialExiles()
+    ];
+  }
+};
