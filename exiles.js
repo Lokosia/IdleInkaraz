@@ -491,7 +491,7 @@ class Exile {
 
         $("#UpgradeGearTable").append(
             '<tr id="' + this.name + 'GearUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" onclick="buyGear(' + this.name + ');">' + this.name + ' Gear' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" onclick="' + this.name + '.lvlGear();">' + this.name + ' Gear' + '</button></td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', this.name) + '</td>' +
             '<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + this.name + ')</td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
@@ -499,7 +499,7 @@ class Exile {
         );
         $("#UpgradeLinksTable").append(
             '<tr id="' + this.name + 'LinksUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" onclick="buyLinks(' + this.name + ');">' + this.name + ' Links</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" onclick="' + this.name + '.lvlLinks();">' + this.name + ' Links</button></td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', this.name) + '</td>' +
             '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + this.name + ')</td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
@@ -584,7 +584,7 @@ function generateUpgradeHTML(exile, upgradeType, description, benefit, requireme
     const html = `
         <td class="mdl-data-table__cell--non-numeric">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" 
-                    onclick="buy${upgradeType}(${exile});">
+                    onclick="${exile}.lvl${upgradeType}();">
                 ${buttonText}
             </button>
         </td>
@@ -880,13 +880,6 @@ function recruitArtificer() {
     }
 }
 
-//---Upgrading Exiles
-function buyGear(name) {
-    name.lvlGear();
-}
-function buyLinks(name) {
-    name.lvlLinks();
-}
 function buyReroll(name) {
     name.rerollExile();
 }
