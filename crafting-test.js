@@ -281,19 +281,49 @@ class CraftingTests {
             exileData.find(e => e.name === 'Artificer').owned = true;
         }
         
-        // Test flask crafting purchase
-        const initialChaosTotal = Chaos.total;
-        const result = craftingSystem.buyCrafting('flask');
+        // Test all regular crafting items
+        const craftingItems = [
+            { id: 'flask', cost: 400 },
+            { id: 'gem', cost: 1600 },
+            { id: 'enchant', cost: 1000 },
+            { id: 'perfect', cost: 2000 },
+            { id: 'chaos', cost: 4000 },
+            { id: 'cold', cost: 4000 },
+            { id: 'light', cost: 4000 },
+            { id: 'fire', cost: 4000 },
+            { id: 'wand', cost: 10000 }
+        ];
         
-        this.assert(
-            result === true && 
-            Chaos.total === initialChaosTotal - 400 &&
-            craftingSystem.craftingItems.flask.level === 0,
-            "Buy Flask Crafting with sufficient currency"
-        );
+        // Test each crafting item purchase
+        let allPassed = true;
+        for (const item of craftingItems) {
+            // Reset level to -1 before testing
+            craftingSystem.craftingItems[item.id].level = -1;
+            
+            // Set enough chaos for the purchase
+            Chaos.total = item.cost + 500;
+            
+            const initialChaosTotal = Chaos.total;
+            const result = craftingSystem.buyCrafting(item.id);
+            
+            const testPassed = result === true && 
+                Chaos.total === initialChaosTotal - item.cost &&
+                craftingSystem.craftingItems[item.id].level === 0;
+            
+            this.assert(
+                testPassed,
+                `Buy ${item.id.charAt(0).toUpperCase() + item.id.slice(1)} Crafting with sufficient currency`
+            );
+            
+            allPassed = allPassed && testPassed;
+        }
         
-        // Test purchase with insufficient currency
+        // Test purchase with insufficient currency (using gem crafting)
         Chaos.total = 100; // Not enough for any crafting
+        
+        // Reset gem level to -1
+        craftingSystem.craftingItems.gem.level = -1;
+        
         const insufficientResult = craftingSystem.buyCrafting('gem');
         
         this.assert(
@@ -424,21 +454,48 @@ class CraftingTests {
             exileData.find(e => e.name === 'Artificer').owned = true;
         }
         
-        // Test mirror sword purchase (requires many resources)
-        const initialPrime = Prime.total;
-        const initialJagged = Jagged.total;
-        const initialExalted = Exalted.total;
+        // Test all mirror items
+        const mirrorItems = [
+            'mirrorSword',
+            'mirrorShield',
+            'mirrorChest'
+        ];
         
-        const result = craftingSystem.buyMirror('mirrorSword');
-        
-        this.assert(
-            result === true && 
-            Prime.total === initialPrime - 50 &&
-            Jagged.total === initialJagged - 50 &&
-            Exalted.total === initialExalted - 500 &&
-            craftingSystem.mirrorItems.mirrorSword.level === 0,
-            "Buy Mirror Sword with sufficient resources"
-        );
+        // Test each mirror item purchase
+        for (const itemId of mirrorItems) {
+            // Reset for clean test
+            this.resetTestState();
+            
+            // Re-set necessary state for crafting after reset
+            window.guildCreated = true;
+            window.quadStashTab = 1;
+            if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+                exileData.find(e => e.name === 'Artificer').owned = true;
+            }
+            
+            // Save initial currency levels for verification
+            const initialCurrencies = {};
+            for (const ing of craftingSystem.mirrorItems[itemId].ingredients) {
+                initialCurrencies[ing.currency] = window[ing.currency].total;
+            }
+            
+            // Attempt purchase
+            const result = craftingSystem.buyMirror(itemId);
+            
+            // Verify purchase was successful
+            let testPassed = result === true && craftingSystem.mirrorItems[itemId].level === 0;
+            
+            // Verify all currencies were deducted correctly
+            for (const ing of craftingSystem.mirrorItems[itemId].ingredients) {
+                testPassed = testPassed && 
+                    window[ing.currency].total === initialCurrencies[ing.currency] - ing.amount;
+            }
+            
+            this.assert(
+                testPassed,
+                `Buy ${itemId} with sufficient resources`
+            );
+        }
         
         // Test purchase with insufficient resources
         this.resetTestState();
@@ -450,6 +507,7 @@ class CraftingTests {
             exileData.find(e => e.name === 'Artificer').owned = true;
         }
         
+        // Set insufficient resources for mirrorSword
         Prime.total = 10; // Not enough for mirror sword
         
         const insufficientResult = craftingSystem.buyMirror('mirrorSword');
@@ -471,33 +529,45 @@ class CraftingTests {
     testMirrorFeeIncrease() {
         console.log("\n--- Testing Mirror Fee Increase ---");
         
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
+        // Test fee increase for all mirror items
+        const mirrorItems = [
+            'mirrorSword',
+            'mirrorShield',
+            'mirrorChest'
+        ];
+        
+        for (const itemId of mirrorItems) {
+            // Reset for clean test
+            this.resetTestState();
+            
+            // Set necessary state for crafting to work
+            window.guildCreated = true;
+            window.quadStashTab = 1;
+            if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+                exileData.find(e => e.name === 'Artificer').owned = true;
+            }
+            
+            // Buy mirror item
+            craftingSystem.buyMirror(itemId);
+            
+            // Save initial fee and exalted total
+            const initialFee = craftingSystem.mirrorItems[itemId].fee;
+            const initialExalted = Exalted.total;
+            
+            // Simulate mirroring by setting progress to 99
+            craftingSystem.mirrorItems[itemId].progress = 99;
+            
+            // Update progress bar which should trigger completion
+            craftingSystem.mirrorItems[itemId].updateProgressBar();
+            
+            // Verify fee increased and rewards given
+            this.assert(
+                craftingSystem.mirrorItems[itemId].fee === initialFee + 5 &&
+                Exalted.total === initialExalted + initialFee &&
+                craftingSystem.mirrorItems[itemId].totalCrafted === 1,
+                `${itemId} fee increases correctly after mirroring`
+            );
         }
-        
-        // Buy mirror sword
-        craftingSystem.buyMirror('mirrorSword');
-        
-        // Save initial fee and exalted total
-        const initialFee = craftingSystem.mirrorItems.mirrorSword.fee;
-        const initialExalted = Exalted.total;
-        
-        // Simulate mirroring by setting progress to 99
-        craftingSystem.mirrorItems.mirrorSword.progress = 99;
-        
-        // Update progress bar which should trigger completion
-        craftingSystem.mirrorItems.mirrorSword.updateProgressBar();
-        
-        // Verify fee increased and rewards given
-        this.assert(
-            craftingSystem.mirrorItems.mirrorSword.fee === initialFee + 5 &&
-            Exalted.total === initialExalted + initialFee &&
-            craftingSystem.mirrorItems.mirrorSword.totalCrafted === 1,
-            "Mirror fee increases correctly after mirroring"
-        );
         
         // Reset for further tests
         this.resetTestState();
