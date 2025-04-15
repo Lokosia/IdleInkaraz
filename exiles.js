@@ -338,22 +338,22 @@ const ExileFactory = {
         return [
             Ascendant = this.createExile('Ascendant'),
             Slayer = this.createExile('Slayer', 35),
-            Gladiator = this.createExile('Gladiator', 450),
-            Champion = this.createExile('Champion', 1455),
             Assassin = this.createExile('Assassin', 65),
-            Saboteur = this.createExile('Saboteur', 580),
-            Trickster = this.createExile('Trickster', 1675),
             Juggernaut = this.createExile('Juggernaut', 110),
-            Berserker = this.createExile('Berserker', 725),
-            Chieftain = this.createExile('Chieftain', 1910),
             Necromancer = this.createExile('Necromancer', 170),
-            Elementalist = this.createExile('Elementalist', 885),
-            Occultist = this.createExile('Occultist', 2160),
             Deadeye = this.createExile('Deadeye', 245),
-            Raider = this.createExile('Raider', 1060),
-            Pathfinder = this.createExile('Pathfinder', 2425),
             Inquisitor = this.createExile('Inquisitor', 335),
+            Gladiator = this.createExile('Gladiator', 450),
+            Saboteur = this.createExile('Saboteur', 580),
+            Berserker = this.createExile('Berserker', 725),
+            Elementalist = this.createExile('Elementalist', 885),
+            Raider = this.createExile('Raider', 1060),
             Hierophant = this.createExile('Hierophant', 1250),
+            Champion = this.createExile('Champion', 1455),
+            Trickster = this.createExile('Trickster', 1675),
+            Chieftain = this.createExile('Chieftain', 1910),
+            Occultist = this.createExile('Occultist', 2160),
+            Pathfinder = this.createExile('Pathfinder', 2425),
             Guardian = this.createExile('Guardian', 2715),
         ];
     },
@@ -418,7 +418,16 @@ class Exile {
         }
         if (this.level == 100) {
             document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = "Max";
-            $('.' + this.name + 'RerollButton').removeClass('hidden');
+            
+            // Show our action button section if it was hidden
+            $('.' + this.name + 'ActionSection').show();
+            
+            // Update the button to be a reroll button
+            const actionButton = document.getElementById(this.name + 'ActionButton');
+            if (actionButton) {
+                actionButton.innerHTML = `Reroll ${this.name}`;
+                actionButton.onclick = () => this.rerollExile();
+            }
         }
     };
 
@@ -567,8 +576,13 @@ class Exile {
     recruitExile() {
         this.level += 1;
         this.dropRate += 0.1;
-        $('.' + this.name + 'Buy').remove();
-        $('.' + this.name + 'Hide').remove();
+        
+        // Hide the action button instead of removing it
+        $('.' + this.name + 'ActionSection').hide();
+        
+        // Update the requirements section with a placeholder instead of removing it
+        // This keeps the card structure intact for consistent button positioning
+        $('.' + this.name + 'Hide').html('Level ' + this.level + ' ' + this.name);
 
         // Get the first gear upgrade directly from gearUpgrades
         const firstGearUpgrade = this.gearUpgrades[0];
@@ -614,7 +628,11 @@ class Exile {
         this.rerollLevel += 100;
         this.exp = 0;
         this.expToLevel = 525;
-        $('.' + this.name + 'RerollButton').addClass('hidden');
+        
+        // Hide the action button section
+        $('.' + this.name + 'ActionSection').hide();
+        
+        // Show the reroll indicator next to level
         $('.' + this.name + 'Reroll').removeClass('hidden');
         document.getElementsByClassName(this.name + 'Reroll')[0].innerHTML = '(+' + this.rerollLevel + ')';
     };
@@ -821,4 +839,61 @@ function recruitExile(exileName) {
 
     // Regular exile recruitment
     exile.recruitExile();
+}
+
+/**
+ * Generates cards for all standard exiles to populate the Guild section
+ * @param {HTMLElement} container - The container element to append cards to
+ */
+function generateExileCards(container) {
+    // Clear the container
+    container.innerHTML = '';
+    
+    // Filter to only include standard exiles (exclude special exiles)
+    const standardExiles = exileData.filter(exile => 
+        !['Melvin', 'Singularity', 'Artificer'].includes(exile.name)
+    );
+    
+    // Generate a card for each standard exile
+    standardExiles.forEach(exile => {
+        // Prepare card content (stats display)
+        const content = `
+            Level: <span class="${exile.name}Level">0</span> <span class="${exile.name}Reroll hidden"></span><br>
+            EXP: <span class="${exile.name}EXP">0/525</span><br>
+            Efficiency: <span class="${exile.name}Efficiency">x0</span><br>
+            Links: <span class="${exile.name}Links">3L</span>
+        `;
+        
+        // Prepare action sections for the card
+        const actionSections = [
+            // Single action button that can be repurposed
+            {
+                content: `
+                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton"
+                        onclick="recruitExile('${exile.name}');">Recruit ${exile.name}</button>
+                `,
+                className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
+            },
+            // Requirements section
+            {
+                content: exile.levelRequirement > 0 
+                    ? `${exile.levelRequirement} Total Levels Required` 
+                    : 'A Scion washes up on the beach...',
+                className: `mdl-card__actions mdl-card--border ${exile.name}Hide`
+            }
+        ];
+        
+        // Create the card using our enhanced UICard component
+        const card = UICard.create({
+            id: `${exile.name.toLowerCase()}-card`,
+            title: exile.name,
+            content: content,
+            actionSections: actionSections,
+            size: 'third',
+            extraClasses: ['cardBG', exile.name.toLowerCase()]
+        });
+        
+        // Add the card to the container
+        container.appendChild(card);
+    });
 }

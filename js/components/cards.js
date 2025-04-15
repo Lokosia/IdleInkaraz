@@ -4,6 +4,7 @@ class UICard {
         title = '', 
         content = '', 
         actions = '', 
+        actionSections = [],
         size = 'third',
         extraClasses = [] 
     }) {
@@ -13,11 +14,23 @@ class UICard {
         
         const titleSection = this.createTitle(title);
         const contentSection = this.createContent(content);
-        const actionsSection = this.createActions(actions);
         
         card.appendChild(titleSection);
         card.appendChild(contentSection);
-        if (actions) card.appendChild(actionsSection);
+        
+        // Handle both legacy single actions and new multiple action sections
+        if (actions) {
+            const actionsSection = this.createActions(actions);
+            card.appendChild(actionsSection);
+        }
+        
+        // Add multiple action sections if provided
+        if (actionSections && actionSections.length > 0) {
+            actionSections.forEach(section => {
+                const actionSection = this.createActionSection(section.content, section.className);
+                card.appendChild(actionSection);
+            });
+        }
         
         return card;
     }
@@ -48,15 +61,19 @@ class UICard {
     }
 
     static createActions(actions) {
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = UI_CLASSES.card.actions;
+        return this.createActionSection(actions, UI_CLASSES.card.actions);
+    }
+    
+    static createActionSection(content, className = UI_CLASSES.card.actions) {
+        const actionDiv = document.createElement('div');
+        actionDiv.className = className;
         
-        if (typeof actions === 'string') {
-            actionsDiv.innerHTML = actions;
-        } else if (actions instanceof Node) {
-            actionsDiv.appendChild(actions);
+        if (typeof content === 'string') {
+            actionDiv.innerHTML = content;
+        } else if (content instanceof Node) {
+            actionDiv.appendChild(content);
         }
         
-        return actionsDiv;
+        return actionDiv;
     }
 }

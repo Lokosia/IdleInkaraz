@@ -53,6 +53,11 @@ function showGuild() {
 	$("#delving").hide();
 	$("#info").hide();
 	
+	// Get the guild grid container
+	const guildGrid = document.querySelector('#guild .mdl-grid');
+	
+	// Generate exile cards dynamically
+	generateExileCards(guildGrid);
 }
 
 function showFlipping() {
