@@ -283,7 +283,7 @@ class CraftingTests {
         
         // Test flask crafting purchase
         const initialChaosTotal = Chaos.total;
-        const result = buyFlaskCraft();
+        const result = craftingSystem.buyCrafting('flask');
         
         this.assert(
             result === true && 
@@ -294,7 +294,7 @@ class CraftingTests {
         
         // Test purchase with insufficient currency
         Chaos.total = 100; // Not enough for any crafting
-        const insufficientResult = buyGemCraft();
+        const insufficientResult = craftingSystem.buyCrafting('gem');
         
         this.assert(
             insufficientResult === false && 
@@ -321,7 +321,7 @@ class CraftingTests {
         }
         
         // Buy flask crafting so we can test its ingredient checking
-        buyFlaskCraft();
+        craftingSystem.buyCrafting('flask');
         
         // Test with sufficient ingredients
         const hasIngredients = craftingSystem.craftingItems.flask.hasIngredients();
@@ -350,7 +350,7 @@ class CraftingTests {
         }
         
         // Buy flask crafting so we can test its crafting
-        buyFlaskCraft();
+        craftingSystem.buyCrafting('flask');
         
         // Save initial currency values
         const initialTransmutation = Transmutation.total;
@@ -387,7 +387,7 @@ class CraftingTests {
         }
         
         // Buy flask crafting
-        buyFlaskCraft();
+        craftingSystem.buyCrafting('flask');
         
         // Save initial chaos total and crafts completed
         const initialChaos = Chaos.total;
@@ -429,7 +429,7 @@ class CraftingTests {
         const initialJagged = Jagged.total;
         const initialExalted = Exalted.total;
         
-        const result = buyMirrorSword();
+        const result = craftingSystem.buyMirror('mirrorSword');
         
         this.assert(
             result === true && 
@@ -452,7 +452,7 @@ class CraftingTests {
         
         Prime.total = 10; // Not enough for mirror sword
         
-        const insufficientResult = buyMirrorSword();
+        const insufficientResult = craftingSystem.buyMirror('mirrorSword');
         
         this.assert(
             insufficientResult === false && 
@@ -479,7 +479,7 @@ class CraftingTests {
         }
         
         // Buy mirror sword
-        buyMirrorSword();
+        craftingSystem.buyMirror('mirrorSword');
         
         // Save initial fee and exalted total
         const initialFee = craftingSystem.mirrorItems.mirrorSword.fee;

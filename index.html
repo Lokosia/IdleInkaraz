@@ -277,7 +277,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftFlaskCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyFlaskCraft();">Research Flask</a><br><br>
+                                onclick="craftingSystem.buyCrafting('flask');">Research Flask</a><br><br>
                             Research Cost:<br>400 Chaos
                             <br>
                         </div>
@@ -296,7 +296,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftEnchantCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyEnchantCraft();">Research Helmet Enchant</a><br><br>
+                                onclick="craftingSystem.buyCrafting('enchant');">Research Helmet Enchant</a><br><br>
                             Research Cost:<br>1,000 Chaos
                             <br>
                         </div>
@@ -317,7 +317,7 @@
                         </div>
                         <div class="mdl-card mdl-card--expand craftGemCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyGemCraft();">Research 21/20% Gem</a><br><br>
+                                onclick="craftingSystem.buyCrafting('gem');">Research 21/20% Gem</a><br><br>
                             Research Cost:<br>1,600 Chaos
                             <br>
                         </div>
@@ -338,7 +338,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftPerfectCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyPerfectCraft();">Research 30% Vaal Regalia</a><br><br>
+                                onclick="craftingSystem.buyCrafting('perfect');">Research 30% Vaal Regalia</a><br><br>
                             Research Cost:<br>2,000 Chaos
                             <br>
                         </div>
@@ -359,7 +359,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftChaosCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyChaosCraft();">Research Chaos Helmet</a><br><br>
+                                onclick="craftingSystem.buyCrafting('chaos');">Research Chaos Helmet</a><br><br>
                             Research Cost:<br>4,000 Chaos
                             <br>
                         </div>
@@ -380,7 +380,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftColdCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyColdCraft();">Research Cold Helmet</a><br><br>
+                                onclick="craftingSystem.buyCrafting('cold');">Research Cold Helmet</a><br><br>
                             Research Cost:<br>4,000 Chaos
                             <br>
                         </div>
@@ -401,7 +401,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftLightCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyLightCraft();">Research Lightning Helmet</a><br><br>
+                                onclick="craftingSystem.buyCrafting('light');">Research Lightning Helmet</a><br><br>
                             Research Cost:<br>4,000 Chaos
                             <br>
                         </div>
@@ -422,7 +422,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftFireCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyFireCraft();">Research Fire Helmet</a><br><br>
+                                onclick="craftingSystem.buyCrafting('fire');">Research Fire Helmet</a><br><br>
                             Research Cost:<br>4,000 Chaos
                             <br>
                         </div>
@@ -445,7 +445,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand craftWandCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyWandCraft();">Research +2 Gem Wand</a><br><br>
+                                onclick="craftingSystem.buyCrafting('wand');">Research +2 Gem Wand</a><br><br>
                             Research Cost:<br>10,000 Chaos
                             <br>
                         </div>
@@ -462,7 +462,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand mirrorSwordCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyMirrorSword();">Craft Mirror Sword</a><br><br>
+                                onclick="craftingSystem.buyMirror('mirrorSword');">Craft Mirror Sword</a><br><br>
                             Crafting Cost:<br>
                             50 Prime Resonator<br>50 Jagged Fossil<br>50 Serrated Fossil<br>50 Shuddering Fossil<br>50
                             Corroded Fossil<br>
@@ -494,7 +494,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand mirrorShieldCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyMirrorShield();">Craft Mirror Shield</a><br><br>
+                                onclick="craftingSystem.buyMirror('mirrorShield');">Craft Mirror Shield</a><br><br>
                             Crafting Cost:<br>
                             1 Awakener's Orb<br>1 Hunter's Exalted Orb<br>1 Crusader's Exalted Orb<br>
                             50 Potent Resonator<br>50 Dense Fossil<br>50 Lucent Fossil<br>
@@ -526,7 +526,7 @@
                         </div>
                         <div class="mdl-card__supporting-text mdl-card--expand mirrorChestCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
-                                onclick="buyMirrorChest();">Craft Mirror Explode Chest</a><br><br>
+                                onclick="craftingSystem.buyMirror('mirrorChest');">Craft Mirror Explode Chest</a><br><br>
                             Crafting Cost:<br>
                             1 Awakener's Orb<br>1 Hunter's Exalted Orb<br>1 Crusader's Exalted Orb<br>
                             50 Prime Resonator<br>50 Jagged Fossil<br>50 Bound Fossil<br>50 Pristine Fossil<br>50
