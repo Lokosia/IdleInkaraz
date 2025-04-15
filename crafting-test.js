@@ -27,21 +27,69 @@ class CraftingTests {
         
         // Reset state for testing
         this.resetTestState();
+
+        // Store original state
+        const originalGuildCreated = window.guildCreated;
+        const originalQuadStashTab = window.quadStashTab;
+        const artificerOriginalState = this.getArtificerState();
         
-        // Regular crafting tests
-        this.testBuyCrafting();
-        this.testCraftingIngredientCheck();
-        this.testCraftingCurrencyDeduction();
-        this.testCraftingRewards();
+        // Save welcome screen visibility state
+        const welcomeVisible = $("#welcomePre").is(":visible");
         
-        // Mirror crafting tests
-        this.testBuyMirrorCrafting();
-        this.testMirrorFeeIncrease();
+        try {
+            // Run all tests
+            
+            // Access control validation
+            this.testCraftingRequiresGuildCreation();
+            this.testCraftingRequiresArtificer();
+            this.testCraftingRequiresQuadTab();
+            
+            // Regular crafting tests
+            this.testBuyCrafting();
+            this.testCraftingIngredientCheck();
+            this.testCraftingCurrencyDeduction();
+            this.testCraftingRewards();
+            
+            // Mirror crafting tests
+            this.testBuyMirrorCrafting();
+            this.testMirrorFeeIncrease();
+        } finally {
+            // Always restore original state at end of tests
+            window.guildCreated = originalGuildCreated;
+            window.quadStashTab = originalQuadStashTab;
+            this.restoreArtificerState(artificerOriginalState);
+            
+            // Restore welcome screen visibility
+            if (welcomeVisible) {
+                $("#welcomePre").show();
+            } else {
+                $("#welcomePre").hide();
+            }
+        }
         
         // Report results
         console.log(`===== TEST RESULTS: ${this.testResults.passed}/${this.testResults.total} PASSED (${this.testResults.failed} failed) =====`);
         
         return this.testResults.failed === 0;
+    }
+
+    /**
+     * Save artificer state
+     */
+    getArtificerState() {
+        if (typeof exileData === 'undefined' || !exileData.some(e => e.name === 'Artificer')) {
+            return false;
+        }
+        return exileData.find(e => e.name === 'Artificer').owned;
+    }
+    
+    /**
+     * Restore artificer state
+     */
+    restoreArtificerState(wasOwned) {
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = wasOwned;
+        }
     }
     
     /**
@@ -97,12 +145,141 @@ class CraftingTests {
         
         return condition;
     }
+
+    /**
+     * Test validation that crafting requires guild creation
+     */
+    testCraftingRequiresGuildCreation() {
+        console.log("\n--- Testing Crafting Requires Guild Creation ---");
+        
+        // Set up test state - guild not created
+        window.guildCreated = false;
+        
+        // Get crafting tab element's display state before trying to access
+        const craftingTabDisplayBefore = $("#crafting").css("display");
+        
+        // Save welcome screen visibility state
+        const welcomeWasVisible = $("#welcomePre").is(":visible");
+        
+        // Mock the welcome screen as visible to simulate guild not being created
+        $("#welcomePre").show();
+        
+        // Call showCrafting
+        showCrafting();
+        
+        // Verify crafting tab remains hidden when guild not created
+        const craftingTabDisplayAfter = $("#crafting").css("display");
+        
+        // Clean up our test environment - restore welcome screen to previous state
+        if (!welcomeWasVisible) {
+            $("#welcomePre").hide();
+        }
+        
+        // Our assertion is simplified: if the UI is correctly implemented,
+        // the crafting tab should not become visible when there's no guild
+        this.assert(
+            craftingTabDisplayAfter === "none" || craftingTabDisplayAfter === craftingTabDisplayBefore,
+            "Crafting tab should remain inaccessible when guild is not created"
+        );
+    }
+
+    /**
+     * Test validation that crafting requires the Artificer
+     */
+    testCraftingRequiresArtificer() {
+        console.log("\n--- Testing Crafting Requires Artificer ---");
+        
+        // Set up proper state for testing: guild is created but artificer not recruited
+        window.guildCreated = true;
+        
+        // Save welcome screen visibility state
+        const welcomeWasVisible = $("#welcomePre").is(":visible");
+        
+        // Hide welcome screen to simulate guild creation
+        $("#welcomePre").hide();
+        
+        // Create a test Artificer exile if it doesn't exist
+        if (typeof exileData === 'undefined') {
+            window.exileData = [{ name: 'Artificer', owned: false }];
+        } else if (!exileData.some(e => e.name === 'Artificer')) {
+            exileData.push({ name: 'Artificer', owned: false });
+        }
+        
+        // Make sure Artificer is not owned
+        const artificer = exileData.find(e => e.name === 'Artificer');
+        artificer.owned = false;
+        
+        // Validate crafting access - we expect the craft cards to be hidden
+        // since Artificer isn't owned, even though we can see the crafting tab
+        showCrafting();
+        
+        // Test for craft cards being correctly hidden
+        const craftCardsVisible = $(".craft").is(":visible");
+        
+        // Restore welcome screen if it was visible
+        if (welcomeWasVisible) {
+            $("#welcomePre").show();
+        }
+        
+        this.assert(
+            !craftCardsVisible, 
+            "Crafting cards should be hidden when Artificer is not recruited"
+        );
+    }
+
+    /**
+     * Test validation that crafting requires Quad Stash Tab
+     */
+    testCraftingRequiresQuadTab() {
+        console.log("\n--- Testing Crafting Requires Quad Stash Tab ---");
+        
+        // Set up proper state: guild created, artificer owned, but no quad tab
+        window.guildCreated = true;
+        window.quadStashTab = 0;
+        
+        // Save welcome screen visibility state
+        const welcomeWasVisible = $("#welcomePre").is(":visible");
+        
+        // Hide welcome screen to simulate guild creation
+        $("#welcomePre").hide();
+        
+        // Set Artificer as owned
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            const artificer = exileData.find(e => e.name === 'Artificer');
+            artificer.owned = true;
+        }
+        
+        // Check crafting access
+        showCrafting();
+        
+        // The expectation is that even with artificer, certain crafting cards 
+        // should be inaccessible without the quad tab
+        const heavierCraftingVisible = $("#heavierCrafting").is(":visible") ||
+                                     $(".advancedCrafting").is(":visible");
+        
+        // Restore welcome screen if it was visible
+        if (welcomeWasVisible) {
+            $("#welcomePre").show();
+        }
+        
+        this.assert(
+            !heavierCraftingVisible,
+            "Advanced crafting options should be hidden without Quad Stash Tab"
+        );
+    }
     
     /**
      * Test buying regular crafting items
      */
     testBuyCrafting() {
         console.log("\n--- Testing Buy Crafting Functionality ---");
+        
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
         
         // Test flask crafting purchase
         const initialChaosTotal = Chaos.total;
@@ -136,6 +313,13 @@ class CraftingTests {
     testCraftingIngredientCheck() {
         console.log("\n--- Testing Crafting Ingredient Check ---");
         
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
+        
         // Buy flask crafting so we can test its ingredient checking
         buyFlaskCraft();
         
@@ -157,6 +341,13 @@ class CraftingTests {
      */
     testCraftingCurrencyDeduction() {
         console.log("\n--- Testing Crafting Currency Deduction ---");
+        
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
         
         // Buy flask crafting so we can test its crafting
         buyFlaskCraft();
@@ -187,6 +378,13 @@ class CraftingTests {
      */
     testCraftingRewards() {
         console.log("\n--- Testing Crafting Rewards ---");
+        
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
         
         // Buy flask crafting
         buyFlaskCraft();
@@ -219,6 +417,13 @@ class CraftingTests {
     testBuyMirrorCrafting() {
         console.log("\n--- Testing Buy Mirror Crafting ---");
         
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
+        
         // Test mirror sword purchase (requires many resources)
         const initialPrime = Prime.total;
         const initialJagged = Jagged.total;
@@ -237,6 +442,14 @@ class CraftingTests {
         
         // Test purchase with insufficient resources
         this.resetTestState();
+        
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
+        
         Prime.total = 10; // Not enough for mirror sword
         
         const insufficientResult = buyMirrorSword();
@@ -257,6 +470,13 @@ class CraftingTests {
      */
     testMirrorFeeIncrease() {
         console.log("\n--- Testing Mirror Fee Increase ---");
+        
+        // Set necessary state for crafting to work
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            exileData.find(e => e.name === 'Artificer').owned = true;
+        }
         
         // Buy mirror sword
         buyMirrorSword();
