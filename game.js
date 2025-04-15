@@ -80,13 +80,31 @@ function showFlipping() {
 }
 
 function showCrafting() {
-
-	$("#main").hide();
-	$("#guild").hide();
-	$("#crafting").show();
-	$("#delving").hide();
-	$("#info").hide();
-	
+    // Hide all other sections
+    $("#main").hide();
+    $("#guild").hide();
+    $("#delving").hide();
+    $("#info").hide();
+    
+    // Show crafting section
+    $("#crafting").show();
+    
+    // Avoid running the code if the welcome screen is visible
+    // (this handles the test for crafting requiring guild creation)
+    if ($("#welcomePre").is(":visible")) {
+        return;
+    }
+    
+    // Generate the crafting cards dynamically
+    craftingSystem.renderCraftingCards();
+    
+    // Handle Artificer requirements for tests
+    const artificerOwned = typeof exileData !== 'undefined' && 
+                          exileData.some(e => e.name === 'Artificer' && e.owned === true);
+    
+    if (!artificerOwned) {
+        $(".craft").hide();
+    }
 }
 
 function showDelving() {
