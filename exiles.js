@@ -835,6 +835,55 @@ function recruitExile(exileName) {
         $(".ArtificerBuy").remove();
         $(".craft").show();
         return;
+    } else if (exileName === 'Melvin') {
+        // Special case for Melvin who has a different HTML structure
+        exile.level += 1;
+        exile.dropRate += 0.1;
+        
+        // Hide Melvin's specific buy button container
+        $(".MelvinBuy").hide();
+        
+        // Update Melvin's hide section
+        $(".MelvinHide").html('Level ' + exile.level + ' ' + exile.name);
+        
+        // Get the first gear upgrade directly from gearUpgrades
+        const firstGearUpgrade = exile.gearUpgrades[0];
+        const requirementsText = firstGearUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+
+        // Get the first links upgrade directly from linksUpgrades
+        const firstLinksUpgrade = exile.linksUpgrades[0];
+        const linksRequirementsText = firstLinksUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+
+        $("#UpgradeGearTable").append(
+            '<tr id="' + exile.name + 'GearUpgrade">' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'GearButton" onclick="' + exile.name + '.lvlGear();">' + exile.name + ' Gear' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', exile.name) + '</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + exile.name + ')</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
+            '</tr>'
+        );
+        $("#UpgradeLinksTable").append(
+            '<tr id="' + exile.name + 'LinksUpgrade">' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'LinksButton" onclick="' + exile.name + '.lvlLinks();">' + exile.name + ' Links</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', exile.name) + '</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + exile.name + ')</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
+            '</tr>'
+        );
+        document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
+        document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
+
+        // Setup hover effects for both gear and links
+        const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
+        const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
+
+        exile.setupHover("Gear", ...gearCurrencies);
+        exile.setupHover("Links", ...linksCurrencies);
+        return;
     }
 
     // Regular exile recruitment
