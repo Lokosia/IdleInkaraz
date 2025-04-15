@@ -176,6 +176,8 @@ function delve() {
 		document.getElementsByClassName('Sulphite')[0].innerHTML = numeral(Sulphite.total).format('0,0');
 		document.getElementsByClassName('SulphiteDepth')[0].innerHTML = numeral(sulphiteDepth).format('0,0');
 		document.getElementsByClassName('SulphiteCost')[0].innerHTML = numeral(sulphiteCost).format('0,0');
+		// Update Melvin's efficiency display to reflect the new value
+		document.getElementsByClassName('MelvinEfficiency')[0].innerHTML = "x" + numeral(Melvin.dropRate).format('0,0.0');
 		rollFossilTick();
 	}
 }
