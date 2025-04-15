@@ -339,12 +339,12 @@ document.addEventListener('DOMContentLoaded', function () {
  * Used for development and debugging
  */
 function initTestMode() {
-    // Set initial currency values for testing
-    currencyMap['StackedDeck'].total = 5;
-    currencyMap['Chaos'].total = 100000;
-    currencyMap['Exalted'].total = 20000;
+    // Set 10000 of every currency
+    currencyData.forEach(currency => {
+        currency.total = 10000;
+    });
     
-    console.log('Test mode initialized with starting currencies');
+    console.log('Test mode initialized with 10000 of each currency');
 }
 
 // Make it available globally

@@ -222,82 +222,13 @@
             </div>
             <!-- /Guild -->
 
-            <!-- Delivng -->
+            <!-- Delving -->
             <div id="delving" class="hidden">
-                <div class="mdl-grid center-items">
-
-                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG melvin">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Delvin' Melvin</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            Level: <span class="MelvinLevel">0</span> <span class="MelvinReroll hidden"></span><br>
-                            EXP: <span class="MelvinEXP">0/525</span><br>
-                            Efficiency: <span class="MelvinEfficiency">x0</span><br>
-                            Links: <span class="MelvinLinks">3L</span>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border MelvinBuy">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="recruitExile('Melvin');">Recruit Melvin</button>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border MelvinHide">
-                            500 Total Levels Required<br>Delve Stash Tab Required
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border MelvinRerollButton hidden">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="Melvin.rerollExile();">Reroll Melvin</button>
-                        </div>
-                    </div>
-
-                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Deep Delving</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <p>Spend Sulphite to traverse the mines.</p>
-                            <p>Collect currency and fossils.</p>
-                            <div id="delveLoader" class="mdl-progress mdl-js-progress hidden"></div>
-                            <br>
-                            Total Sulphite: <span class="Sulphite">0</span><br>
-                            Delve Depth: <span class="SulphiteDepth">1</span><br>
-                            Sulphite Cost: <span class="SulphiteCost">110</span>
-                        </div>
-                    </div>
-
-                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Resonators & Fossils</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <b>Resonators:</b><br>
-                            Primitive: <span class="PrimitiveTotal">0</span><br>
-                            Potent: <span class="PotentTotal">0</span><br>
-                            Powerful: <span class="PowerfulTotal">0</span><br>
-                            Prime: <span class="PrimeTotal">0</span><br><br>
-                            <b>Fossils:</b><br>
-                            Aberrant: <span class="AberrantTotal">0</span><br>
-                            Frigid: <span class="FrigidTotal">0</span><br>
-                            Metallic: <span class="MetallicTotal">0</span><br>
-                            Scorched: <span class="ScorchedTotal">0</span><br>
-                            Pristine: <span class="PristineTotal">0</span><br>
-                            Aetheric: <span class="AethericTotal">0</span><br>
-                            Bound: <span class="BoundTotal">0</span><br>
-                            Corroded: <span class="CorrodedTotal">0</span><br>
-                            Dense: <span class="DenseTotal">0</span><br>
-                            Enchanted: <span class="EnchantedTotal">0</span><br>
-                            Jagged: <span class="JaggedTotal">0</span><br>
-                            Lucent: <span class="LucentTotal">0</span><br>
-                            Perfect: <span class="PerfectTotal">0</span><br>
-                            Prismatic: <span class="PrismaticTotal">0</span><br>
-                            Serrated: <span class="SerratedTotal">0</span><br>
-                            Shuddering: <span class="ShudderingTotal">0</span><br>
-                            Faceted: <span class="FacetedTotal">0</span><br>
-                        </div>
-                    </div>
-
+                <div class="mdl-grid center-items" id="delving-container">
+                    <!-- UI sections will be generated dynamically -->
                 </div>
             </div>
-            <!-- /Delivng -->
+            <!-- /Delving -->
 
             <!-- Crafting -->
             <div id="crafting" class="hidden">
@@ -384,7 +315,7 @@
                             Sale Price: 40 Chaos<br>
                             Total Crafted: <span class="craftGemTotal">0</span>
                         </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand craftGemCost">
+                        <div class="mdl-card mdl-card--expand craftGemCost">
                             <a class="mdl-button mdl-button--raised mdl-button--colored"
                                 onclick="buyGemCraft();">Research 21/20% Gem</a><br><br>
                             Research Cost:<br>1,600 Chaos

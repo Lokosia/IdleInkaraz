@@ -419,7 +419,14 @@ class Exile {
         if (this.level == 100) {
             document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = "Max";
             
-            // Show our action button section if it was hidden
+            // Special handling for Melvin
+            if (this.name === 'Melvin') {
+                // Show Melvin's specific reroll button
+                $(".MelvinRerollButton").removeClass('hidden');
+                return;
+            }
+            
+            // Standard exile handling
             $('.' + this.name + 'ActionSection').show();
             
             // Update the button to be a reroll button
@@ -629,12 +636,22 @@ class Exile {
         this.exp = 0;
         this.expToLevel = 525;
         
-        // Hide the action button section
-        $('.' + this.name + 'ActionSection').hide();
+        // Handle standard exiles
+        if (this.name !== 'Melvin') {
+            // Hide the action button section for standard exiles
+            $('.' + this.name + 'ActionSection').hide();
+        } else {
+            // For Melvin, hide his reroll button instead
+            $(".MelvinRerollButton").addClass('hidden');
+        }
         
         // Show the reroll indicator next to level
         $('.' + this.name + 'Reroll').removeClass('hidden');
         document.getElementsByClassName(this.name + 'Reroll')[0].innerHTML = '(+' + this.rerollLevel + ')';
+        
+        // Update EXP display for all exiles
+        document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = "0/525";
+        document.getElementsByClassName(this.name + 'Level')[0].innerHTML = "1";
     };
 
     /**
@@ -768,19 +785,18 @@ setInterval(function gameTick() {
         const exile = exileData[i];
 
         if (exile.level >= 1) {
-            // Skip updateExileClass for special exiles
-            if (exile.name !== 'Singularity' && exile.name !== 'Artificer') {
-                exile.updateExileClass();
-                // Only add dropRate from standard exiles
-                tempDropRate += exile.dropRate;
+            // Special exiles handling
+            if (exile.name === 'Singularity' || exile.name === 'Artificer') {
+                // Don't add to tempDropRate for special exiles
+                // Don't add their levels to tempLevel
             } else {
-                // Still update their levels for total level calculation without UI updates
-                exile.lvlExile();
+                // Regular exile handling (including Melvin)
+                exile.updateExileClass();
+                tempDropRate += exile.dropRate;
+                tempLevel += exile.level;
+                tempLevel += exile.rerollLevel;
             }
         }
-
-        tempLevel += exile.level;
-        tempLevel += exile.rerollLevel;
     }
 
     totalLevel = tempLevel;
@@ -876,6 +892,15 @@ function recruitExile(exileName) {
         );
         document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
         document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
+
+        // Enable reroll when Melvin reaches level 100
+        if (exile.level == 100) {
+            document.getElementsByClassName('MelvinEXP')[0].innerHTML = "Max";
+            $(".MelvinRerollButton").removeClass('hidden');
+        } else {
+            // Normal leveling logic - make sure to update EXP display
+            document.getElementsByClassName('MelvinEXP')[0].innerHTML = numeral(exile.exp).format('0,0') + "/" + numeral(exile.expToLevel).format('0,0');
+        }
 
         // Setup hover effects for both gear and links
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
