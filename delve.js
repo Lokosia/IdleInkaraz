@@ -164,7 +164,7 @@ setInterval(function delveTick() {
 	if (Melvin.level >= 1) {
 		delve();
 	}
-}, 2500); //every 2.5 seconds
+}, 100); //every 2.5 seconds
 
 function delve() {
 	if (Sulphite.total >= sulphiteCost) {

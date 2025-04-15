@@ -1,520 +1,382 @@
-//---vars
-var craftFlask = -1;
-var flaskLoadingProgress = 0;
-var craftGem = -1;
-var gemLoadingProgress = 0;
-var craftEnchant = -1;
-var enchantLoadingProgress = 0;
-var craftPerfect = -1;
-var perfectLoadingProgress = 0;
-var craftChaos = -1;
-var chaosLoadingProgress = 0;
-var craftCold = -1;
-var coldLoadingProgress = 0;
-var craftLight = -1;
-var lightLoadingProgress = 0;
-var craftFire = -1;
-var fireLoadingProgress = 0;
-var craftWand = -1;
-var wandLoadingProgress = 0;
+/**
+ * Idle Inkaraz - Crafting System
+ * Object-oriented refactoring of the crafting mechanics
+ */
 
-//mirror
-var mirrorSword = -1;
-var mirrorSwordLoadingProgress = 0;
-var mirrorSwordFee = 20;
-var mirrorShield = -1;
-var mirrorShieldLoadingProgress = 0;
-var mirrorShieldFee = 20;
-var mirrorChest = -1;
-var mirrorChestLoadingProgress = 0;
-var mirrorChestFee = 20;
+// Base class for all crafting items
+class CraftingItem {
+    constructor(id, researchCost, ingredients, reward, progressInterval = 300) {
+        this.id = id;
+        this.level = -1; // -1 means not researched yet
+        this.progress = 0;
+        this.researchCost = researchCost;
+        this.ingredients = ingredients;
+        this.reward = reward;
+        this.progressInterval = progressInterval;
+        this.totalCrafted = 0;
+    }
 
-//---loops
-setInterval(function craftingTick() {
-	flaskCraft();
-	gemCraft();
-	enchantCraft();
-	perfectCraft();
-	chaosCraft();
-	coldCraft();
-	fireCraft();
-	lightCraft();
-	wandCraft();
+    // Buy/research the crafting item
+    buy() {
+        if (Chaos.total >= this.researchCost) {
+            Chaos.total -= this.researchCost;
+            this.level++;
+            $(`.craft${this.capitalizeFirst()}Cost`).hide();
+            $(`#${this.id}Loader`).removeClass("hidden");
+            return true;
+        } else {
+            SnackBar("Requirements not met.");
+            return false;
+        }
+    }
 
-	for (let i = 0; i < fossilData.length; i++) {
-		document.getElementsByClassName(fossilData[i].name + 'Total')[0].innerHTML = numeral(fossilData[i].total).format('0,0', Math.floor);
-	}
-}, 30000); //craft every 30 sec
+    // Helper method to capitalize first letter
+    capitalizeFirst() {
+        return this.id.charAt(0).toUpperCase() + this.id.slice(1);
+    }
 
-setInterval(function mirrorTick() {
-	mirrorSwordTick();
-	mirrorShieldTick();
-	mirrorChestTick();
-}, 60000); //mirror every 60 sec
+    // Check if we have all ingredients for crafting
+    hasIngredients() {
+        return this.ingredients.every(ing => window[ing.currency].total >= ing.amount);
+    }
 
+    // Consume ingredients and increment progress
+    craft() {
+        if (this.level >= 0 && this.hasIngredients()) {
+            this.ingredients.forEach(ing => {
+                window[ing.currency].total -= ing.amount;
+            });
+            this.progress += 1;
+            return true;
+        }
+        return false;
+    }
 
+    // Update the progress bar in the UI
+    updateProgressBar() {
+        if (this.progress >= 1) {
+            this.progress += 1;
+            let e = document.querySelector(`#${this.id}Loader`);
+            componentHandler.upgradeElement(e);
+            e.MaterialProgress.setProgress(this.progress);
+            
+            // Complete crafting when progress reaches 99%
+            if (this.progress >= 99) {
+                this.completeCrafting();
+            }
+        }
+    }
 
-//---crafting
-function buyFlaskCraft() {
-	if (Chaos.total >= 400) {
-		Chaos.total -= 400;
-		craftFlask++;
-		$(".craftFlaskCost").hide();
-		$("#flaskLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
+    // Complete the crafting process and give rewards
+    completeCrafting() {
+        this.progress = 0;
+        let e = document.querySelector(`#${this.id}Loader`);
+        componentHandler.upgradeElement(e);
+        e.MaterialProgress.setProgress(0);
+        
+        // Add reward
+        window[this.reward.currency].total += this.reward.amount;
+        this.totalCrafted++;
+        this.level++;
+        
+        // Update UI
+        document.getElementsByClassName(`craft${this.capitalizeFirst()}Total`)[0].innerHTML = numeral(this.totalCrafted).format('0,0');
+    }
+
+    // Check if the crafting item is active (researched)
+    isActive() {
+        return this.level >= 0;
+    }
+
+    // Check if progress has changed
+    hasProgressChanged() {
+        return this.progress >= 1;
+    }
 }
-function flaskCraft() {
-	if (craftFlask >= 0) {
-		if (Transmutation.total >= 1 && Alteration.total >= 20 && Augmentation.total >= 10) {
-			Transmutation.total -= 1;
-			Alteration.total -= 20;
-			Augmentation.total -= 10;
-			flaskLoadingProgress += 1;
-		}
-	}
+
+// Mirror item class extends CraftingItem for mirror-specific behavior
+class MirrorItem extends CraftingItem {
+    constructor(id, ingredients, initialFee = 20, feeIncrease = 5) {
+        super(id, 0, ingredients, { currency: 'Exalted', amount: initialFee }, 600);
+        this.fee = initialFee;
+        this.feeIncrease = feeIncrease;
+    }
+
+    // Override completeCrafting to handle mirror fee increases
+    completeCrafting() {
+        this.progress = 0;
+        let e = document.querySelector(`#${this.id}Loader`);
+        componentHandler.upgradeElement(e);
+        e.MaterialProgress.setProgress(0);
+        
+        // Add reward (exalted based on fee)
+        Exalted.total += this.fee;
+        
+        // Increase fee for next mirror
+        this.fee += this.feeIncrease;
+        this.reward.amount = this.fee;
+        
+        this.totalCrafted++;
+        this.level++;
+        
+        // Update UI
+        document.getElementsByClassName(`${this.id}Total`)[0].innerHTML = numeral(this.totalCrafted).format('0,0');
+        document.getElementsByClassName(`${this.id}Fee`)[0].innerHTML = numeral(this.fee).format('0,0');
+    }
+
+    // Custom buy method for mirror items
+    buy() {
+        // Check if player has all required ingredients
+        if (this.hasIngredients()) {
+            // Consume all ingredients
+            this.ingredients.forEach(ing => {
+                window[ing.currency].total -= ing.amount;
+            });
+            
+            this.level++;
+            $(`.${this.id}Cost`).hide();
+            $(`#${this.id}Loader`).removeClass("hidden");
+            $(`.${this.id}Stats`).removeClass("hidden");
+            
+            let itemName = this.id.replace('mirror', '');
+            SnackBar(`${itemName} Crafted!`);
+            return true;
+        } else {
+            SnackBar("Requirements not met.");
+            return false;
+        }
+    }
+}
+
+// Main system to control all crafting operations
+class CraftingSystem {
+    constructor() {
+        // Singleton instance
+        if (CraftingSystem.instance) {
+            return CraftingSystem.instance;
+        }
+        CraftingSystem.instance = this;
+
+        // Initialize crafting items
+        this.craftingItems = {};
+        this.mirrorItems = {};
+        
+        this.initializeCraftingItems();
+        this.initializeMirrorItems();
+        this.startIntervals();
+    }
+
+    // Define all regular crafting items
+    initializeCraftingItems() {
+        this.craftingItems = {
+            flask: new CraftingItem('flask', 400,
+                [{ currency: 'Transmutation', amount: 1 }, { currency: 'Alteration', amount: 20 }, { currency: 'Augmentation', amount: 10 }],
+                { currency: 'Chaos', amount: 10 }
+            ),
+            gem: new CraftingItem('gem', 1600,
+                [{ currency: 'GCP', amount: 20 }, { currency: 'Vaal', amount: 1 }],
+                { currency: 'Chaos', amount: 40 }
+            ),
+            enchant: new CraftingItem('enchant', 1000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Enchanted', amount: 1 }],
+                { currency: 'Chaos', amount: 25 }
+            ),
+            perfect: new CraftingItem('perfect', 2000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Perfect', amount: 1 }],
+                { currency: 'Chaos', amount: 50 }
+            ),
+            chaos: new CraftingItem('chaos', 4000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Aberrant', amount: 1 }],
+                { currency: 'Chaos', amount: 100 }
+            ),
+            cold: new CraftingItem('cold', 4000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Frigid', amount: 1 }],
+                { currency: 'Chaos', amount: 100 }
+            ),
+            light: new CraftingItem('light', 4000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Metallic', amount: 1 }],
+                { currency: 'Chaos', amount: 100 }
+            ),
+            fire: new CraftingItem('fire', 4000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Scorched', amount: 1 }],
+                { currency: 'Chaos', amount: 100 }
+            ),
+            wand: new CraftingItem('wand', 10000,
+                [{ currency: 'Primitive', amount: 1 }, { currency: 'Aetheric', amount: 1 }, { currency: 'Prismatic', amount: 1 }, { currency: 'Faceted', amount: 1 }],
+                { currency: 'Chaos', amount: 250 }
+            )
+        };
+    }
+
+    // Define all mirror items
+    initializeMirrorItems() {
+        this.mirrorItems = {
+            mirrorSword: new MirrorItem('mirrorSword', [
+                { currency: 'Prime', amount: 50 }, { currency: 'Jagged', amount: 50 }, 
+                { currency: 'Serrated', amount: 50 }, { currency: 'Shuddering', amount: 50 }, 
+                { currency: 'Corroded', amount: 50 }, { currency: 'Eternal', amount: 25 }, 
+                { currency: 'Exalted', amount: 500 }
+            ]),
+            mirrorShield: new MirrorItem('mirrorShield', [
+                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 }, 
+                { currency: 'Crusader', amount: 1 }, { currency: 'Potent', amount: 50 }, 
+                { currency: 'Dense', amount: 50 }, { currency: 'Lucent', amount: 50 }, 
+                { currency: 'Eternal', amount: 30 }, { currency: 'Exalted', amount: 600 }
+            ]),
+            mirrorChest: new MirrorItem('mirrorChest', [
+                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 }, 
+                { currency: 'Crusader', amount: 1 }, { currency: 'Prime', amount: 50 }, 
+                { currency: 'Jagged', amount: 50 }, { currency: 'Bound', amount: 50 }, 
+                { currency: 'Pristine', amount: 50 }, { currency: 'Serrated', amount: 50 }, 
+                { currency: 'Eternal', amount: 35 }, { currency: 'Exalted', amount: 700 }
+            ])
+        };
+    }
+
+    // Start all interval timers
+    startIntervals() {
+        // Crafting tick - every 30 seconds
+        setInterval(() => this.craftingTick(), 30000);
+        
+        // Mirror tick - every 60 seconds
+        setInterval(() => this.mirrorTick(), 60000);
+        
+        // Progress bar animation for regular crafting - every 300ms
+        setInterval(() => this.updateCraftingProgressBars(), 300);
+        
+        // Progress bar animation for mirror items - every 600ms
+        setInterval(() => this.updateMirrorProgressBars(), 600);
+        
+        // Update fossil counts every 30 seconds
+        setInterval(() => this.updateFossilCounts(), 30000);
+    }
+
+    // Processing tick for all crafting items
+    craftingTick() {
+        Object.values(this.craftingItems).forEach(item => item.craft());
+    }
+
+    // Processing tick for all mirror items
+    mirrorTick() {
+        Object.values(this.mirrorItems).forEach(item => {
+            if (item.isActive()) {
+                item.progress += 1;
+            }
+        });
+    }
+
+    // Update progress bars for crafting items
+    updateCraftingProgressBars() {
+        Object.values(this.craftingItems).forEach(item => {
+            if (item.isActive() && item.hasProgressChanged()) {
+                item.updateProgressBar();
+            }
+        });
+    }
+
+    // Update progress bars for mirror items
+    updateMirrorProgressBars() {
+        Object.values(this.mirrorItems).forEach(item => {
+            if (item.isActive() && item.hasProgressChanged()) {
+                item.updateProgressBar();
+            }
+        });
+    }
+    
+    // Update fossil count display in UI
+    updateFossilCounts() {
+        for (let i = 0; i < fossilData.length; i++) {
+            document.getElementsByClassName(fossilData[i].name + 'Total')[0].innerHTML = numeral(fossilData[i].total).format('0,0', Math.floor);
+        }
+    }
+
+    // Buy a crafting item by id
+    buyCrafting(id) {
+        if (this.craftingItems[id]) {
+            return this.craftingItems[id].buy();
+        }
+        return false;
+    }
+
+    // Buy a mirror item by id
+    buyMirror(id) {
+        if (this.mirrorItems[id]) {
+            return this.mirrorItems[id].buy();
+        }
+        return false;
+    }
+}
+
+// Initialize crafting system
+const craftingSystem = new CraftingSystem();
+
+//------------------------------------------------------------------------------
+// Facade functions for backward compatibility with existing HTML calls
+//------------------------------------------------------------------------------
+
+// Crafting buy functions
+function buyFlaskCraft() {
+    return craftingSystem.buyCrafting('flask');
 }
 
 function buyGemCraft() {
-	if (Chaos.total >= 1600) {
-		Chaos.total -= 1600;
-		craftGem++;
-		$(".craftGemCost").hide();
-		$("#gemLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function gemCraft() {
-	if (craftGem >= 0) {
-		if (GCP.total >= 20 && Vaal.total >= 1) {
-			Vaal.total -= 1;
-			GCP.total -= 20;
-			gemLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('gem');
 }
 
 function buyEnchantCraft() {
-	if (Chaos.total >= 1000) {
-		Chaos.total -= 1000;
-		craftEnchant++;
-		$(".craftEnchantCost").hide();
-		$("#enchantLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function enchantCraft() {
-	if (craftEnchant >= 0) {
-		if (Enchanted.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Enchanted.total -= 1;
-			enchantLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('enchant');
 }
 
 function buyPerfectCraft() {
-	if (Chaos.total >= 2000) {
-		Chaos.total -= 2000;
-		craftPerfect++;
-		$(".craftPerfectCost").hide();
-		$("#perfectLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function perfectCraft() {
-	if (craftPerfect >= 0) {
-		if (Perfect.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Perfect.total -= 1;
-			perfectLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('perfect');
 }
 
 function buyChaosCraft() {
-	if (Chaos.total >= 4000) {
-		Chaos.total -= 4000;
-		craftChaos++;
-		$(".craftChaosCost").hide();
-		$("#chaosLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function chaosCraft() {
-	if (craftChaos >= 0) {
-		if (Aberrant.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Aberrant.total -= 1;
-			chaosLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('chaos');
 }
 
 function buyColdCraft() {
-	if (Chaos.total >= 4000) {
-		Chaos.total -= 4000;
-		craftCold++;
-		$(".craftColdCost").hide();
-		$("#coldLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function coldCraft() {
-	if (craftCold >= 0) {
-		if (Frigid.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Frigid.total -= 1;
-			coldLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('cold');
 }
 
 function buyFireCraft() {
-	if (Chaos.total >= 4000) {
-		Chaos.total -= 4000;
-		craftFire++;
-		$(".craftFireCost").hide();
-		$("#fireLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function fireCraft() {
-	if (craftFire >= 0) {
-		if (Scorched.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Scorched.total -= 1;
-			fireLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('fire');
 }
 
 function buyLightCraft() {
-	if (Chaos.total >= 4000) {
-		Chaos.total -= 4000;
-		craftLight++;
-		$(".craftLightCost").hide();
-		$("#lightLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function lightCraft() {
-	if (craftLight >= 0) {
-		if (Metallic.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Metallic.total -= 1;
-			lightLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('light');
 }
 
 function buyWandCraft() {
-	if (Chaos.total >= 10000) {
-		Chaos.total -= 10000;
-		craftWand++;
-		$(".craftWandCost").hide();
-		$("#wandLoader").removeClass("hidden");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-function wandCraft() {
-	if (craftWand >= 0) {
-		if (Aetheric.total >= 1 && Prismatic.total >= 1 && Faceted.total >= 1 && Primitive.total >= 1) {
-			Primitive.total -= 1;
-			Prismatic.total -= 1;
-			Aetheric.total -= 1;
-			Faceted.total -= 1;
-			wandLoadingProgress += 1;
-		}
-	}
+    return craftingSystem.buyCrafting('wand');
 }
 
-//mirroring
+// Mirror buy functions
 function buyMirrorSword() {
-	if (Prime.total >= 50 && Jagged.total >= 50 && Serrated.total >= 50 && Shuddering.total >= 50 && Corroded.total >= 50 && Eternal.total >= 25 && Exalted.total >= 500) {
-		Exalted.total -= 500;
-		Eternal.total -= 25;
-		Corroded.total -= 50;
-		Shuddering.total -= 50;
-		Serrated.total -= 50;
-		Jagged.total -= 50;
-		Prime.total -= 50;
-		mirrorSword++;
-		$(".mirrorSwordCost").hide();
-		$("#mirrorSwordLoader").removeClass("hidden");
-		$(".mirrorSwordStats").removeClass("hidden");
-		SnackBar("600pDPS Sword Crafted!");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-
-function mirrorSwordTick() {
-	if (mirrorSword >= 0) {
-		mirrorSwordLoadingProgress += 1;
-	}
+    return craftingSystem.buyMirror('mirrorSword');
 }
 
 function buyMirrorShield() {
-	if (Awakener.total >= 1 && Hunter.total >= 1 && Crusader.total >= 1 && Potent.total >= 50 && Dense.total >= 50 && Lucent.total >= 50 && Eternal.total >= 30 && Exalted.total >= 600) {
-		Exalted.total -= 600;
-		Eternal.total -= 30;
-		Lucent.total -= 50;
-		Dense.total -= 50;
-		Potent.total -= 50;
-		Crusader.total -= 1;
-		Hunter.total -= 1;
-		Awakener.total -= 1;
-		mirrorShield++;
-		$(".mirrorShieldCost").hide();
-		$("#mirrorShieldLoader").removeClass("hidden");
-		$(".mirrorShieldStats").removeClass("hidden");
-		SnackBar("ES Shield Crafted!");
-	} else {
-		SnackBar("Requirements not met.");
-	}
-}
-
-function mirrorShieldTick() {
-	if (mirrorShield >= 0) {
-		mirrorShieldLoadingProgress += 1;
-	}
+    return craftingSystem.buyMirror('mirrorShield');
 }
 
 function buyMirrorChest() {
-	if (Awakener.total >= 1 && Hunter.total >= 1 && Crusader.total >= 1 && Prime.total >= 50 && Jagged.total >= 50 && Bound.total >= 50 && Pristine.total >= 50 && Serrated.total >= 50 && Eternal.total >= 35 && Exalted.total >= 700) {
-		Exalted.total -= 700;
-		Eternal.total -= 35;
-		Serrated.total -= 50;
-		Pristine.total -= 50;
-		Bound.total -= 50;
-		Jagged.total -= 50;
-		Prime.total -= 50;
-		Crusader.total -= 1;
-		Hunter.total -= 1;
-		Awakener.total -= 1;
-		mirrorChest++;
-		$(".mirrorChestCost").hide();
-		$("#mirrorChestLoader").removeClass("hidden");
-		$(".mirrorChestStats").removeClass("hidden");
-		SnackBar("Explode Chest Crafted!");
-	} else {
-		SnackBar("Requirements not met.");
-	}
+    return craftingSystem.buyMirror('mirrorChest');
 }
 
-function mirrorChestTick() {
-	if (mirrorChest >= 0) {
-		mirrorChestLoadingProgress += 1;
-	}
-}
+// Crafting functions - these are now handled by the crafting system
+// and are kept for backwards compatibility only
+function flaskCraft() {}
+function gemCraft() {}
+function enchantCraft() {}
+function perfectCraft() {}
+function chaosCraft() {}
+function coldCraft() {}
+function fireCraft() {}
+function lightCraft() {}
+function wandCraft() {}
 
-//loading bars
-//crafts
-setInterval(function flaskLoadingBarAnimate() {
-	if (flaskLoadingProgress >= 1) {
-		flaskLoadingProgress += 1;
-		let e = document.querySelector('#flaskLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(flaskLoadingProgress);
-		if (flaskLoadingProgress >= 99) {
-			flaskLoadingProgress = 0;
-			e.MaterialProgress.setProgress(flaskLoadingProgress);
-			Chaos.total += 10;
-			craftFlask++;
-			document.getElementsByClassName('craftFlaskTotal')[0].innerHTML = numeral(craftFlask).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function gemLoadingBarAnimate() {
-	if (gemLoadingProgress >= 1) {
-		gemLoadingProgress += 1;
-		let e = document.querySelector('#gemLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(gemLoadingProgress);
-		if (gemLoadingProgress >= 99) {
-			gemLoadingProgress = 0;
-			e.MaterialProgress.setProgress(gemLoadingProgress);
-			Chaos.total += 40;
-			craftGem++;
-			document.getElementsByClassName('craftGemTotal')[0].innerHTML = numeral(craftGem).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function enchantLoadingBarAnimate() {
-	if (enchantLoadingProgress >= 1) {
-		enchantLoadingProgress += 1;
-		let e = document.querySelector('#enchantLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(enchantLoadingProgress);
-		if (enchantLoadingProgress >= 99) {
-			enchantLoadingProgress = 0;
-			e.MaterialProgress.setProgress(enchantLoadingProgress);
-			Chaos.total += 25;
-			craftEnchant++;
-			document.getElementsByClassName('craftEnchantTotal')[0].innerHTML = numeral(craftEnchant).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function perfectLoadingBarAnimate() {
-	if (perfectLoadingProgress >= 1) {
-		perfectLoadingProgress += 1;
-		let e = document.querySelector('#perfectLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(perfectLoadingProgress);
-		if (perfectLoadingProgress >= 99) {
-			perfectLoadingProgress = 0;
-			e.MaterialProgress.setProgress(perfectLoadingProgress);
-			Chaos.total += 50;
-			craftPerfect++;
-			document.getElementsByClassName('craftPerfectTotal')[0].innerHTML = numeral(craftPerfect).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function chaosLoadingBarAnimate() {
-	if (chaosLoadingProgress >= 1) {
-		chaosLoadingProgress += 1;
-		let e = document.querySelector('#chaosLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(chaosLoadingProgress);
-		if (chaosLoadingProgress >= 99) {
-			chaosLoadingProgress = 0;
-			e.MaterialProgress.setProgress(chaosLoadingProgress);
-			Chaos.total += 100;
-			craftChaos++;
-			document.getElementsByClassName('craftChaosTotal')[0].innerHTML = numeral(craftChaos).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function coldLoadingBarAnimate() {
-	if (coldLoadingProgress >= 1) {
-		coldLoadingProgress += 1;
-		let e = document.querySelector('#coldLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(coldLoadingProgress);
-		if (coldLoadingProgress >= 99) {
-			coldLoadingProgress = 0;
-			e.MaterialProgress.setProgress(coldLoadingProgress);
-			Chaos.total += 100;
-			craftCold++;
-			document.getElementsByClassName('craftColdTotal')[0].innerHTML = numeral(craftCold).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function fireLoadingBarAnimate() {
-	if (fireLoadingProgress >= 1) {
-		fireLoadingProgress += 1;
-		let e = document.querySelector('#fireLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(fireLoadingProgress);
-		if (fireLoadingProgress >= 99) {
-			fireLoadingProgress = 0;
-			e.MaterialProgress.setProgress(fireLoadingProgress);
-			Chaos.total += 100;
-			craftFire++;
-			document.getElementsByClassName('craftFireTotal')[0].innerHTML = numeral(craftFire).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function lightLoadingBarAnimate() {
-	if (lightLoadingProgress >= 1) {
-		lightLoadingProgress += 1;
-		let e = document.querySelector('#lightLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(lightLoadingProgress);
-		if (lightLoadingProgress >= 99) {
-			lightLoadingProgress = 0;
-			e.MaterialProgress.setProgress(lightLoadingProgress);
-			Chaos.total += 100;
-			craftLight++;
-			document.getElementsByClassName('craftLightTotal')[0].innerHTML = numeral(craftLight).format('0,0');
-		}
-	}
-}, 300);
-
-setInterval(function wandLoadingBarAnimate() {
-	if (wandLoadingProgress >= 1) {
-		wandLoadingProgress += 1;
-		let e = document.querySelector('#wandLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(wandLoadingProgress);
-		if (wandLoadingProgress >= 99) {
-			wandLoadingProgress = 0;
-			e.MaterialProgress.setProgress(wandLoadingProgress);
-			Chaos.total += 250;
-			craftWand++;
-			document.getElementsByClassName('craftWandTotal')[0].innerHTML = numeral(craftWand).format('0,0');
-		}
-	}
-}, 300);
-
-//mirrors
-setInterval(function mirrorSwordLoadingBarAnimate() {
-	if (mirrorSwordLoadingProgress >= 1) {
-		mirrorSwordLoadingProgress += 1;
-		let e = document.querySelector('#mirrorSwordLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(mirrorSwordLoadingProgress);
-		if (mirrorSwordLoadingProgress >= 99) {
-			mirrorSwordLoadingProgress = 0;
-			e.MaterialProgress.setProgress(mirrorSwordLoadingProgress);
-			Exalted.total += mirrorSwordFee;
-			mirrorSwordFee += 5;
-			mirrorSword++;
-			document.getElementsByClassName('mirrorSwordTotal')[0].innerHTML = numeral(mirrorSword).format('0,0');
-			document.getElementsByClassName('mirrorSwordFee')[0].innerHTML = numeral(mirrorSwordFee).format('0,0');
-		}
-	}
-}, 600);
-
-setInterval(function mirrorShieldLoadingBarAnimate() {
-	if (mirrorShieldLoadingProgress >= 1) {
-		mirrorShieldLoadingProgress += 1;
-		let e = document.querySelector('#mirrorShieldLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(mirrorShieldLoadingProgress);
-		if (mirrorShieldLoadingProgress >= 99) {
-			mirrorShieldLoadingProgress = 0;
-			e.MaterialProgress.setProgress(mirrorShieldLoadingProgress);
-			Exalted.total += mirrorShieldFee;
-			mirrorShieldFee += 5;
-			mirrorShield++;
-			document.getElementsByClassName('mirrorShieldTotal')[0].innerHTML = numeral(mirrorShield).format('0,0');
-			document.getElementsByClassName('mirrorShieldFee')[0].innerHTML = numeral(mirrorShieldFee).format('0,0');
-		}
-	}
-}, 600);
-
-setInterval(function mirrorChestLoadingBarAnimate() {
-	if (mirrorChestLoadingProgress >= 1) {
-		mirrorChestLoadingProgress += 1;
-		let e = document.querySelector('#mirrorChestLoader');
-		componentHandler.upgradeElement(e);
-		e.MaterialProgress.setProgress(mirrorChestLoadingProgress);
-		if (mirrorChestLoadingProgress >= 99) {
-			mirrorChestLoadingProgress = 0;
-			e.MaterialProgress.setProgress(mirrorChestLoadingProgress);
-			Exalted.total += mirrorChestFee;
-			mirrorChestFee += 5;
-			mirrorChest++;
-			document.getElementsByClassName('mirrorChestTotal')[0].innerHTML = numeral(mirrorChest).format('0,0');
-			document.getElementsByClassName('mirrorChestFee')[0].innerHTML = numeral(mirrorChestFee).format('0,0');
-		}
-	}
-}, 600);
+// Mirror functions - these are now handled by the crafting system
+function mirrorSwordTick() {}
+function mirrorShieldTick() {}
+function mirrorChestTick() {}

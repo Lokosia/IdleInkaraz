@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function initTestMode() {
     // Set 10000 of every currency
     currencyData.forEach(currency => {
-        currency.total = 10000;
+        currency.total = 99999;
     });
     
     console.log('Test mode initialized with 10000 of each currency');
