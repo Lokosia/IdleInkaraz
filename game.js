@@ -1,3 +1,7 @@
+/**
+ * Initializes the game by hiding all UI sections except the welcome screen
+ * Called when the page first loads
+ */
 function gameStart() {
 
 	$("#main").hide();
@@ -17,6 +21,10 @@ function gameStart() {
 	
 }
 
+/**
+ * Initiates the game after the player creates a guild
+ * Reveals all main UI sections and navigates to the guild screen
+ */
 function welcome() {
 
 	$("#welcomePre").hide();
@@ -29,6 +37,10 @@ function welcome() {
 }
 
 //----------------------------------Menu
+/**
+ * Shows the main game screen and hides all other sections
+ * Configures layout for the main currency display
+ */
 function showMain() {
 
 	$("#main").show();
@@ -47,6 +59,10 @@ function showMain() {
 	$("#MainCurrency").addClass("mdl-cell--3-col-tablet");
 }
 
+/**
+ * Shows the guild management screen where players recruit and manage Exiles
+ * Dynamically generates exile cards in the guild grid
+ */
 function showGuild() {
 
 	$("#main").hide();
@@ -62,6 +78,10 @@ function showGuild() {
 	generateExileCards(guildGrid);
 }
 
+/**
+ * Shows the currency flipping interface where players can trade currencies
+ * Configures the layout and visibility of trading components
+ */
 function showFlipping() {
 
 	$("#main").show();
@@ -81,6 +101,10 @@ function showFlipping() {
 	
 }
 
+/**
+ * Shows the crafting interface where players can craft items
+ * Renders the crafting UI components and applies visibility rules based on player progress
+ */
 function showCrafting() {
     // Hide all other sections
     $("#main").hide();
@@ -132,6 +156,9 @@ function showCrafting() {
     }
 }
 
+/**
+ * Shows the delving interface where players can manage delve-related activities
+ */
 function showDelving() {
 
 	$("#main").hide();
@@ -142,6 +169,9 @@ function showDelving() {
 	
 }
 
+/**
+ * Shows the information screen with game details and help
+ */
 function showInfo() {
 
 	$("#main").hide();
@@ -153,21 +183,40 @@ function showInfo() {
 }
 
 //---Show upgrades
+/**
+ * Shows all upgrade tables in the upgrade interface
+ * Displays general, gear, and links upgrade options
+ */
 function showAllUpgrades() {
 	$("#UpgradeTable").show();
 	$("#UpgradeGearTable").show();
 	$("#UpgradeLinksTable").show();
 }
+
+/**
+ * Shows only the general upgrades table
+ * Hides gear and links upgrade options
+ */
 function showGeneralUpgrades() {
 	$("#UpgradeTable").show();
 	$("#UpgradeGearTable").hide();
 	$("#UpgradeLinksTable").hide();
 }
+
+/**
+ * Shows only the gear upgrades table
+ * Hides general and links upgrade options
+ */
 function showGearUpgrades() {
 	$("#UpgradeTable").hide();
 	$("#UpgradeGearTable").show();
 	$("#UpgradeLinksTable").hide();
 }
+
+/**
+ * Shows only the links upgrades table
+ * Hides general and gear upgrade options
+ */
 function showLinksUpgrades() {
 	$("#UpgradeTable").hide();
 	$("#UpgradeGearTable").hide();
@@ -177,6 +226,12 @@ function showLinksUpgrades() {
 //---Misc.
 
 //---Snackbar
+/**
+ * Displays a temporary notification message to the user
+ * Implements a cooldown to prevent message spam
+ * 
+ * @param {string} input - The message to display in the snackbar
+ */
 function SnackBar(input) {
 	if (snackBarTimer <= 0) {
 		'use strict';
@@ -187,6 +242,10 @@ function SnackBar(input) {
 	}
 }
 
+/**
+ * Initializes the welcome screen UI when the DOM is loaded
+ * Creates the welcome card and sets up event handlers
+ */
 document.addEventListener('DOMContentLoaded', function() {
     const welcomeCard = UICard.create({
         id: 'welcome-card',
@@ -208,7 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const createGuildButton = UIButton.create('Create Guild', welcome);
     document.getElementById('create-guild-button').appendChild(createGuildButton);
 
-	// Helper function for hover effects
+	/**
+     * Adds hover effects to currency text elements
+     * 
+     * @param {HTMLElement} switchElement - The switch element to attach hover events to
+     * @param {string} currencyName - The name of the currency to highlight on hover
+     */
     function addCurrencyHoverEffect(switchElement, currencyName) {
         $(switchElement).hover(
             function() {

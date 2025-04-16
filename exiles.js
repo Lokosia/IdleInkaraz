@@ -1,10 +1,18 @@
+/**
+ * Exiles management module for Idle Inkaraz
+ * Manages character (exile) creation, upgrades, and progression
+ */
+
 //---Main
 var totalLevel = 0;
 var dropRate = 0;
 var playTime = 0;
 var snackBarTimer = 0;
 
-// Factory for creating and managing exiles
+/**
+ * Factory for creating and managing exiles
+ * Provides methods for creating different types of exiles with predefined upgrade paths
+ */
 const ExileFactory = {
     // Default upgrade data
     gearUpgrades: [
@@ -301,7 +309,15 @@ const ExileFactory = {
         }
     ],
 
-    // Base method to create exiles
+    /**
+     * Creates a new exile instance with optional custom upgrade paths
+     * @param {string} name - The name of the exile
+     * @param {number} levelRequirement - Total level required to recruit this exile
+     * @param {Array|null} specialRequirement - Special requirement for recruiting [type, value]
+     * @param {Array|null} customGearUpgrades - Custom gear upgrade path (optional)
+     * @param {Array|null} customLinksUpgrades - Custom links upgrade path (optional)
+     * @returns {Exile} - A new exile instance
+     */
     createExile(name, levelRequirement = 0, specialRequirement = null, customGearUpgrades = null, customLinksUpgrades = null) {
         const exile = new Exile(
             name,
@@ -328,12 +344,22 @@ const ExileFactory = {
         return exile;
     },
 
-    // Helper for special exiles
+    /**
+     * Helper method to create special exiles with unique requirements
+     * @param {string} name - The name of the exile
+     * @param {number} levelRequirement - Total level required to recruit
+     * @param {string} specialReqType - Type of special requirement
+     * @param {*} specialReqValue - Value of special requirement
+     * @returns {Exile} - A new special exile instance
+     */
     createSpecialExile(name, levelRequirement, specialReqType, specialReqValue) {
         return this.createExile(name, levelRequirement, [specialReqType, specialReqValue]);
     },
 
-    // Create all standard exiles
+    /**
+     * Creates all standard exiles with predefined level requirements
+     * @returns {Array<Exile>} - Array of standard exile instances
+     */
     createStandardExiles() {
         return [
             Ascendant = this.createExile('Ascendant'),
@@ -358,7 +384,10 @@ const ExileFactory = {
         ];
     },
 
-    // Create special exiles
+    /**
+     * Creates special exiles with unique requirements (e.g., stash tabs)
+     * @returns {Array<Exile>} - Array of special exile instances
+     */
     createSpecialExiles() {
         return [
             Melvin = this.createSpecialExile('Melvin', 500, 'delveStashTab', 1),
@@ -367,7 +396,10 @@ const ExileFactory = {
         ];
     },
 
-    // Create all exiles at once
+    /**
+     * Creates all exiles (standard and special)
+     * @returns {Array<Exile>} - Combined array of all exile instances
+     */
     createAllExiles() {
         return [
             ...this.createStandardExiles(),
@@ -377,7 +409,24 @@ const ExileFactory = {
 };
 
 //---Define Class
+/**
+ * Represents an Exile character in the game
+ * Handles progression, upgrades, and UI interactions for a specific character
+ */
 class Exile {
+    /**
+     * Creates a new Exile instance
+     * @param {string} name - The name of the exile
+     * @param {string|number} level - Current level
+     * @param {string|number} exp - Current experience points
+     * @param {string|number} expToLevel - Experience required for next level
+     * @param {string|number} dropRate - Current efficiency/drop rate
+     * @param {string|number} gear - Current gear level
+     * @param {string|number} links - Current links level
+     * @param {string|number} rerollLevel - Current reroll level (bonus from resets)
+     * @param {number} levelRequirement - Total level required to recruit
+     * @param {Array|null} specialRequirement - Special requirement for recruiting
+     */
     constructor(name, level, exp, expToLevel, dropRate, gear, links, rerollLevel, levelRequirement = 0, specialRequirement = null) {
         this.name = name;
         this.level = Number(level);
@@ -394,6 +443,10 @@ class Exile {
         this.linksUpgrades = ExileFactory.linksUpgrades;
     }
 
+    /**
+     * Increases exile's experience and levels them up when threshold is reached
+     * Updates drop rate based on level gains
+     */
     lvlExile() {
         if (this.level > 0 && this.level <= 99) {
             this.exp += Math.floor((Math.random() * (25 - 15) + 15) + (this.dropRate * 3) + (this.level / 5)) * 1000; // delete *100
@@ -409,6 +462,10 @@ class Exile {
         }
     }
 
+    /**
+     * Updates the exile's UI elements based on current state
+     * Handles level 100 cap and reroll button display
+     */
     updateExileClass() {
         if (this.level > 0 && this.level <= 99) {
             this.lvlExile();
@@ -438,20 +495,28 @@ class Exile {
         }
     };
 
+    /**
+     * Upgrades the exile's gear to the next level
+     * Increases drop rate based on the upgrade benefit
+     */
     lvlGear() {
         this.upgradeExile('Gear', this.getNextGearUpgrade.bind(this), this.applyGearUpgrade.bind(this));
     }
 
+    /**
+     * Upgrades the exile's links to the next level
+     * Increases drop rate based on the upgrade benefit
+     */
     lvlLinks() {
         this.upgradeExile('Links', this.getNextLinksUpgrade.bind(this), this.applyLinksUpgrade.bind(this));
     }
 
     /**
- * Gets the next gear upgrade based on current gear level
- * @param {number} level - Current gear level
- * @param {Array} upgrades - Array of available upgrades 
- * @returns {Object} The next upgrade object
- */
+     * Gets the next gear upgrade based on current gear level
+     * @param {number} level - Current gear level
+     * @param {Array} upgrades - Array of available upgrades 
+     * @returns {Object} The next upgrade object
+     */
     getNextGearUpgrade(level, upgrades) {
         if (level >= 0 && level <= 23) {
             const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
@@ -509,11 +574,11 @@ class Exile {
     }
 
     /**
- * Generic method to manage upgrades based on the specified upgrade type
- * @param {string} upgradeType - Type of upgrade ('Gear' or 'Links')
- * @param {function} getNextUpgrade - Function to determine the next upgrade
- * @param {function} applyUpgrade - Function to apply the upgrade effects
- */
+     * Generic method to manage upgrades based on the specified upgrade type
+     * @param {string} upgradeType - Type of upgrade ('Gear' or 'Links')
+     * @param {function} getNextUpgrade - Function to determine the next upgrade
+     * @param {function} applyUpgrade - Function to apply the upgrade effects
+     */
     upgradeExile(upgradeType, getNextUpgrade, applyUpgrade) {
         // Get property name for this upgrade type (e.g., 'gear' or 'links')
         const propertyName = upgradeType.toLowerCase();
@@ -580,6 +645,10 @@ class Exile {
         this.setupHover(upgradeType, ...hoverCurrencies);
     }
 
+    /**
+     * Recruits the exile, making them active in the party
+     * Updates UI and adds upgrade options to the upgrade tables
+     */
     recruitExile() {
         this.level += 1;
         this.dropRate += 0.1;
@@ -630,6 +699,10 @@ class Exile {
         this.setupHover("Links", ...linksCurrencies);
     };
 
+    /**
+     * Resets the exile to level 1 but with bonus efficiency
+     * Updates UI to show reroll status and bonuses
+     */
     rerollExile() {
         this.level = 1;
         this.rerollLevel += 100;
@@ -759,7 +832,11 @@ function deductCosts(requirements) {
     }
 }
 
-// For gear levels beyond our defined upgrades
+/**
+ * Generates a Mirror upgrade for high gear levels
+ * @param {number} gearLevel - Current gear level
+ * @returns {Object} - A Mirror upgrade configuration
+ */
 function getMirrorUpgrade(gearLevel) {
     return {
         level: gearLevel,
@@ -777,6 +854,10 @@ function getMirrorUpgrade(gearLevel) {
 //---Define Exiles
 var exileData = ExileFactory.createAllExiles();
 
+/**
+ * Main game loop that runs every 100ms
+ * Updates exile levels, calculates total level and drop rate, and updates UI
+ */
 setInterval(function gameTick() {
     let tempLevel = 1000;
     let tempDropRate = upgradeDropRate;
