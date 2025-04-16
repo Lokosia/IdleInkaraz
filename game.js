@@ -9,7 +9,9 @@ function gameStart() {
 	$("#HunterUpgrade").hide();
 	$("#RedeemerUpgrade").hide();
 	$("#WarlordUpgrade").hide();
-	$(".craft").hide();
+	
+	// Don't hide craft cards here - let the crafting tab logic control this
+	// $(".craft").hide();
 
 	$("#loader").hide();
 	
@@ -101,17 +103,26 @@ function showCrafting() {
     // Generate the crafting cards dynamically
     craftingSystem.renderCraftingCards();
     
-    // Handle Artificer requirements and ownership state
+    // Get the current Artificer owned state
     const artificerOwned = typeof exileData !== 'undefined' && 
                           exileData.some(e => e.name === 'Artificer' && e.owned === true);
     
+    // Debug: Check how many craft elements exist
+    console.log("Craft elements count:", $(".craft").length);
+    
+    // Always apply visibility rules based on current state
     if (artificerOwned) {
-        // If Artificer is owned, hide the recruit button and requirements
+        // When the Artificer is owned, hide all recruitment elements
         $(".ArtificerBuy, .ArtificerHide").hide();
-        // And show the crafting cards
+        
+        // Force display:block on all craft cards to ensure they're visible
+        $(".craft").css("display", "block");
         $(".craft").show();
+        
+        // Double-check visibility
+        console.log("After showing craft cards:", $(".craft").is(":visible"));
     } else {
-        // If Artificer is not owned, hide the crafting cards
+        // When the Artificer is not owned, hide crafting cards
         $(".craft").hide();
     }
     

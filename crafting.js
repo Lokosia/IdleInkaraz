@@ -406,7 +406,7 @@ class CraftingSystem {
         // Clear the container first
         container.innerHTML = '';
 
-        // Check if Artificer is already recruited
+        // Check if Artificer is already recruited - focus solely on the owned property
         const artificerOwned = typeof exileData !== 'undefined' && 
                                exileData.some(e => e.name === 'Artificer' && e.owned === true);
 
