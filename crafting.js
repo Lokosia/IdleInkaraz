@@ -398,6 +398,60 @@ class CraftingSystem {
         }
     }
 
+    // Render the main crafting header cards (Artificer recruitment and description)
+    renderCraftingHeader() {
+        const container = document.getElementById('crafting-main-container');
+        if (!container) return;
+
+        // Clear the container first
+        container.innerHTML = '';
+
+        // Check if Artificer is already recruited
+        const artificerOwned = typeof exileData !== 'undefined' && 
+                               exileData.some(e => e.name === 'Artificer' && e.owned === true);
+
+        // Generate the Artificer card with conditional sections based on ownership
+        const artificerCard = `
+        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG artificer">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">The Artificer</h2>
+            </div>
+            <div class="mdl-card__supporting-text mdl-card--expand">
+                The hideout warrior.<br>
+            </div>
+            ${artificerOwned ? '' : `
+            <div class="mdl-card__actions mdl-card--border ArtificerBuy">
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                    onclick="recruitExile('Artificer');">Recruit The Artificer</button>
+            </div>
+            <div class="mdl-card__actions mdl-card--border ArtificerHide">
+                1000 Total Levels Required<br>
+                Quad Stash Tab Required
+            </div>
+            `}
+        </div>`;
+
+        // Generate the description card
+        const descriptionCard = `
+        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet cardBG imgBG">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">Gear Crafting</h2>
+            </div>
+            <div class="mdl-card__supporting-text mdl-card--expand">
+                <p>Use the resources that the guild farms to produce high valued items.</p>
+                <p>Research a crafting method to unlock it.</p>
+                <p>Crafts are completed (then sold) every 30 seconds.<br>Items are mirrored every 60
+                    seconds, the mirror fee increases by 5 Exalted every time.</p>
+            </div>
+        </div>`;
+
+        // Add both cards to the container
+        container.innerHTML = artificerCard + descriptionCard;
+
+        // Upgrade MDL components
+        componentHandler.upgradeElements(container);
+    }
+
     // Start all interval timers
     startIntervals() {
         // Crafting tick - every 30 seconds

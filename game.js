@@ -95,15 +95,29 @@ function showCrafting() {
         return;
     }
     
+    // Generate the header cards (Artificer and description)
+    craftingSystem.renderCraftingHeader();
+    
     // Generate the crafting cards dynamically
     craftingSystem.renderCraftingCards();
     
-    // Handle Artificer requirements for tests
+    // Handle Artificer requirements and ownership state
     const artificerOwned = typeof exileData !== 'undefined' && 
                           exileData.some(e => e.name === 'Artificer' && e.owned === true);
     
-    if (!artificerOwned) {
+    if (artificerOwned) {
+        // If Artificer is owned, hide the recruit button and requirements
+        $(".ArtificerBuy, .ArtificerHide").hide();
+        // And show the crafting cards
+        $(".craft").show();
+    } else {
+        // If Artificer is not owned, hide the crafting cards
         $(".craft").hide();
+    }
+    
+    // Check for Quad Stash Tab requirement
+    if (window.quadStashTab !== 1) {
+        $("#heavierCrafting, .advancedCrafting").hide();
     }
 }
 

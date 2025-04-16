@@ -847,8 +847,11 @@ function recruitExile(exileName) {
         return;
     } else if (exileName === 'Artificer') {
         exile.level++;
-        $(".ArtificerHide").remove();
-        $(".ArtificerBuy").remove();
+        // Use hide() instead of remove() to be compatible with dynamic regeneration
+        $(".ArtificerHide").hide();
+        $(".ArtificerBuy").hide();
+        // Update the exile's owned property to track recruitment state
+        exile.owned = true;
         $(".craft").show();
         return;
     } else if (exileName === 'Melvin') {

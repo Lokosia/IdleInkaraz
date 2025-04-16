@@ -79,7 +79,7 @@
 
 
             <div id="main" class="hidden">
-
+                <!-- Grid -->
                 <div class="mdl-grid center-items">
 
                     <div id="divSingularity"
@@ -209,7 +209,8 @@
                         </table>
                     </div>
 
-                </div><!-- /Grid -->
+                </div>
+                <!-- /Grid -->
 
             </div>
             <!-- /Main -->
@@ -232,42 +233,11 @@
 
             <!-- Crafting -->
             <div id="crafting" class="hidden">
-                <div class="mdl-grid center-items">
-
-                    <div
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG artificer">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">The Artificer</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            The hideout warrior.<br>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border ArtificerBuy">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="recruitExile('Artificer');">Recruit The Artificer</button>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border ArtificerHide">
-                            1000 Total Levels Required<br>
-                            Quad Stash Tab Required
-                        </div>
-                    </div>
-
-                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Gear Crafting</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <p>Use the resources that the guild farms to produce high valued items.</p>
-                            <p>Research a crafting method to unlock it.</p>
-                            <p>Crafts are completed (then sold) every 30 seconds.<br>Items are mirrored every 60
-                                seconds, the mirror fee increases by 5 Exalted every time.</p>
-                        </div>
-                    </div>
-
+                <div class="mdl-grid center-items" id="crafting-main-container">
+                    <!-- Header cards will be dynamically generated here -->
+                </div>
+                <div id="crafting-cards-container" class="mdl-grid center-items">
                     <!-- Crafting cards will be dynamically generated here -->
-                    <div id="crafting-cards-container" class="mdl-grid center-items">
-                    </div>
-
                 </div>
             </div>
             <!-- /Crafting -->
@@ -336,3 +306,4 @@
 </body><!-- /Body -->
 
 </html><!-- Hello :) -->
+``` 

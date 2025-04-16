@@ -53,6 +53,9 @@ class CraftingTests {
             // Mirror crafting tests
             this.testBuyMirrorCrafting();
             this.testMirrorFeeIncrease();
+
+            // New test case
+            this.testArtificerStatePreservation();
         } finally {
             // Always restore original state at end of tests
             window.guildCreated = originalGuildCreated;
@@ -571,6 +574,49 @@ class CraftingTests {
         
         // Reset for further tests
         this.resetTestState();
+    }
+
+    /**
+     * Test that Artificer recruitment state is preserved when switching tabs
+     */
+    testArtificerStatePreservation() {
+        console.log("\n--- Testing Artificer State Preservation After Tab Switch ---");
+        
+        // Set up state: guild is created, artificer is already recruited
+        window.guildCreated = true;
+        
+        // Hide welcome screen to simulate guild creation
+        $("#welcomePre").hide();
+        
+        // Set Artificer as owned
+        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
+            const artificer = exileData.find(e => e.name === 'Artificer');
+            artificer.owned = true;
+        } else {
+            // Create test data if it doesn't exist
+            window.exileData = [{ name: 'Artificer', owned: true }];
+        }
+        
+        // Show crafting tab
+        showCrafting();
+        
+        // Check that the Artificer recruitment button is hidden and the craft cards are visible
+        const artificerBuyVisible = $(".ArtificerBuy").is(":visible");
+        const craftCardsVisible = $(".craft").is(":visible");
+        
+        // Switch to another tab and back
+        showMain();
+        showCrafting();
+        
+        // Check again that the Artificer recruitment button is still hidden and craft cards still visible
+        const artificerBuyVisibleAfterSwitch = $(".ArtificerBuy").is(":visible");
+        const craftCardsVisibleAfterSwitch = $(".craft").is(":visible");
+        
+        this.assert(
+            !artificerBuyVisible && craftCardsVisible && 
+            !artificerBuyVisibleAfterSwitch && craftCardsVisibleAfterSwitch,
+            "Artificer recruitment state should be preserved after tab switch"
+        );
     }
 }
 
