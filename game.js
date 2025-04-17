@@ -1,3 +1,5 @@
+import { generateExileCards } from './js/components/ExileUI.js';
+
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
  * Called when the page first loads
@@ -75,7 +77,7 @@ function showGuild() {
 	const guildGrid = document.querySelector('#guild .mdl-grid');
 	
 	// Generate exile cards dynamically
-	generateExileCards(guildGrid);
+	generateExileCards(guildGrid, window.exileData);
 }
 
 /**
@@ -233,12 +235,12 @@ function showLinksUpgrades() {
  * @param {string} input - The message to display in the snackbar
  */
 function SnackBar(input) {
-	if (snackBarTimer <= 0) {
+	if (window.snackBarTimer <= 0) {
 		'use strict';
 		var snackbarContainer = document.querySelector('#snackBar');
 		var data = {message: input, timeout: 1500};
 		snackbarContainer.MaterialSnackbar.showSnackbar(data);
-		snackBarTimer = 1500;
+		window.snackBarTimer = 1500;
 	}
 }
 
@@ -287,3 +289,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //----------------------------------Start Functions
 gameStart();
+
+window.showMain = showMain;
+window.showGuild = showGuild;
+window.showFlipping = showFlipping;
+window.showDelving = showDelving;
+window.showCrafting = showCrafting;
+window.showInfo = showInfo;
+window.SnackBar = SnackBar;
+window.showGeneralUpgrades = showGeneralUpgrades;
+window.showGearUpgrades = showGearUpgrades;
+window.showLinksUpgrades = showLinksUpgrades;
+window.showAllUpgrades = showAllUpgrades;
