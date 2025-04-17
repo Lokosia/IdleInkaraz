@@ -140,12 +140,6 @@ class CraftingTests {
                 }
             }
         }
-
-        // Update UI if the crafting tab is visible (optional, depends if tests manipulate UI directly)
-        // if ($("#crafting").is(":visible")) {
-        //     craftingSystem.renderCraftingCards();
-        //     craftingSystem.updateFossilCounts();
-        // }
     }
 
 
@@ -167,6 +161,22 @@ class CraftingTests {
         // Restore the state that existed *before* this specific test ran
         this.restoreStateSnapshot(this.stateSnapshotBeforeTest);
         this.stateSnapshotBeforeTest = null; // Clear snapshot for the next test
+        // --- Minimal robust DOM sync: ---
+        if (typeof $ !== 'undefined' && $("#crafting").is(":visible")) {
+            craftingSystem.renderCraftingHeader();
+            craftingSystem.renderCraftingCards();
+            // Apply visibility rules for Artificer and craft cards
+            const artificerOwned = typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer' && e.owned === true);
+            if (artificerOwned) {
+                $(".ArtificerBuy, .ArtificerHide").hide();
+                $(".craft").css("display", "block").show();
+            } else {
+                $(".craft").hide();
+            }
+            if (window.quadStashTab !== 1) {
+                $("#heavierCrafting, .advancedCrafting").hide();
+            }
+        }
     }
 
     /**
@@ -238,10 +248,32 @@ class CraftingTests {
         return this.testResults.failed === 0;
     }
 
-    // Removed storeOriginalCraftingState
-    // Removed restoreOriginalCraftingState
-    // Removed getArtificerState
-    // Removed restoreArtificerState
+    /**
+     * Helper to reset all crafting and mirror item states
+     */
+    resetAllCraftingItems() {
+        if (craftingSystem) {
+            if (craftingSystem.craftingItems) {
+                for (const item of Object.values(craftingSystem.craftingItems)) {
+                    item.level = -1;
+                    item.progress = 0;
+                    item.totalCrafted = 0;
+                }
+            }
+            if (craftingSystem.mirrorItems) {
+                for (const [id, item] of Object.entries(craftingSystem.mirrorItems)) {
+                    item.level = -1;
+                    item.progress = 0;
+                    item.totalCrafted = 0;
+                    // Reset fee based on its initial definition if possible, otherwise a default
+                    const initialFee = craftingSystem.config?.mirrorItems?.[id]?.initialFee ?? 5;
+                    item.fee = initialFee;
+                }
+            }
+        } else {
+            console.error("Test Setup: craftingSystem not found!");
+        }
+    }
 
     /**
      * Reset game state to a default "ready-to-craft" state for testing
@@ -292,31 +324,7 @@ class CraftingTests {
         }
 
         // Reset crafting/mirror item states (levels, progress, etc.)
-        if (craftingSystem) {
-            if (craftingSystem.craftingItems) {
-                for (const item of Object.values(craftingSystem.craftingItems)) {
-                    item.level = -1; // Default to not bought
-                    item.progress = 0;
-                    item.totalCrafted = 0;
-                }
-            }
-            if (craftingSystem.mirrorItems) {
-                 for (const [id, item] of Object.entries(craftingSystem.mirrorItems)) {
-                    item.level = -1; // Default to not bought
-                    item.progress = 0;
-                    item.totalCrafted = 0;
-                    // Reset fee based on its initial definition if possible, otherwise a default
-                    const initialFee = craftingSystem.config?.mirrorItems?.[id]?.initialFee ?? 5; // Example lookup
-                    item.fee = initialFee;
-                }
-            }
-        } else {
-             console.error("Test Setup: craftingSystem not found!");
-        }
-
-        // Ensure craftingSystem UI elements are potentially updated if needed
-        // craftingSystem?.renderCraftingCards(); // Call if UI state needs reset visually
-        // craftingSystem?.updateFossilCounts();
+        this.resetAllCraftingItems();
     }
 
     /**
@@ -378,17 +386,17 @@ class CraftingTests {
              // If artificer didn't exist, the test condition is met by default
         }
 
-
         showCrafting(); // Attempt to show crafting tab content
 
         // Test for craft cards being correctly hidden/absent
-        // Check if the recruitment message is shown instead
-        const recruitMessageVisible = $("#recruitmentMessage").is(":visible"); // Assuming an ID for the message
-        const craftCardsVisible = $(".craft").is(":visible"); // Check if any craft cards are visible
+        // Check if the recruitment button is shown instead
+        const recruitButtonVisible = $(".ArtificerBuy:visible").length > 0;
+        // Check if any craft cards are visible
+        const craftCardsVisible = $(".craft:visible").length > 0;
 
         this.assert(
-            recruitMessageVisible && !craftCardsVisible, // Expect message, no cards
-            "Crafting cards should be hidden and recruitment message shown when Artificer is not recruited"
+            recruitButtonVisible && !craftCardsVisible, // Expect button, no cards
+            "Crafting cards should be hidden and recruitment button shown when Artificer is not recruited"
         );
     }
 
@@ -540,6 +548,8 @@ class CraftingTests {
         craftingSystem.buyCrafting('flask');
         this.assert(craftingSystem.craftingItems.flask.level === 0, "Pre-check: Flask crafting bought");
 
+        // Ensure crafting cards are rendered so DOM elements exist
+        craftingSystem.renderCraftingCards();
 
         // Save initial chaos total and crafts completed (should be 0 from reset)
         const initialChaos = Chaos.total;
@@ -693,64 +703,55 @@ class CraftingTests {
      */
     testArtificerStatePreservation() {
         console.log("\n--- Testing Artificer State Preservation After Tab Switch ---");
-        // Default state from resetTestState is sufficient (Artificer owned)
-
-        // Buy a crafting item to ensure craft cards exist
+        // Ensure at least one craft is researched for the test
         craftingSystem.buyCrafting('flask');
-
-        // Show crafting tab
         showCrafting();
-
+    
         // Check the state (Artificer owned -> no recruitment button, craft cards visible)
-        const artificerBuyExistsBefore = this.isVisible(".ArtificerBuy");
-        const craftCardsVisibleBefore = this.isVisible(".craft:visible");
-
+        const artificerBuyVisibleBefore = $(".ArtificerBuy button:visible").length > 0;
+        const craftCardsVisibleBefore = $(".craft:visible").length > 0;
+    
         // Switch to another tab and back
         showMain();
         showCrafting();
-
+    
         // Check state after tab switch
-        const artificerBuyExistsAfter = this.isVisible(".ArtificerBuy");
-        const craftCardsVisibleAfter = this.isVisible(".craft:visible");
-
-        // Log the current state for debugging
+        const artificerBuyVisibleAfter = $(".ArtificerBuy button:visible").length > 0;
+        const craftCardsVisibleAfter = $(".craft:visible").length > 0;
+    
         const artificer = window.exileData.find(e => e.name === 'Artificer');
         console.log("Test summary:",
                    "Artificer owned:", artificer?.owned,
-                   "Recruitment button exists before/after:", artificerBuyExistsBefore + "/" + artificerBuyExistsAfter,
+                   "Recruitment button visible before/after:", artificerBuyVisibleBefore + "/" + artificerBuyVisibleAfter,
                    "Craft cards visible before/after:", craftCardsVisibleBefore + "/" + craftCardsVisibleAfter);
-
-        // Assertions: When Artificer is owned:
-        // 1. The recruitment button should NOT exist/be visible.
-        // 2. Craft cards SHOULD be visible (assuming flask was bought).
+    
         this.assert(
-            !artificerBuyExistsAfter && craftCardsVisibleAfter,
+            !artificerBuyVisibleAfter && craftCardsVisibleAfter,
             "Artificer recruitment state (owned) should be preserved after tab switch"
         );
-
-         // --- Test case: Artificer NOT owned ---
-         // Need to override state *after* beforeEach's reset
-         if (artificer) artificer.owned = false;
-         showCrafting(); // Re-render based on new state
-
-         const recruitMsgVisibleBefore = this.isVisible("#recruitmentMessage");
-         const craftCardsHiddenBefore = !this.isVisible(".craft:visible");
-
-         showMain();
-         showCrafting();
-
-         const recruitMsgVisibleAfter = this.isVisible("#recruitmentMessage");
-         const craftCardsHiddenAfter = !this.isVisible(".craft:visible");
-
-         console.log("Test summary (not owned):",
+    
+        // --- Test case: Artificer NOT owned ---
+        if (artificer) artificer.owned = false;
+        showCrafting();
+    
+        const artificerBuyVisibleBefore2 = $(".ArtificerBuy button:visible").length > 0;
+        const craftCardsVisibleBefore2 = $(".craft:visible").length > 0;
+    
+        showMain();
+        showCrafting();
+    
+        const artificerBuyVisibleAfter2 = $(".ArtificerBuy button:visible").length > 0;
+        const craftCardsVisibleAfter2 = $(".craft:visible").length > 0;
+    
+        console.log("Test summary (not owned):",
                     "Artificer owned:", artificer?.owned,
-                    "Recruitment message visible before/after:", recruitMsgVisibleBefore + "/" + recruitMsgVisibleAfter,
-                    "Craft cards hidden before/after:", craftCardsHiddenBefore + "/" + craftCardsHiddenAfter);
-
-         this.assert(
-             recruitMsgVisibleAfter && craftCardsHiddenAfter,
-             "Artificer recruitment state (not owned) should be preserved after tab switch"
-         );
+                    "Recruitment button visible before/after:", artificerBuyVisibleBefore2 + "/" + artificerBuyVisibleAfter2,
+                    "Craft cards visible before/after:", craftCardsVisibleBefore2 + "/" + craftCardsVisibleAfter2);
+    
+        this.assert(
+            artificerBuyVisibleAfter2 && !craftCardsVisibleAfter2,
+            "Artificer recruitment state (not owned) should be preserved after tab switch"
+        );
     }
 
 }
