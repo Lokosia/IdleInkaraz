@@ -14,6 +14,7 @@ class CraftingTests {
             failed: 0,
             total: 0
         };
+        this.originalCraftingState = null;
     }
 
     /**
@@ -24,6 +25,9 @@ class CraftingTests {
         this.testResults = { passed: 0, failed: 0, total: 0 };
         
         console.log("===== RUNNING CRAFTING SYSTEM TESTS =====");
+        
+        // Store original crafting system state
+        this.storeOriginalCraftingState();
         
         // Reset state for testing
         this.resetTestState();
@@ -62,6 +66,9 @@ class CraftingTests {
             window.quadStashTab = originalQuadStashTab;
             this.restoreArtificerState(artificerOriginalState);
             
+            // Restore original crafting system state
+            this.restoreOriginalCraftingState();
+            
             // Restore welcome screen visibility
             if (welcomeVisible) {
                 $("#welcomePre").show();
@@ -74,6 +81,124 @@ class CraftingTests {
         console.log(`===== TEST RESULTS: ${this.testResults.passed}/${this.testResults.total} PASSED (${this.testResults.failed} failed) =====`);
         
         return this.testResults.failed === 0;
+    }
+
+    /**
+     * Store original crafting system state
+     */
+    storeOriginalCraftingState() {
+        console.log("Storing original crafting system state...");
+        this.originalCraftingState = {
+            craftingItems: {},
+            mirrorItems: {}
+        };
+
+        // Clone the crafting items state
+        if (craftingSystem && craftingSystem.craftingItems) {
+            for (const [id, item] of Object.entries(craftingSystem.craftingItems)) {
+                this.originalCraftingState.craftingItems[id] = {
+                    level: item.level,
+                    progress: item.progress,
+                    totalCrafted: item.totalCrafted
+                };
+            }
+        }
+
+        // Clone the mirror items state
+        if (craftingSystem && craftingSystem.mirrorItems) {
+            for (const [id, item] of Object.entries(craftingSystem.mirrorItems)) {
+                this.originalCraftingState.mirrorItems[id] = {
+                    level: item.level,
+                    progress: item.progress,
+                    totalCrafted: item.totalCrafted,
+                    fee: item.fee
+                };
+            }
+        }
+
+        // Store currency state
+        this.originalCraftingState.currency = {};
+        const currencyTypes = [
+            'Chaos', 'Exalted', 'Transmutation', 'Alteration', 
+            'Augmentation', 'GCP', 'Vaal'
+        ];
+
+        for (const currency of currencyTypes) {
+            if (typeof window[currency] !== 'undefined') {
+                this.originalCraftingState.currency[currency] = window[currency].total;
+            }
+        }
+
+        // Store fossil state
+        this.originalCraftingState.fossils = [];
+        if (typeof fossilData !== 'undefined') {
+            for (let i = 0; i < fossilData.length; i++) {
+                this.originalCraftingState.fossils.push({
+                    name: fossilData[i].name,
+                    total: fossilData[i].total
+                });
+            }
+        }
+    }
+
+    /**
+     * Restore original crafting system state
+     */
+    restoreOriginalCraftingState() {
+        if (!this.originalCraftingState) {
+            console.log("No original crafting state to restore.");
+            return;
+        }
+
+        console.log("Restoring original crafting system state...");
+
+        // Restore crafting items state
+        if (craftingSystem && craftingSystem.craftingItems) {
+            for (const [id, savedState] of Object.entries(this.originalCraftingState.craftingItems)) {
+                if (craftingSystem.craftingItems[id]) {
+                    craftingSystem.craftingItems[id].level = savedState.level;
+                    craftingSystem.craftingItems[id].progress = savedState.progress;
+                    craftingSystem.craftingItems[id].totalCrafted = savedState.totalCrafted;
+                }
+            }
+        }
+
+        // Restore mirror items state
+        if (craftingSystem && craftingSystem.mirrorItems) {
+            for (const [id, savedState] of Object.entries(this.originalCraftingState.mirrorItems)) {
+                if (craftingSystem.mirrorItems[id]) {
+                    craftingSystem.mirrorItems[id].level = savedState.level;
+                    craftingSystem.mirrorItems[id].progress = savedState.progress;
+                    craftingSystem.mirrorItems[id].totalCrafted = savedState.totalCrafted;
+                    craftingSystem.mirrorItems[id].fee = savedState.fee;
+                }
+            }
+        }
+
+        // Restore currency state
+        for (const [currency, total] of Object.entries(this.originalCraftingState.currency)) {
+            if (typeof window[currency] !== 'undefined') {
+                window[currency].total = total;
+            }
+        }
+
+        // Restore fossil state
+        if (typeof fossilData !== 'undefined' && this.originalCraftingState.fossils) {
+            for (let i = 0; i < fossilData.length; i++) {
+                const savedFossil = this.originalCraftingState.fossils.find(
+                    f => f.name === fossilData[i].name
+                );
+                if (savedFossil) {
+                    fossilData[i].total = savedFossil.total;
+                }
+            }
+        }
+
+        // Update UI if the crafting tab is visible
+        if ($("#crafting").is(":visible")) {
+            craftingSystem.renderCraftingCards();
+            craftingSystem.updateFossilCounts();
+        }
     }
 
     /**
@@ -114,22 +239,7 @@ class CraftingTests {
         }
         
         // Reset crafting system
-        const newSystem = new CraftingSystem();
-        
-        // Reset crafting items
-        for (const item of Object.values(newSystem.craftingItems)) {
-            item.level = -1;
-            item.progress = 0;
-            item.totalCrafted = 0;
-        }
-        
-        // Reset mirror items
-        for (const item of Object.values(newSystem.mirrorItems)) {
-            item.level = -1;
-            item.progress = 0;
-            item.totalCrafted = 0;
-            item.fee = 20; // Reset to default fee
-        }
+        this.newSystem = new CraftingSystem();
     }
     
     /**
@@ -301,17 +411,17 @@ class CraftingTests {
         let allPassed = true;
         for (const item of craftingItems) {
             // Reset level to -1 before testing
-            craftingSystem.craftingItems[item.id].level = -1;
+            this.newSystem.craftingItems[item.id].level = -1;
             
             // Set enough chaos for the purchase
             Chaos.total = item.cost + 500;
             
             const initialChaosTotal = Chaos.total;
-            const result = craftingSystem.buyCrafting(item.id);
+            const result = this.newSystem.buyCrafting(item.id);
             
             const testPassed = result === true && 
                 Chaos.total === initialChaosTotal - item.cost &&
-                craftingSystem.craftingItems[item.id].level === 0;
+                this.newSystem.craftingItems[item.id].level === 0;
             
             this.assert(
                 testPassed,
@@ -325,14 +435,14 @@ class CraftingTests {
         Chaos.total = 100; // Not enough for any crafting
         
         // Reset gem level to -1
-        craftingSystem.craftingItems.gem.level = -1;
+        this.newSystem.craftingItems.gem.level = -1;
         
-        const insufficientResult = craftingSystem.buyCrafting('gem');
+        const insufficientResult = this.newSystem.buyCrafting('gem');
         
         this.assert(
             insufficientResult === false && 
             Chaos.total === 100 &&
-            craftingSystem.craftingItems.gem.level === -1,
+            this.newSystem.craftingItems.gem.level === -1,
             "Reject purchase with insufficient currency"
         );
         
@@ -354,15 +464,15 @@ class CraftingTests {
         }
         
         // Buy flask crafting so we can test its ingredient checking
-        craftingSystem.buyCrafting('flask');
+        this.newSystem.buyCrafting('flask');
         
         // Test with sufficient ingredients
-        const hasIngredients = craftingSystem.craftingItems.flask.hasIngredients();
+        const hasIngredients = this.newSystem.craftingItems.flask.hasIngredients();
         this.assert(hasIngredients === true, "Has ingredients check with sufficient resources");
         
         // Test with insufficient ingredients
         Transmutation.total = 0; // Remove required currency
-        const missingIngredients = craftingSystem.craftingItems.flask.hasIngredients();
+        const missingIngredients = this.newSystem.craftingItems.flask.hasIngredients();
         this.assert(missingIngredients === false, "Has ingredients check with insufficient resources");
         
         // Reset for further tests
@@ -383,7 +493,7 @@ class CraftingTests {
         }
         
         // Buy flask crafting so we can test its crafting
-        craftingSystem.buyCrafting('flask');
+        this.newSystem.buyCrafting('flask');
         
         // Save initial currency values
         const initialTransmutation = Transmutation.total;
@@ -391,7 +501,7 @@ class CraftingTests {
         const initialAugmentation = Augmentation.total;
         
         // Perform craft
-        const craftResult = craftingSystem.craftingItems.flask.craft();
+        const craftResult = this.newSystem.craftingItems.flask.craft();
         
         // Verify currency was deducted correctly
         this.assert(
@@ -420,23 +530,23 @@ class CraftingTests {
         }
         
         // Buy flask crafting
-        craftingSystem.buyCrafting('flask');
+        this.newSystem.buyCrafting('flask');
         
         // Save initial chaos total and crafts completed
         const initialChaos = Chaos.total;
-        const initialCraftsCompleted = craftingSystem.craftingItems.flask.totalCrafted;
+        const initialCraftsCompleted = this.newSystem.craftingItems.flask.totalCrafted;
         
         // Simulate completing crafting by setting progress to 99
-        craftingSystem.craftingItems.flask.progress = 99;
+        this.newSystem.craftingItems.flask.progress = 99;
         
         // Update progress bar which should trigger completion
-        craftingSystem.craftingItems.flask.updateProgressBar();
+        this.newSystem.craftingItems.flask.updateProgressBar();
         
         // Verify rewards were given
         this.assert(
             Chaos.total === initialChaos + 10 &&
-            craftingSystem.craftingItems.flask.totalCrafted === initialCraftsCompleted + 1 &&
-            craftingSystem.craftingItems.flask.progress === 0, // Progress should reset
+            this.newSystem.craftingItems.flask.totalCrafted === initialCraftsCompleted + 1 &&
+            this.newSystem.craftingItems.flask.progress === 0, // Progress should reset
             "Rewards correctly given after crafting completion"
         );
         
@@ -478,18 +588,18 @@ class CraftingTests {
             
             // Save initial currency levels for verification
             const initialCurrencies = {};
-            for (const ing of craftingSystem.mirrorItems[itemId].ingredients) {
+            for (const ing of this.newSystem.mirrorItems[itemId].ingredients) {
                 initialCurrencies[ing.currency] = window[ing.currency].total;
             }
             
             // Attempt purchase
-            const result = craftingSystem.buyMirror(itemId);
+            const result = this.newSystem.buyMirror(itemId);
             
             // Verify purchase was successful
-            let testPassed = result === true && craftingSystem.mirrorItems[itemId].level === 0;
+            let testPassed = result === true && this.newSystem.mirrorItems[itemId].level === 0;
             
             // Verify all currencies were deducted correctly
-            for (const ing of craftingSystem.mirrorItems[itemId].ingredients) {
+            for (const ing of this.newSystem.mirrorItems[itemId].ingredients) {
                 testPassed = testPassed && 
                     window[ing.currency].total === initialCurrencies[ing.currency] - ing.amount;
             }
@@ -513,12 +623,12 @@ class CraftingTests {
         // Set insufficient resources for mirrorSword
         Prime.total = 10; // Not enough for mirror sword
         
-        const insufficientResult = craftingSystem.buyMirror('mirrorSword');
+        const insufficientResult = this.newSystem.buyMirror('mirrorSword');
         
         this.assert(
             insufficientResult === false && 
             Prime.total === 10 &&
-            craftingSystem.mirrorItems.mirrorSword.level === -1,
+            this.newSystem.mirrorItems.mirrorSword.level === -1,
             "Reject mirror purchase with insufficient resources"
         );
         
@@ -551,23 +661,23 @@ class CraftingTests {
             }
             
             // Buy mirror item
-            craftingSystem.buyMirror(itemId);
+            this.newSystem.buyMirror(itemId);
             
             // Save initial fee and exalted total
-            const initialFee = craftingSystem.mirrorItems[itemId].fee;
+            const initialFee = this.newSystem.mirrorItems[itemId].fee;
             const initialExalted = Exalted.total;
             
             // Simulate mirroring by setting progress to 99
-            craftingSystem.mirrorItems[itemId].progress = 99;
+            this.newSystem.mirrorItems[itemId].progress = 99;
             
             // Update progress bar which should trigger completion
-            craftingSystem.mirrorItems[itemId].updateProgressBar();
+            this.newSystem.mirrorItems[itemId].updateProgressBar();
             
             // Verify fee increased and rewards given
             this.assert(
-                craftingSystem.mirrorItems[itemId].fee === initialFee + 5 &&
+                this.newSystem.mirrorItems[itemId].fee === initialFee + 5 &&
                 Exalted.total === initialExalted + initialFee &&
-                craftingSystem.mirrorItems[itemId].totalCrafted === 1,
+                this.newSystem.mirrorItems[itemId].totalCrafted === 1,
                 `${itemId} fee increases correctly after mirroring`
             );
         }
@@ -605,7 +715,7 @@ class CraftingTests {
         }
         
         // Buy a crafting item to ensure craft cards exist in the test
-        craftingSystem.buyCrafting('flask');
+        this.newSystem.buyCrafting('flask');
         
         // Show crafting tab
         showCrafting();
