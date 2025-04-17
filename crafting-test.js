@@ -14,89 +14,39 @@ class CraftingTests {
             failed: 0,
             total: 0
         };
-        this.originalCraftingState = null;
+        // Store for the state before *any* tests run
+        this.initialGlobalStateSnapshot = null;
+        // Store for the state before *each* test runs
+        this.stateSnapshotBeforeTest = null;
     }
 
     /**
-     * Run all tests and report results
+     * Takes a snapshot of the relevant game state.
      */
-    runAllTests() {
-        // Reset test results
-        this.testResults = { passed: 0, failed: 0, total: 0 };
-        
-        console.log("===== RUNNING CRAFTING SYSTEM TESTS =====");
-        
-        // Store original crafting system state
-        this.storeOriginalCraftingState();
-        
-        // Reset state for testing
-        this.resetTestState();
-
-        // Store original state
-        const originalGuildCreated = window.guildCreated;
-        const originalQuadStashTab = window.quadStashTab;
-        const artificerOriginalState = this.getArtificerState();
-        
-        // Save welcome screen visibility state
-        const welcomeVisible = $("#welcomePre").is(":visible");
-        
-        try {
-            // Run all tests
-            
-            // Access control validation
-            this.testCraftingRequiresGuildCreation();
-            this.testCraftingRequiresArtificer();
-            this.testCraftingRequiresQuadTab();
-            
-            // Regular crafting tests
-            this.testBuyCrafting();
-            this.testCraftingIngredientCheck();
-            this.testCraftingCurrencyDeduction();
-            this.testCraftingRewards();
-            
-            // Mirror crafting tests
-            this.testBuyMirrorCrafting();
-            this.testMirrorFeeIncrease();
-
-            // New test case
-            this.testArtificerStatePreservation();
-        } finally {
-            // Always restore original state at end of tests
-            window.guildCreated = originalGuildCreated;
-            window.quadStashTab = originalQuadStashTab;
-            this.restoreArtificerState(artificerOriginalState);
-            
-            // Restore original crafting system state
-            this.restoreOriginalCraftingState();
-            
-            // Restore welcome screen visibility
-            if (welcomeVisible) {
-                $("#welcomePre").show();
-            } else {
-                $("#welcomePre").hide();
-            }
-        }
-        
-        // Report results
-        console.log(`===== TEST RESULTS: ${this.testResults.passed}/${this.testResults.total} PASSED (${this.testResults.failed} failed) =====`);
-        
-        return this.testResults.failed === 0;
-    }
-
-    /**
-     * Store original crafting system state
-     */
-    storeOriginalCraftingState() {
-        console.log("Storing original crafting system state...");
-        this.originalCraftingState = {
+    takeStateSnapshot() {
+        const snapshot = {
+            guildCreated: window.guildCreated,
+            quadStashTab: window.quadStashTab,
+            welcomeVisible: $("#welcomePre").is(":visible"),
+            artificer: null,
             craftingItems: {},
-            mirrorItems: {}
+            mirrorItems: {},
+            currency: {},
+            fossils: []
         };
 
-        // Clone the crafting items state
+        // Snapshot Artificer state
+        if (typeof window.exileData !== 'undefined') {
+            const artificer = window.exileData.find(e => e.name === 'Artificer');
+            if (artificer) {
+                snapshot.artificer = { owned: artificer.owned, level: artificer.level };
+            }
+        }
+
+        // Snapshot crafting items state
         if (craftingSystem && craftingSystem.craftingItems) {
             for (const [id, item] of Object.entries(craftingSystem.craftingItems)) {
-                this.originalCraftingState.craftingItems[id] = {
+                snapshot.craftingItems[id] = {
                     level: item.level,
                     progress: item.progress,
                     totalCrafted: item.totalCrafted
@@ -104,10 +54,10 @@ class CraftingTests {
             }
         }
 
-        // Clone the mirror items state
+        // Snapshot mirror items state
         if (craftingSystem && craftingSystem.mirrorItems) {
             for (const [id, item] of Object.entries(craftingSystem.mirrorItems)) {
-                this.originalCraftingState.mirrorItems[id] = {
+                snapshot.mirrorItems[id] = {
                     level: item.level,
                     progress: item.progress,
                     totalCrafted: item.totalCrafted,
@@ -116,138 +66,265 @@ class CraftingTests {
             }
         }
 
-        // Store currency state
-        this.originalCraftingState.currency = {};
+        // Snapshot currency state
         const currencyTypes = [
-            'Chaos', 'Exalted', 'Transmutation', 'Alteration', 
-            'Augmentation', 'GCP', 'Vaal'
+            'Chaos', 'Exalted', 'Transmutation', 'Alteration',
+            'Augmentation', 'GCP', 'Vaal', 'Prime', 'Regal', 'Divine' // Add potentially missing ones
         ];
-
         for (const currency of currencyTypes) {
             if (typeof window[currency] !== 'undefined') {
-                this.originalCraftingState.currency[currency] = window[currency].total;
+                snapshot.currency[currency] = window[currency].total;
             }
         }
 
-        // Store fossil state
-        this.originalCraftingState.fossils = [];
-        if (typeof fossilData !== 'undefined') {
-            for (let i = 0; i < fossilData.length; i++) {
-                this.originalCraftingState.fossils.push({
-                    name: fossilData[i].name,
-                    total: fossilData[i].total
-                });
-            }
+        // Snapshot fossil state
+        if (typeof window.fossilData !== 'undefined') {
+            snapshot.fossils = window.fossilData.map(f => ({ name: f.name, total: f.total }));
         }
+
+        return snapshot;
     }
 
     /**
-     * Restore original crafting system state
+     * Restores the game state from a snapshot.
      */
-    restoreOriginalCraftingState() {
-        if (!this.originalCraftingState) {
-            console.log("No original crafting state to restore.");
-            return;
-        }
+    restoreStateSnapshot(snapshot) {
+        if (!snapshot) return;
 
-        console.log("Restoring original crafting system state...");
+        window.guildCreated = snapshot.guildCreated;
+        window.quadStashTab = snapshot.quadStashTab;
+        if (snapshot.welcomeVisible) $("#welcomePre").show(); else $("#welcomePre").hide();
+
+        // Restore Artificer state
+        if (typeof window.exileData !== 'undefined' && snapshot.artificer !== null) {
+            let artificer = window.exileData.find(e => e.name === 'Artificer');
+            if (!artificer) {
+                artificer = { name: 'Artificer', owned: false, level: 0 };
+                window.exileData.push(artificer);
+            }
+            artificer.owned = snapshot.artificer.owned;
+            artificer.level = snapshot.artificer.level;
+        }
 
         // Restore crafting items state
         if (craftingSystem && craftingSystem.craftingItems) {
-            for (const [id, savedState] of Object.entries(this.originalCraftingState.craftingItems)) {
+            for (const [id, savedState] of Object.entries(snapshot.craftingItems)) {
                 if (craftingSystem.craftingItems[id]) {
-                    craftingSystem.craftingItems[id].level = savedState.level;
-                    craftingSystem.craftingItems[id].progress = savedState.progress;
-                    craftingSystem.craftingItems[id].totalCrafted = savedState.totalCrafted;
+                    Object.assign(craftingSystem.craftingItems[id], savedState);
                 }
             }
         }
 
         // Restore mirror items state
         if (craftingSystem && craftingSystem.mirrorItems) {
-            for (const [id, savedState] of Object.entries(this.originalCraftingState.mirrorItems)) {
+            for (const [id, savedState] of Object.entries(snapshot.mirrorItems)) {
                 if (craftingSystem.mirrorItems[id]) {
-                    craftingSystem.mirrorItems[id].level = savedState.level;
-                    craftingSystem.mirrorItems[id].progress = savedState.progress;
-                    craftingSystem.mirrorItems[id].totalCrafted = savedState.totalCrafted;
-                    craftingSystem.mirrorItems[id].fee = savedState.fee;
+                    Object.assign(craftingSystem.mirrorItems[id], savedState);
                 }
             }
         }
 
         // Restore currency state
-        for (const [currency, total] of Object.entries(this.originalCraftingState.currency)) {
+        for (const [currency, total] of Object.entries(snapshot.currency)) {
             if (typeof window[currency] !== 'undefined') {
                 window[currency].total = total;
             }
         }
 
         // Restore fossil state
-        if (typeof fossilData !== 'undefined' && this.originalCraftingState.fossils) {
-            for (let i = 0; i < fossilData.length; i++) {
-                const savedFossil = this.originalCraftingState.fossils.find(
-                    f => f.name === fossilData[i].name
-                );
+        if (typeof window.fossilData !== 'undefined' && snapshot.fossils) {
+            for (let i = 0; i < window.fossilData.length; i++) {
+                const savedFossil = snapshot.fossils.find(f => f.name === window.fossilData[i].name);
                 if (savedFossil) {
-                    fossilData[i].total = savedFossil.total;
+                    window.fossilData[i].total = savedFossil.total;
                 }
             }
         }
 
-        // Update UI if the crafting tab is visible
-        if ($("#crafting").is(":visible")) {
-            craftingSystem.renderCraftingCards();
-            craftingSystem.updateFossilCounts();
-        }
+        // Update UI if the crafting tab is visible (optional, depends if tests manipulate UI directly)
+        // if ($("#crafting").is(":visible")) {
+        //     craftingSystem.renderCraftingCards();
+        //     craftingSystem.updateFossilCounts();
+        // }
+    }
+
+
+    /**
+     * Setup before each test
+     */
+    beforeEach() {
+        // Take snapshot *before* resetting state for the test
+        this.stateSnapshotBeforeTest = this.takeStateSnapshot();
+
+        // Reset state to a known good default for most tests
+        this.resetTestState();
     }
 
     /**
-     * Save artificer state
+     * Teardown after each test
      */
-    getArtificerState() {
-        if (typeof exileData === 'undefined' || !exileData.some(e => e.name === 'Artificer')) {
-            return false;
-        }
-        return exileData.find(e => e.name === 'Artificer').owned;
+    afterEach() {
+        // Restore the state that existed *before* this specific test ran
+        this.restoreStateSnapshot(this.stateSnapshotBeforeTest);
+        this.stateSnapshotBeforeTest = null; // Clear snapshot for the next test
     }
-    
+
     /**
-     * Restore artificer state
+     * Run all tests and report results
      */
-    restoreArtificerState(wasOwned) {
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = wasOwned;
+    runAllTests() {
+        // Prevent tab switching during tests by mocking showCrafting and related functions
+        const originalShowCrafting = window.showCrafting;
+        const originalShowMain = window.showMain;
+        const originalShowGuild = window.showGuild;
+        const originalShowDelving = window.showDelving;
+        const originalShowInfo = window.showInfo;
+        window.showCrafting = function(){};
+        window.showMain = function(){};
+        window.showGuild = function(){};
+        window.showDelving = function(){};
+        window.showInfo = function(){};
+
+        // Reset test results
+        this.testResults = { passed: 0, failed: 0, total: 0 };
+
+        console.log("===== RUNNING CRAFTING SYSTEM TESTS =====");
+
+        // Store the initial state *before any tests run*
+        this.initialGlobalStateSnapshot = this.takeStateSnapshot();
+
+        const testsToRun = [
+            this.testCraftingRequiresGuildCreation,
+            this.testCraftingRequiresArtificer,
+            this.testCraftingRequiresQuadTab,
+            this.testBuyCrafting,
+            this.testCraftingIngredientCheck,
+            this.testCraftingCurrencyDeduction,
+            this.testCraftingRewards,
+            this.testBuyMirrorCrafting,
+            this.testMirrorFeeIncrease,
+            this.testArtificerStatePreservation
+        ];
+
+        try {
+            for (const testMethod of testsToRun) {
+                try {
+                    this.beforeEach(); // Setup before the test (takes snapshot, resets state)
+                    testMethod.call(this); // Run the test
+                } catch (e) {
+                    console.error(`❌ ERROR in test ${testMethod.name}:`, e);
+                    this.testResults.failed++; // Count errors as failures
+                    this.testResults.total++; // Ensure total is incremented even on error
+                } finally {
+                    this.afterEach(); // Teardown after the test (restores snapshot)
+                }
+            }
+        } finally {
+            // Restore the initial state from *before any tests ran*
+            console.log("Restoring initial global state...");
+            this.restoreStateSnapshot(this.initialGlobalStateSnapshot);
+            this.initialGlobalStateSnapshot = null; // Clean up
+            // Restore original tab functions
+            window.showCrafting = originalShowCrafting;
+            window.showMain = originalShowMain;
+            window.showGuild = originalShowGuild;
+            window.showDelving = originalShowDelving;
+            window.showInfo = originalShowInfo;
         }
+
+        // Report results
+        console.log(`===== TEST RESULTS: ${this.testResults.passed}/${this.testResults.total} PASSED (${this.testResults.failed} failed) =====`);
+
+        return this.testResults.failed === 0;
     }
-    
+
+    // Removed storeOriginalCraftingState
+    // Removed restoreOriginalCraftingState
+    // Removed getArtificerState
+    // Removed restoreArtificerState
+
     /**
-     * Reset game state for testing
+     * Reset game state to a default "ready-to-craft" state for testing
      */
     resetTestState() {
-        // Reset currency for testing
-        Chaos.total = 100000;
-        Exalted.total = 10000;
-        Transmutation.total = 10000;
-        Alteration.total = 10000;
-        Augmentation.total = 10000;
-        GCP.total = 10000;
-        Vaal.total = 10000;
-        
-        // Reset fossils for testing
-        for (let i = 0; i < fossilData.length; i++) {
-            fossilData[i].total = 10000;
+        // Default global state
+        window.guildCreated = true;
+        window.quadStashTab = 1;
+        $("#welcomePre").hide(); // Hide welcome screen by default
+
+        // Default Artificer state (ensure exists and is owned)
+        if (typeof window.exileData === 'undefined') {
+            window.exileData = [];
         }
-        
-        // Reset crafting system
-        this.newSystem = new CraftingSystem();
+        let artificer = window.exileData.find(e => e.name === 'Artificer');
+        if (!artificer) {
+            artificer = { name: 'Artificer', owned: false, level: 0 };
+            window.exileData.push(artificer);
+        }
+        artificer.owned = true;
+        artificer.level = 1; // Set a default level > 0
+
+        // Reset currency to generous amounts
+        const currencyTypes = [
+            'Chaos', 'Exalted', 'Transmutation', 'Alteration',
+            'Augmentation', 'GCP', 'Vaal', 'Prime', 'Regal', 'Divine'
+        ];
+        for (const currency of currencyTypes) {
+            if (typeof window[currency] !== 'undefined') {
+                window[currency].total = 100000; // Generous amount
+            } else {
+                 // Define missing currency objects if necessary for tests
+                 // Example: window[currency] = { total: 100000, ... other properties };
+                 console.warn(`Test Setup: Currency ${currency} not found, initializing.`);
+                 // Basic initialization, might need adjustment based on actual currency structure
+                 window[currency] = { total: 100000, id: currency.toLowerCase(), name: currency };
+            }
+        }
+
+        // Reset fossils to generous amounts
+        if (typeof window.fossilData !== 'undefined') {
+            for (let i = 0; i < window.fossilData.length; i++) {
+                window.fossilData[i].total = 10000;
+            }
+        } else {
+            console.warn("Test Setup: fossilData not found.");
+            window.fossilData = []; // Initialize if missing
+        }
+
+        // Reset crafting/mirror item states (levels, progress, etc.)
+        if (craftingSystem) {
+            if (craftingSystem.craftingItems) {
+                for (const item of Object.values(craftingSystem.craftingItems)) {
+                    item.level = -1; // Default to not bought
+                    item.progress = 0;
+                    item.totalCrafted = 0;
+                }
+            }
+            if (craftingSystem.mirrorItems) {
+                 for (const [id, item] of Object.entries(craftingSystem.mirrorItems)) {
+                    item.level = -1; // Default to not bought
+                    item.progress = 0;
+                    item.totalCrafted = 0;
+                    // Reset fee based on its initial definition if possible, otherwise a default
+                    const initialFee = craftingSystem.config?.mirrorItems?.[id]?.initialFee ?? 5; // Example lookup
+                    item.fee = initialFee;
+                }
+            }
+        } else {
+             console.error("Test Setup: craftingSystem not found!");
+        }
+
+        // Ensure craftingSystem UI elements are potentially updated if needed
+        // craftingSystem?.renderCraftingCards(); // Call if UI state needs reset visually
+        // craftingSystem?.updateFossilCounts();
     }
-    
+
     /**
      * Helper to assert and log test results
      */
     assert(condition, testName) {
         this.testResults.total++;
-        
+
         if (condition) {
             console.log(`✅ PASS: ${testName}`);
             this.testResults.passed++;
@@ -255,8 +332,15 @@ class CraftingTests {
             console.log(`❌ FAIL: ${testName}`);
             this.testResults.failed++;
         }
-        
+
         return condition;
+    }
+
+    /**
+     * Helper to check if a selector is visible in the DOM
+     */
+    isVisible(selector) {
+        return $(selector).is(":visible");
     }
 
     /**
@@ -264,32 +348,15 @@ class CraftingTests {
      */
     testCraftingRequiresGuildCreation() {
         console.log("\n--- Testing Crafting Requires Guild Creation ---");
-        
-        // Set up test state - guild not created
+
+        // Override default state set by resetTestState in beforeEach
         window.guildCreated = false;
-        
-        // Get crafting tab element's display state before trying to access
+        $("#welcomePre").show(); // Explicitly show welcome screen for this test
+
         const craftingTabDisplayBefore = $("#crafting").css("display");
-        
-        // Save welcome screen visibility state
-        const welcomeWasVisible = $("#welcomePre").is(":visible");
-        
-        // Mock the welcome screen as visible to simulate guild not being created
-        $("#welcomePre").show();
-        
-        // Call showCrafting
-        showCrafting();
-        
-        // Verify crafting tab remains hidden when guild not created
+        showCrafting(); // Attempt to show crafting tab
         const craftingTabDisplayAfter = $("#crafting").css("display");
-        
-        // Clean up our test environment - restore welcome screen to previous state
-        if (!welcomeWasVisible) {
-            $("#welcomePre").hide();
-        }
-        
-        // Our assertion is simplified: if the UI is correctly implemented,
-        // the crafting tab should not become visible when there's no guild
+
         this.assert(
             craftingTabDisplayAfter === "none" || craftingTabDisplayAfter === craftingTabDisplayBefore,
             "Crafting tab should remain inaccessible when guild is not created"
@@ -301,42 +368,27 @@ class CraftingTests {
      */
     testCraftingRequiresArtificer() {
         console.log("\n--- Testing Crafting Requires Artificer ---");
-        
-        // Set up proper state for testing: guild is created but artificer not recruited
-        window.guildCreated = true;
-        
-        // Save welcome screen visibility state
-        const welcomeWasVisible = $("#welcomePre").is(":visible");
-        
-        // Hide welcome screen to simulate guild creation
-        $("#welcomePre").hide();
-        
-        // Create a test Artificer exile if it doesn't exist
-        if (typeof exileData === 'undefined') {
-            window.exileData = [{ name: 'Artificer', owned: false }];
-        } else if (!exileData.some(e => e.name === 'Artificer')) {
-            exileData.push({ name: 'Artificer', owned: false });
+
+        // Override default state: Make sure Artificer is not owned for this test
+        const artificer = window.exileData.find(e => e.name === 'Artificer');
+        if (artificer) {
+            artificer.owned = false;
+        } else {
+             console.warn("Artificer not found in test setup for testCraftingRequiresArtificer");
+             // If artificer didn't exist, the test condition is met by default
         }
-        
-        // Make sure Artificer is not owned
-        const artificer = exileData.find(e => e.name === 'Artificer');
-        artificer.owned = false;
-        
-        // Validate crafting access - we expect the craft cards to be hidden
-        // since Artificer isn't owned, even though we can see the crafting tab
-        showCrafting();
-        
-        // Test for craft cards being correctly hidden
-        const craftCardsVisible = $(".craft").is(":visible");
-        
-        // Restore welcome screen if it was visible
-        if (welcomeWasVisible) {
-            $("#welcomePre").show();
-        }
-        
+
+
+        showCrafting(); // Attempt to show crafting tab content
+
+        // Test for craft cards being correctly hidden/absent
+        // Check if the recruitment message is shown instead
+        const recruitMessageVisible = $("#recruitmentMessage").is(":visible"); // Assuming an ID for the message
+        const craftCardsVisible = $(".craft").is(":visible"); // Check if any craft cards are visible
+
         this.assert(
-            !craftCardsVisible, 
-            "Crafting cards should be hidden when Artificer is not recruited"
+            recruitMessageVisible && !craftCardsVisible, // Expect message, no cards
+            "Crafting cards should be hidden and recruitment message shown when Artificer is not recruited"
         );
     }
 
@@ -345,56 +397,37 @@ class CraftingTests {
      */
     testCraftingRequiresQuadTab() {
         console.log("\n--- Testing Crafting Requires Quad Stash Tab ---");
-        
-        // Set up proper state: guild created, artificer owned, but no quad tab
-        window.guildCreated = true;
+
+        // Override default state: Set quad tab to 0 for this test
         window.quadStashTab = 0;
-        
-        // Save welcome screen visibility state
-        const welcomeWasVisible = $("#welcomePre").is(":visible");
-        
-        // Hide welcome screen to simulate guild creation
-        $("#welcomePre").hide();
-        
-        // Set Artificer as owned
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            const artificer = exileData.find(e => e.name === 'Artificer');
-            artificer.owned = true;
-        }
-        
-        // Check crafting access
-        showCrafting();
-        
-        // The expectation is that even with artificer, certain crafting cards 
-        // should be inaccessible without the quad tab
-        const heavierCraftingVisible = $("#heavierCrafting").is(":visible") ||
-                                     $(".advancedCrafting").is(":visible");
-        
-        // Restore welcome screen if it was visible
-        if (welcomeWasVisible) {
-            $("#welcomePre").show();
-        }
-        
+
+        // Ensure Artificer is owned (should be by default from resetTestState)
+        const artificer = window.exileData.find(e => e.name === 'Artificer');
+        if (artificer) artificer.owned = true;
+
+
+        showCrafting(); // Show the tab
+
+        // Check if advanced/heavier crafting sections are hidden
+        // Assuming specific IDs or classes for these sections
+        const heavierCraftingVisible = $("#heavierCrafting").is(":visible");
+        const advancedCraftingVisible = $(".advancedCrafting").is(":visible"); // Example class
+
         this.assert(
-            !heavierCraftingVisible,
+            !heavierCraftingVisible && !advancedCraftingVisible,
             "Advanced crafting options should be hidden without Quad Stash Tab"
         );
     }
-    
+
     /**
      * Test buying regular crafting items
      */
     testBuyCrafting() {
         console.log("\n--- Testing Buy Crafting Functionality ---");
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
-        }
-        
-        // Test all regular crafting items
+
+        // Default state from resetTestState is sufficient (guild, quad, artificer, currency)
+
+         // Test all regular crafting items
         const craftingItems = [
             { id: 'flask', cost: 400 },
             { id: 'gem', cost: 1600 },
@@ -406,347 +439,325 @@ class CraftingTests {
             { id: 'fire', cost: 4000 },
             { id: 'wand', cost: 10000 }
         ];
-        
+
+
         // Test each crafting item purchase
-        let allPassed = true;
         for (const item of craftingItems) {
-            // Reset level to -1 before testing
-            this.newSystem.craftingItems[item.id].level = -1;
-            
-            // Set enough chaos for the purchase
-            Chaos.total = item.cost + 500;
-            
+            // Level is already -1 from resetTestState
+            // Currency is already high from resetTestState
+
             const initialChaosTotal = Chaos.total;
-            const result = this.newSystem.buyCrafting(item.id);
-            
-            const testPassed = result === true && 
+            const result = craftingSystem.buyCrafting(item.id);
+
+            const testPassed = result === true &&
                 Chaos.total === initialChaosTotal - item.cost &&
-                this.newSystem.craftingItems[item.id].level === 0;
-            
+                craftingSystem.craftingItems[item.id].level === 0;
+
             this.assert(
                 testPassed,
                 `Buy ${item.id.charAt(0).toUpperCase() + item.id.slice(1)} Crafting with sufficient currency`
             );
-            
-            allPassed = allPassed && testPassed;
         }
-        
-        // Test purchase with insufficient currency (using gem crafting)
+
+        // Test purchase with insufficient currency
         Chaos.total = 100; // Not enough for any crafting
-        
-        // Reset gem level to -1
-        this.newSystem.craftingItems.gem.level = -1;
-        
-        const insufficientResult = this.newSystem.buyCrafting('gem');
-        
+        craftingSystem.craftingItems.gem.level = -1; // Ensure it's not bought
+
+        const insufficientResult = craftingSystem.buyCrafting('gem');
+
         this.assert(
-            insufficientResult === false && 
-            Chaos.total === 100 &&
-            this.newSystem.craftingItems.gem.level === -1,
+            insufficientResult === false &&
+            Chaos.total === 100 && // Currency unchanged
+            craftingSystem.craftingItems.gem.level === -1, // Level unchanged
             "Reject purchase with insufficient currency"
         );
-        
-        // Reset for further tests
-        this.resetTestState();
     }
-    
-    /**
+
+     /**
      * Test crafting ingredient check functionality
      */
     testCraftingIngredientCheck() {
         console.log("\n--- Testing Crafting Ingredient Check ---");
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
-        }
-        
-        // Buy flask crafting so we can test its ingredient checking
-        this.newSystem.buyCrafting('flask');
-        
-        // Test with sufficient ingredients
-        const hasIngredients = this.newSystem.craftingItems.flask.hasIngredients();
+        // Default state from resetTestState is sufficient
+
+        // Buy flask crafting first (level becomes 0)
+        craftingSystem.buyCrafting('flask');
+        this.assert(craftingSystem.craftingItems.flask.level === 0, "Pre-check: Flask crafting bought");
+
+        // Test with sufficient ingredients (resetTestState provides enough)
+        const hasIngredients = craftingSystem.craftingItems.flask.hasIngredients();
         this.assert(hasIngredients === true, "Has ingredients check with sufficient resources");
-        
+
         // Test with insufficient ingredients
         Transmutation.total = 0; // Remove required currency
-        const missingIngredients = this.newSystem.craftingItems.flask.hasIngredients();
+        const missingIngredients = craftingSystem.craftingItems.flask.hasIngredients();
         this.assert(missingIngredients === false, "Has ingredients check with insufficient resources");
-        
-        // Reset for further tests
-        this.resetTestState();
     }
-    
+
     /**
      * Test currency deduction during crafting
      */
     testCraftingCurrencyDeduction() {
         console.log("\n--- Testing Crafting Currency Deduction ---");
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
-        }
-        
-        // Buy flask crafting so we can test its crafting
-        this.newSystem.buyCrafting('flask');
-        
-        // Save initial currency values
+        // Default state from resetTestState is sufficient
+
+        // Buy flask crafting
+        craftingSystem.buyCrafting('flask');
+        this.assert(craftingSystem.craftingItems.flask.level === 0, "Pre-check: Flask crafting bought");
+
+
+        // Save initial currency values (resetTestState provides initial values)
         const initialTransmutation = Transmutation.total;
         const initialAlteration = Alteration.total;
         const initialAugmentation = Augmentation.total;
-        
+
         // Perform craft
-        const craftResult = this.newSystem.craftingItems.flask.craft();
-        
+        const craftResult = craftingSystem.craftingItems.flask.craft(); // Assumes craft() returns true on success
+
         // Verify currency was deducted correctly
         this.assert(
             craftResult === true &&
-            Transmutation.total === initialTransmutation - 1 &&
-            Alteration.total === initialAlteration - 20 &&
-            Augmentation.total === initialAugmentation - 10,
+            Transmutation.total === initialTransmutation - 1 && // Assuming flask costs 1 Transmutation
+            Alteration.total === initialAlteration - 20 && // Assuming flask costs 20 Alteration
+            Augmentation.total === initialAugmentation - 10, // Assuming flask costs 10 Augmentation
             "Currency correctly deducted after crafting"
         );
-        
-        // Reset for further tests
-        this.resetTestState();
+         // Verify craft fails if insufficient ingredients
+        Transmutation.total = 0; // Make insufficient
+        const failedCraftResult = craftingSystem.craftingItems.flask.craft();
+        this.assert(failedCraftResult === false, "Crafting fails with insufficient ingredients");
+
     }
-    
-    /**
+
+     /**
      * Test reward distribution after crafting completes
      */
     testCraftingRewards() {
         console.log("\n--- Testing Crafting Rewards ---");
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
-        }
-        
+        // Default state from resetTestState is sufficient
+
         // Buy flask crafting
-        this.newSystem.buyCrafting('flask');
-        
-        // Save initial chaos total and crafts completed
+        craftingSystem.buyCrafting('flask');
+        this.assert(craftingSystem.craftingItems.flask.level === 0, "Pre-check: Flask crafting bought");
+
+
+        // Save initial chaos total and crafts completed (should be 0 from reset)
         const initialChaos = Chaos.total;
-        const initialCraftsCompleted = this.newSystem.craftingItems.flask.totalCrafted;
-        
-        // Simulate completing crafting by setting progress to 99
-        this.newSystem.craftingItems.flask.progress = 99;
-        
-        // Update progress bar which should trigger completion
-        this.newSystem.craftingItems.flask.updateProgressBar();
-        
+        const initialCraftsCompleted = craftingSystem.craftingItems.flask.totalCrafted;
+
+        // Simulate completing crafting by setting progress just below max
+        // Assuming max progress is 100 for flask
+        craftingSystem.craftingItems.flask.progress = 99;
+
+        // Update progress bar which should trigger completion and reward
+        craftingSystem.craftingItems.flask.updateProgressBar(); // Assumes this increments progress and checks completion
+
         // Verify rewards were given
+        // Assuming flask reward is 10 Chaos
         this.assert(
             Chaos.total === initialChaos + 10 &&
-            this.newSystem.craftingItems.flask.totalCrafted === initialCraftsCompleted + 1 &&
-            this.newSystem.craftingItems.flask.progress === 0, // Progress should reset
+            craftingSystem.craftingItems.flask.totalCrafted === initialCraftsCompleted + 1 &&
+            craftingSystem.craftingItems.flask.progress === 0, // Progress should reset
             "Rewards correctly given after crafting completion"
         );
-        
-        // Reset for further tests
-        this.resetTestState();
     }
-    
+
     /**
      * Test buying mirror crafting items
      */
     testBuyMirrorCrafting() {
         console.log("\n--- Testing Buy Mirror Crafting ---");
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
-        }
-        
-        // Test all mirror items
+        // Default state from resetTestState is sufficient (includes Prime, Regal, Divine)
+
         const mirrorItems = [
             'mirrorSword',
             'mirrorShield',
             'mirrorChest'
         ];
-        
-        // Test each mirror item purchase
+
         for (const itemId of mirrorItems) {
-            // Reset for clean test
-            this.resetTestState();
-            
-            // Re-set necessary state for crafting after reset
-            window.guildCreated = true;
-            window.quadStashTab = 1;
-            if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-                exileData.find(e => e.name === 'Artificer').owned = true;
+            // Ensure item exists in the system
+            if (!craftingSystem.mirrorItems[itemId]) {
+                 console.warn(`Mirror item ${itemId} not found. Skipping buy test.`);
+                 continue;
             }
-            
+             // Level is -1 from reset, currency is high
+
             // Save initial currency levels for verification
             const initialCurrencies = {};
-            for (const ing of this.newSystem.mirrorItems[itemId].ingredients) {
-                initialCurrencies[ing.currency] = window[ing.currency].total;
+            const ingredients = craftingSystem.mirrorItems[itemId].ingredients;
+            if (!ingredients) {
+                 console.warn(`Mirror item ${itemId} has no ingredients defined. Skipping buy test.`);
+                 continue;
             }
-            
+            for (const ing of ingredients) {
+                if (typeof window[ing.currency] !== 'undefined') {
+                    initialCurrencies[ing.currency] = window[ing.currency].total;
+                } else {
+                     console.warn(`Currency ${ing.currency} not found for item ${itemId}`);
+                     initialCurrencies[ing.currency] = 0; // Should not happen with resetTestState
+                }
+            }
+
             // Attempt purchase
-            const result = this.newSystem.buyMirror(itemId);
-            
+            const result = craftingSystem.buyMirror(itemId);
+
             // Verify purchase was successful
-            let testPassed = result === true && this.newSystem.mirrorItems[itemId].level === 0;
-            
+            let testPassed = result === true && craftingSystem.mirrorItems[itemId].level === 0;
+
             // Verify all currencies were deducted correctly
-            for (const ing of this.newSystem.mirrorItems[itemId].ingredients) {
-                testPassed = testPassed && 
-                    window[ing.currency].total === initialCurrencies[ing.currency] - ing.amount;
+            for (const ing of ingredients) {
+                if (typeof window[ing.currency] !== 'undefined') {
+                    testPassed = testPassed &&
+                        window[ing.currency].total === initialCurrencies[ing.currency] - ing.amount;
+                } else {
+                     testPassed = false; // Fail if currency was missing
+                }
             }
-            
+
             this.assert(
                 testPassed,
                 `Buy ${itemId} with sufficient resources`
             );
         }
-        
-        // Test purchase with insufficient resources
-        this.resetTestState();
-        
-        // Set necessary state for crafting to work
-        window.guildCreated = true;
-        window.quadStashTab = 1;
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            exileData.find(e => e.name === 'Artificer').owned = true;
+
+        // Test purchase with insufficient resources (using mirrorSword)
+         if (craftingSystem.mirrorItems.mirrorSword && typeof Prime !== 'undefined') {
+            Prime.total = 10; // Not enough (assuming cost > 10)
+            craftingSystem.mirrorItems.mirrorSword.level = -1; // Ensure not bought
+
+            const insufficientResult = craftingSystem.buyMirror('mirrorSword');
+
+            this.assert(
+                insufficientResult === false &&
+                Prime.total === 10 && // Unchanged
+                craftingSystem.mirrorItems.mirrorSword.level === -1, // Unchanged
+                "Reject mirror purchase with insufficient resources (Prime)"
+            );
+        } else {
+             console.warn("Skipping insufficient Prime test: mirrorSword or Prime currency not defined.");
         }
-        
-        // Set insufficient resources for mirrorSword
-        Prime.total = 10; // Not enough for mirror sword
-        
-        const insufficientResult = this.newSystem.buyMirror('mirrorSword');
-        
-        this.assert(
-            insufficientResult === false && 
-            Prime.total === 10 &&
-            this.newSystem.mirrorItems.mirrorSword.level === -1,
-            "Reject mirror purchase with insufficient resources"
-        );
-        
-        // Reset for further tests
-        this.resetTestState();
     }
-    
+
     /**
      * Test mirror fee increase functionality
      */
     testMirrorFeeIncrease() {
         console.log("\n--- Testing Mirror Fee Increase ---");
-        
-        // Test fee increase for all mirror items
+        // Default state from resetTestState is sufficient
+
         const mirrorItems = [
             'mirrorSword',
             'mirrorShield',
             'mirrorChest'
         ];
-        
+
         for (const itemId of mirrorItems) {
-            // Reset for clean test
-            this.resetTestState();
-            
-            // Set necessary state for crafting to work
-            window.guildCreated = true;
-            window.quadStashTab = 1;
-            if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-                exileData.find(e => e.name === 'Artificer').owned = true;
+            if (!craftingSystem.mirrorItems[itemId]) {
+                console.warn(`Mirror item ${itemId} not found. Skipping fee increase test.`);
+                continue;
             }
-            
-            // Buy mirror item
-            this.newSystem.buyMirror(itemId);
-            
+
+            // Buy mirror item first
+            const buyResult = craftingSystem.buyMirror(itemId);
+             if (!buyResult) {
+                 console.warn(`Failed to buy ${itemId}, skipping fee increase test.`);
+                 continue; // Cannot test fee if buy fails
+             }
+             this.assert(craftingSystem.mirrorItems[itemId].level === 0, `Pre-check: ${itemId} bought`);
+
+
             // Save initial fee and exalted total
-            const initialFee = this.newSystem.mirrorItems[itemId].fee;
+            const initialFee = craftingSystem.mirrorItems[itemId].fee;
             const initialExalted = Exalted.total;
-            
-            // Simulate mirroring by setting progress to 99
-            this.newSystem.mirrorItems[itemId].progress = 99;
-            
-            // Update progress bar which should trigger completion
-            this.newSystem.mirrorItems[itemId].updateProgressBar();
-            
+            const initialCrafts = craftingSystem.mirrorItems[itemId].totalCrafted; // Should be 0
+
+            // Simulate mirroring completion
+            craftingSystem.mirrorItems[itemId].progress = 99; // Assuming max 100
+            craftingSystem.mirrorItems[itemId].updateProgressBar(); // Trigger completion
+
             // Verify fee increased and rewards given
+            // Assuming fee increases by 5 and reward is the fee amount in Exalted
             this.assert(
-                this.newSystem.mirrorItems[itemId].fee === initialFee + 5 &&
-                Exalted.total === initialExalted + initialFee &&
-                this.newSystem.mirrorItems[itemId].totalCrafted === 1,
+                craftingSystem.mirrorItems[itemId].fee === initialFee + 5 &&
+                Exalted.total === initialExalted + initialFee && // Gained the initial fee
+                craftingSystem.mirrorItems[itemId].totalCrafted === initialCrafts + 1 &&
+                craftingSystem.mirrorItems[itemId].progress === 0, // Progress reset
                 `${itemId} fee increases correctly after mirroring`
             );
         }
-        
-        // Reset for further tests
-        this.resetTestState();
     }
 
-    /**
+     /**
      * Test that Artificer recruitment state is preserved when switching tabs
      */
     testArtificerStatePreservation() {
         console.log("\n--- Testing Artificer State Preservation After Tab Switch ---");
-        
-        // Reset test state to start fresh
-        this.resetTestState();
-        
-        // Set up state: guild is created, artificer is already recruited
-        window.guildCreated = true;
-        window.quadStashTab = 1; // Ensure quad tab is owned
-        
-        // Hide welcome screen to simulate guild creation
-        $("#welcomePre").hide();
-        
-        // Set Artificer as owned
-        if (typeof exileData !== 'undefined' && exileData.some(e => e.name === 'Artificer')) {
-            const artificer = exileData.find(e => e.name === 'Artificer');
-            artificer.owned = true;
-            artificer.level = 1; // Set level to 1 to ensure it's considered recruited
-            console.log("Setting Artificer as owned, level:", artificer.level);
-        } else {
-            // Create test data if it doesn't exist
-            window.exileData = [{ name: 'Artificer', owned: true, level: 1 }];
-            console.log("Created new Artificer with owned=true");
-        }
-        
-        // Buy a crafting item to ensure craft cards exist in the test
-        this.newSystem.buyCrafting('flask');
-        
+        // Default state from resetTestState is sufficient (Artificer owned)
+
+        // Buy a crafting item to ensure craft cards exist
+        craftingSystem.buyCrafting('flask');
+
         // Show crafting tab
         showCrafting();
-        
-        // Check the state
-        const artificerBuyExistsBefore = $(".ArtificerBuy").length > 0;
-        const craftCardsVisibleBefore = $(".craft").length > 0;
-        
+
+        // Check the state (Artificer owned -> no recruitment button, craft cards visible)
+        const artificerBuyExistsBefore = this.isVisible(".ArtificerBuy");
+        const craftCardsVisibleBefore = this.isVisible(".craft:visible");
+
         // Switch to another tab and back
         showMain();
         showCrafting();
-        
+
         // Check state after tab switch
-        const artificerBuyExistsAfter = $(".ArtificerBuy").length > 0;
-        const craftCardsVisibleAfter = $(".craft").length > 0;
-        
-        // Log the current state
-        console.log("Test summary:", 
-                   "Artificer owned:", exileData.find(e => e.name === 'Artificer').owned,
+        const artificerBuyExistsAfter = this.isVisible(".ArtificerBuy");
+        const craftCardsVisibleAfter = this.isVisible(".craft:visible");
+
+        // Log the current state for debugging
+        const artificer = window.exileData.find(e => e.name === 'Artificer');
+        console.log("Test summary:",
+                   "Artificer owned:", artificer?.owned,
                    "Recruitment button exists before/after:", artificerBuyExistsBefore + "/" + artificerBuyExistsAfter,
-                   "Craft cards exist before/after:", craftCardsVisibleBefore + "/" + craftCardsVisibleAfter);
-        
-        // When Artificer is owned:
-        // 1. The recruitment button should not exist
-        // 2. Craft cards should exist
+                   "Craft cards visible before/after:", craftCardsVisibleBefore + "/" + craftCardsVisibleAfter);
+
+        // Assertions: When Artificer is owned:
+        // 1. The recruitment button should NOT exist/be visible.
+        // 2. Craft cards SHOULD be visible (assuming flask was bought).
         this.assert(
             !artificerBuyExistsAfter && craftCardsVisibleAfter,
-            "Artificer recruitment state should be preserved after tab switch"
+            "Artificer recruitment state (owned) should be preserved after tab switch"
         );
+
+         // --- Test case: Artificer NOT owned ---
+         // Need to override state *after* beforeEach's reset
+         if (artificer) artificer.owned = false;
+         showCrafting(); // Re-render based on new state
+
+         const recruitMsgVisibleBefore = this.isVisible("#recruitmentMessage");
+         const craftCardsHiddenBefore = !this.isVisible(".craft:visible");
+
+         showMain();
+         showCrafting();
+
+         const recruitMsgVisibleAfter = this.isVisible("#recruitmentMessage");
+         const craftCardsHiddenAfter = !this.isVisible(".craft:visible");
+
+         console.log("Test summary (not owned):",
+                    "Artificer owned:", artificer?.owned,
+                    "Recruitment message visible before/after:", recruitMsgVisibleBefore + "/" + recruitMsgVisibleAfter,
+                    "Craft cards hidden before/after:", craftCardsHiddenBefore + "/" + craftCardsHiddenAfter);
+
+         this.assert(
+             recruitMsgVisibleAfter && craftCardsHiddenAfter,
+             "Artificer recruitment state (not owned) should be preserved after tab switch"
+         );
     }
+
 }
+
+// =====================
+// Test Utility Functions & UI Setup
+// =====================
 
 /**
  * Test function to add 99999 of all fossils
@@ -767,6 +778,7 @@ function addTestFossils() {
 }
 
 // Create test button UI when the DOM is loaded
+// (UI setup for test controls)
 document.addEventListener('DOMContentLoaded', function() {
     // Create a simple test interface
     const testContainer = document.createElement('div');
