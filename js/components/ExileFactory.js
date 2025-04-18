@@ -1,12 +1,13 @@
 // ExileFactory module for creating and managing exiles and their upgrades
 import { Exile } from './Exile.js';
+import { currencyMap } from './currencyData.js';
 
 const gearUpgrades = [
     {
         level: 0,  // First upgrade, applied at gear level 0
         requirements: [
-            { currency: Transmutation, amount: 5 },
-            { currency: Augmentation, amount: 5 }
+            { currency: currencyMap['Transmutation'], amount: 5 },
+            { currency: currencyMap['Augmentation'], amount: 5 }
         ],
         benefit: 0.1,
         description: "Upgrade {name} flasks to Magic rarity"
@@ -14,8 +15,8 @@ const gearUpgrades = [
     {
         level: 1,
         requirements: [
-            { currency: Transmutation, amount: 10 },
-            { currency: Augmentation, amount: 10 }
+            { currency: currencyMap['Transmutation'], amount: 10 },
+            { currency: currencyMap['Augmentation'], amount: 10 }
         ],
         benefit: 0.1,
         description: "Upgrade {name} gear to Magic rarity"
@@ -23,8 +24,8 @@ const gearUpgrades = [
     {
         level: 2,
         requirements: [
-            { currency: Alteration, amount: 50 },
-            { currency: Augmentation, amount: 50 }
+            { currency: currencyMap['Alteration'], amount: 50 },
+            { currency: currencyMap['Augmentation'], amount: 50 }
         ],
         benefit: 0.2,
         description: "Roll {name} flasks"
@@ -32,8 +33,8 @@ const gearUpgrades = [
     {
         level: 3,
         requirements: [
-            { currency: Alteration, amount: 100 },
-            { currency: Augmentation, amount: 100 }
+            { currency: currencyMap['Alteration'], amount: 100 },
+            { currency: currencyMap['Augmentation'], amount: 100 }
         ],
         benefit: 0.2,
         description: "Roll {name} gear"
@@ -41,7 +42,7 @@ const gearUpgrades = [
     {
         level: 4,
         requirements: [
-            { currency: Blacksmith, amount: 20 }
+            { currency: currencyMap['Blacksmith'], amount: 20 }
         ],
         benefit: 0.2,
         description: "20% quality {name} weapon"
@@ -49,7 +50,7 @@ const gearUpgrades = [
     {
         level: 5,
         requirements: [
-            { currency: Armourer, amount: 200 }
+            { currency: currencyMap['Armourer'], amount: 200 }
         ],
         benefit: 0.2,
         description: "20% quality {name} gear"
@@ -57,7 +58,7 @@ const gearUpgrades = [
     {
         level: 6,
         requirements: [
-            { currency: Regal, amount: 10 }
+            { currency: currencyMap['Regal'], amount: 10 }
         ],
         benefit: 0.3,
         description: "Upgrade {name} gear to Rare rarity"
@@ -65,7 +66,7 @@ const gearUpgrades = [
     {
         level: 7,
         requirements: [
-            { currency: Chaos, amount: 30 }
+            { currency: currencyMap['Chaos'], amount: 30 }
         ],
         benefit: 0.4,
         description: "Buy upgrades for {name} gear"
@@ -73,7 +74,7 @@ const gearUpgrades = [
     {
         level: 8,
         requirements: [
-            { currency: Chaos, amount: 50 }
+            { currency: currencyMap['Chaos'], amount: 50 }
         ],
         benefit: 0.4,
         description: "Buy jewels for {name} gear"
@@ -81,7 +82,7 @@ const gearUpgrades = [
     {
         level: 9,
         requirements: [
-            { currency: Blessed, amount: 30 }
+            { currency: currencyMap['Blessed'], amount: 30 }
         ],
         benefit: 0.4,
         description: "Blessed implicits for {name} gear"
@@ -89,7 +90,7 @@ const gearUpgrades = [
     {
         level: 10,
         requirements: [
-            { currency: Chaos, amount: 100 }
+            { currency: currencyMap['Chaos'], amount: 100 }
         ],
         benefit: 0.5,
         description: "Buy upgrades for {name} gear"
@@ -97,8 +98,8 @@ const gearUpgrades = [
     {
         level: 11,
         requirements: [
-            { currency: Regret, amount: 15 },
-            { currency: Chance, amount: 150 }
+            { currency: currencyMap['Regret'], amount: 15 },
+            { currency: currencyMap['Chance'], amount: 150 }
         ],
         benefit: 0.5,
         description: "Enchant {name} gloves"
@@ -106,8 +107,8 @@ const gearUpgrades = [
     {
         level: 12,
         requirements: [
-            { currency: Regret, amount: 40 },
-            { currency: Chance, amount: 400 }
+            { currency: currencyMap['Regret'], amount: 40 },
+            { currency: currencyMap['Chance'], amount: 400 }
         ],
         benefit: 0.5,
         description: "Enchant {name} boots"
@@ -115,7 +116,7 @@ const gearUpgrades = [
     {
         level: 13,
         requirements: [
-            { currency: Glassblower, amount: 50 }
+            { currency: currencyMap['Glassblower'], amount: 50 }
         ],
         benefit: 0.5,
         description: "20% quality {name} flasks"
@@ -123,8 +124,8 @@ const gearUpgrades = [
     {
         level: 14,
         requirements: [
-            { currency: Exalted, amount: 1 },
-            { currency: Chaos, amount: 50 }
+            { currency: currencyMap['Exalted'], amount: 1 },
+            { currency: currencyMap['Chaos'], amount: 50 }
         ],
         benefit: 0.6,
         description: "Anoint {name} amulet"
@@ -132,7 +133,7 @@ const gearUpgrades = [
     {
         level: 15,
         requirements: [
-            { currency: Chaos, amount: 250 }
+            { currency: currencyMap['Chaos'], amount: 250 }
         ],
         benefit: 0.6,
         description: "Buy upgrades for {name} gear"
@@ -140,8 +141,8 @@ const gearUpgrades = [
     {
         level: 16,
         requirements: [
-            { currency: Exalted, amount: 2 },
-            { currency: Chaos, amount: 200 }
+            { currency: currencyMap['Exalted'], amount: 2 },
+            { currency: currencyMap['Chaos'], amount: 200 }
         ],
         benefit: 0.7,
         description: "Buy unique flasks for {name}"
@@ -149,7 +150,7 @@ const gearUpgrades = [
     {
         level: 17,
         requirements: [
-            { currency: Divine, amount: 10 }
+            { currency: currencyMap['Divine'], amount: 10 }
         ],
         benefit: 0.7,
         description: "Divine {name} gear"
@@ -157,7 +158,7 @@ const gearUpgrades = [
     {
         level: 18,
         requirements: [
-            { currency: Exalted, amount: 3 }
+            { currency: currencyMap['Exalted'], amount: 3 }
         ],
         benefit: 0.8,
         description: "Buy upgrades for {name} gear"
@@ -165,8 +166,8 @@ const gearUpgrades = [
     {
         level: 19,
         requirements: [
-            { currency: Regret, amount: 250 },
-            { currency: Chance, amount: 2500 }
+            { currency: currencyMap['Regret'], amount: 250 },
+            { currency: currencyMap['Chance'], amount: 2500 }
         ],
         benefit: 0.9,
         description: "Enchant {name} helmet"
@@ -174,7 +175,7 @@ const gearUpgrades = [
     {
         level: 20,
         requirements: [
-            { currency: Exalted, amount: 10 }
+            { currency: currencyMap['Exalted'], amount: 10 }
         ],
         benefit: 1,
         description: "Exalt {name} gear"
@@ -182,8 +183,8 @@ const gearUpgrades = [
     {
         level: 21,
         requirements: [
-            { currency: Exalted, amount: 5 },
-            { currency: Awakener, amount: 1 }
+            { currency: currencyMap['Exalted'], amount: 5 },
+            { currency: currencyMap['Awakener'], amount: 1 }
         ],
         benefit: 1.5,
         description: "Craft explode chest for {name}"
@@ -191,7 +192,7 @@ const gearUpgrades = [
     {
         level: 22,
         requirements: [
-            { currency: Exalted, amount: 50 }
+            { currency: currencyMap['Exalted'], amount: 50 }
         ],
         benefit: 1.5,
         description: "Buy Watchers Eye for {name}"
@@ -199,7 +200,7 @@ const gearUpgrades = [
     {
         level: 23,
         requirements: [
-            { currency: Exalted, amount: 150 }
+            { currency: currencyMap['Exalted'], amount: 150 }
         ],
         benefit: 2,
         specialIncrement: 7,
@@ -211,8 +212,8 @@ const linksUpgrades = [
     {
         level: 0,
         requirements: [
-            { currency: Fusing, amount: 10 },
-            { currency: Jeweller, amount: 10 }
+            { currency: currencyMap['Fusing'], amount: 10 },
+            { currency: currencyMap['Jeweller'], amount: 10 }
         ],
         benefit: 0.5,
         displayValue: "4L",
@@ -221,7 +222,7 @@ const linksUpgrades = [
     {
         level: 1,
         requirements: [
-            { currency: Chromatic, amount: 100 }
+            { currency: currencyMap['Chromatic'], amount: 100 }
         ],
         benefit: 0.5,
         displayValue: "4L",
@@ -230,8 +231,8 @@ const linksUpgrades = [
     {
         level: 2,
         requirements: [
-            { currency: Fusing, amount: 150 },
-            { currency: Jeweller, amount: 150 }
+            { currency: currencyMap['Fusing'], amount: 150 },
+            { currency: currencyMap['Jeweller'], amount: 150 }
         ],
         benefit: 0.6,
         displayValue: "5L",
@@ -240,8 +241,8 @@ const linksUpgrades = [
     {
         level: 3,
         requirements: [
-            { currency: Fusing, amount: 1500 },
-            { currency: Jeweller, amount: 1500 }
+            { currency: currencyMap['Fusing'], amount: 1500 },
+            { currency: currencyMap['Jeweller'], amount: 1500 }
         ],
         benefit: 1.0,
         displayValue: "6L",
@@ -250,7 +251,7 @@ const linksUpgrades = [
     {
         level: 4,
         requirements: [
-            { currency: Vaal, amount: 50 }
+            { currency: currencyMap['Vaal'], amount: 50 }
         ],
         benefit: 1.5,
         displayValue: "6L (+1 Gems)",
@@ -259,7 +260,7 @@ const linksUpgrades = [
     {
         level: 5,
         requirements: [
-            { currency: GCP, amount: 120 }
+            { currency: currencyMap['GCP'], amount: 120 }
         ],
         benefit: 1.5,
         displayValue: "6L (+1/20% Gems)",
@@ -268,7 +269,7 @@ const linksUpgrades = [
     {
         level: 6,
         requirements: [
-            { currency: Vaal, amount: 100 }
+            { currency: currencyMap['Vaal'], amount: 100 }
         ],
         benefit: 1.5,
         displayValue: "6L (+2/20% Gems)",
@@ -277,7 +278,7 @@ const linksUpgrades = [
     {
         level: 7,
         requirements: [
-            { currency: Vaal, amount: 150 }
+            { currency: currencyMap['Vaal'], amount: 150 }
         ],
         benefit: 2.0,
         displayValue: "6L (+2/23% Gems)",
@@ -286,7 +287,7 @@ const linksUpgrades = [
     {
         level: 8,
         requirements: [
-            { currency: Vaal, amount: 200 }
+            { currency: currencyMap['Vaal'], amount: 200 }
         ],
         benefit: 2.5,
         displayValue: "6L (+5/23% Gems)",

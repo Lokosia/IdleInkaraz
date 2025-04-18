@@ -148,3 +148,5 @@ const CURRENCY_CONFIG = [
     },
     { name: 'Sulphite', rate: 0.0000650, sellRate: 0, buyRate: 0, tradingCurrency: 'None', displayName: "Sulphite" },
 ];
+
+export { CURRENCY_CONFIG };

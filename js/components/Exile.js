@@ -47,12 +47,16 @@ class Exile {
     updateExileClass() {
         if (this.level > 0 && this.level <= 99) {
             this.lvlExile();
-            document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
-            document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = numeral(this.exp).format('0,0') + "/" + numeral(this.expToLevel).format('0,0');
-            document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + numeral(this.dropRate).format('0,0.0');
+            const levelElem = document.getElementsByClassName(this.name + 'Level')[0];
+            if (levelElem) levelElem.innerHTML = this.level;
+            const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
+            if (expElem) expElem.innerHTML = numeral(this.exp).format('0,0') + "/" + numeral(this.expToLevel).format('0,0');
+            const effElem = document.getElementsByClassName(this.name + 'Efficiency')[0];
+            if (effElem) effElem.innerHTML = "x" + numeral(this.dropRate).format('0,0.0');
         }
         if (this.level == 100) {
-            document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = "Max";
+            const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
+            if (expElem) expElem.innerHTML = "Max";
             if (this.name === 'Melvin') {
                 $(".MelvinRerollButton").removeClass('hidden');
                 return;
@@ -97,7 +101,8 @@ class Exile {
 
     applyLinksUpgrade(upgrade) {
         this.dropRate += upgrade.benefit;
-        document.getElementsByClassName(this.name + 'Links')[0].innerHTML = upgrade.displayValue;
+        const linksElem = document.getElementsByClassName(this.name + 'Links')[0];
+        if (linksElem) linksElem.innerHTML = upgrade.displayValue;
         if (upgrade.finalUpgrade) {
             $(".hover").removeClass("hover");
             $(`#${this.name}LinksUpgrade`).off('mouseenter mouseleave');
@@ -189,9 +194,12 @@ class Exile {
             $(".MelvinRerollButton").addClass('hidden');
         }
         $('.' + this.name + 'Reroll').removeClass('hidden');
-        document.getElementsByClassName(this.name + 'Reroll')[0].innerHTML = '(+' + this.rerollLevel + ')';
-        document.getElementsByClassName(this.name + 'EXP')[0].innerHTML = "0/525";
-        document.getElementsByClassName(this.name + 'Level')[0].innerHTML = "1";
+        const rerollElem = document.getElementsByClassName(this.name + 'Reroll')[0];
+        if (rerollElem) rerollElem.innerHTML = '(+' + this.rerollLevel + ')';
+        const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
+        if (expElem) expElem.innerHTML = "0/525";
+        const levelElem = document.getElementsByClassName(this.name + 'Level')[0];
+        if (levelElem) levelElem.innerHTML = "1";
     }
 
     setupHover(upgradeType, firstCurrency, secondCurrency = null) {

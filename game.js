@@ -136,9 +136,6 @@ function showCrafting() {
     const artificerOwned = typeof exileData !== 'undefined' && 
                           exileData.some(e => e.name === 'Artificer' && e.owned === true);
     
-    // Debug: Check how many craft elements exist
-    console.log("Craft elements count:", $(".craft").length);
-    
     // Always apply visibility rules based on current state
     if (artificerOwned) {
         // When the Artificer is owned, hide all recruitment elements
