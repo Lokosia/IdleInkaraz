@@ -1,11 +1,11 @@
-import { generateExileCards } from './js/components/ExileUI.js';
-import { ExileFactory } from './js/components/ExileFactory.js';
-import { currencyData } from './js/components/CurrencyData.js';
-import { updateCurrencyClass, setupCurrencyUI } from './js/components/CurrencyUI.js';
-import { initDelvingUI } from './js/components/DelveUI.js';
-import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/DelveSystem.js';
-import Upgrades from './upgrades.js';
-import { fossilData } from './js/components/Fossil.js';
+import { generateExileCards } from './js/components/exile/ExileUI.js';
+import { ExileFactory } from './js/components/exile/ExileFactory.js';
+import { currencyData } from './js/components/currency/CurrencyData.js';
+import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
+import { initDelvingUI } from './js/components/delve/DelveUI.js';
+import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
+import Upgrades from './js/components/Upgrades.js';
+import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 
 /**

@@ -1,6 +1,6 @@
 // DelveUI.js - Contains UI creation and initialization for Delving
 import { fossilData } from './Fossil.js';
-import { UICard } from './Cards.js';
+import { UICard } from '../Cards.js';
 
 function createMelvinSection() {
     const content = `

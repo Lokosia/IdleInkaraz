@@ -1,6 +1,6 @@
-// currencyData.js - Currency data and initialization
+// CurrencyData.js - Currency data and initialization
 import Currency from './Currency.js';
-import { CURRENCY_CONFIG } from '../../currency-config.js';
+import { CURRENCY_CONFIG } from './CurrencyConfig.js';
 
 const currencyData = [];
 const currencyMap = {};

@@ -1,5 +1,5 @@
 // Currency.js - Currency class module
-import Upgrades from '../../upgrades.js';
+import Upgrades from '../Upgrades.js';
 
 /**
  * Represents a game currency with trading functionality

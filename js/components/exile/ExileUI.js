@@ -1,5 +1,5 @@
 // Exile UI utilities for rendering and updating Exile-related UI
-import { UICard } from './Cards.js';
+import { UICard } from '../Cards.js';
 /**
  * Generates and updates HTML for upgrade buttons and descriptions
  * @param {string} exile - The exile name
