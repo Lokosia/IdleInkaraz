@@ -307,17 +307,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Recruit Singularity
 	document.getElementById('recruit-singularity')?.addEventListener('click', () => recruitExile('Singularity'));
 
-	// Upgrade navigation
+	// Main tab upgrade filters
 	document.getElementById('btn-all-upgrades')?.addEventListener('click', showAllUpgrades);
 	document.getElementById('btn-general-upgrades')?.addEventListener('click', showGeneralUpgrades);
 	document.getElementById('btn-gear-upgrades')?.addEventListener('click', showGearUpgrades);
 	document.getElementById('btn-links-upgrades')?.addEventListener('click', showLinksUpgrades);
 
 	// Upgrade buttons
-	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyCrusader());
-	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyHunter());
-	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyRedeemer());
-	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyWarlord());
+	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Crusader));
+	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Hunter));
+	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Redeemer));
+	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Warlord));
 });
 
 //----------------------------------Start Functions
