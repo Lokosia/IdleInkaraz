@@ -273,7 +273,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.querySelector('#welcomePre .mdl-grid').appendChild(welcomeCard);
 
 	// Initialize the button inside the card
-	const createGuildButton = UIButton.create('Create Guild', welcome);
+	const createGuildButton = document.createElement('button');
+	createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
+	createGuildButton.textContent = 'Create Guild';
+	createGuildButton.onclick = welcome;
 	document.getElementById('create-guild-button').appendChild(createGuildButton);
 
 	/**
