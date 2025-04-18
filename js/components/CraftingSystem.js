@@ -1,4 +1,5 @@
 import { CraftingItem, MirrorItem } from './CraftingItem.js';
+import { fossilData } from './Fossil.js';
 
 class CraftingSystem {
     constructor() {

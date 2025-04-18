@@ -2,6 +2,8 @@ import { generateExileCards } from './js/components/ExileUI.js';
 import { ExileFactory } from './js/components/ExileFactory.js';
 import { currencyData } from './js/components/currencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/CurrencyUI.js';
+import { initDelvingUI } from './js/components/DelveUI.js';
+import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/DelveSystem.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -288,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         );
     }
+    initDelvingUI(); // Initialize Delving UI
 });
 
 //----------------------------------Start Functions
@@ -352,6 +355,30 @@ setInterval(function gameTick() {
     processCurrencyOperation('sellCurrency');
     processCurrencyOperation('buyCurrency');
     updateCurrencyClass();
+}, 100);
+
+//---Delve system integration---
+setInterval(function delveTick() {
+    if (window.Melvin && window.Melvin.level >= 1 && window.Sulphite) {
+        // Use upgradeDropRate if available, else 0
+        delve(window.Sulphite, window.Melvin, window.upgradeDropRate || 0);
+    }
+}, 2500);
+
+setInterval(function delveLoadingBarAnimate() {
+    const { delveLoadingProgress } = getDelveState();
+    if (delveLoadingProgress >= 1) {
+        incrementDelveLoadingProgress(5);
+        let e = document.querySelector('#delveLoader');
+        if (e && e.MaterialProgress) {
+            componentHandler.upgradeElement(e);
+            e.MaterialProgress.setProgress(getDelveState().delveLoadingProgress);
+            if (getDelveState().delveLoadingProgress >= 100) {
+                setDelveLoadingProgress(0);
+                e.MaterialProgress.setProgress(0);
+            }
+        }
+    }
 }, 100);
 
 //---Unlocking Exiles (moved from exiles.js)
