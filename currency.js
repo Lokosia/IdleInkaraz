@@ -339,12 +339,12 @@ document.addEventListener('DOMContentLoaded', function () {
  * Used for development and debugging
  */
 function initTestMode() {
-    // Set 10000 of every currency
+    // Set 99999 of every currency
     currencyData.forEach(currency => {
         currency.total = 99999;
     });
     
-    console.log('Test mode initialized with 10000 of each currency');
+    console.log('Test mode initialized with 99999 of each currency');
 }
 
 // Make it available globally

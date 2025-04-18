@@ -44,3 +44,7 @@ show how much currency each individual exile farmed
 show efficecy of every exile
 
 add trading mini-game, where player can receive buying message which he should react to, and where he can get scammed
+
+make sure the game is working when web page is not in focus
+
+optimize timer intervals, probably change all to event listeners
