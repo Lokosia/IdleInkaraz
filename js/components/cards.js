@@ -77,3 +77,5 @@ class UICard {
         return actionDiv;
     }
 }
+
+export { UICard };

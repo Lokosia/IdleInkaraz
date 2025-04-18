@@ -1,11 +1,12 @@
 import { generateExileCards } from './js/components/ExileUI.js';
 import { ExileFactory } from './js/components/ExileFactory.js';
-import { currencyData } from './js/components/currencyData.js';
+import { currencyData } from './js/components/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/CurrencyUI.js';
 import { initDelvingUI } from './js/components/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/DelveSystem.js';
 import Upgrades from './upgrades.js';
 import { fossilData } from './js/components/Fossil.js';
+import { UICard } from './js/components/Cards.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen

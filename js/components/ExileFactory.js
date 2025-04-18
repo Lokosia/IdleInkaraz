@@ -1,6 +1,6 @@
 // ExileFactory module for creating and managing exiles and their upgrades
 import { Exile } from './Exile.js';
-import { currencyMap } from './currencyData.js';
+import { currencyMap } from './CurrencyData.js';
 
 const gearUpgrades = [
     {

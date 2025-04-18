@@ -1,5 +1,6 @@
 import { CraftingItem, MirrorItem } from './CraftingItem.js';
 import { fossilData } from './Fossil.js';
+import { UICard } from './Cards.js';
 
 class CraftingSystem {
     constructor() {

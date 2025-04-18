@@ -1,5 +1,5 @@
 // CurrencyUI.js - Handles all currency-related UI rendering and events
-import { currencyData, currencyMap } from './currencyData.js';
+import { currencyData, currencyMap } from './CurrencyData.js';
 
 function toggleCurrencyOperation(currency, operation) {
     const method = operation === 'sell' ? 'sellSetCurrency' : 'buySetCurrency';

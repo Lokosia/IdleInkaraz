@@ -1,6 +1,8 @@
 1. Refactor code
 2. Connect telegram methods
 
+some cards have dynamic height, get rid of it
+
 Each second (tick) = 1 minute in game. Make it last a whole season. Or have some kinda real prestige system that is meaningful.
 
 save/load feature. Kinda shit with JS/jQuery but maybe React/Angular would be better for saving states.
