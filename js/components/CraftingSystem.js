@@ -234,26 +234,26 @@ class CraftingSystem {
 
     // Generate HTML for this crafting item
     generateHTML() {
-        let html = `
-        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG craft">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">${this.displayName}</h2>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand">
-                <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
-                Crafting Cost:<br>
-                ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br><br>
-                Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
-                Total Crafted: <span class="craft${this.capitalizeFirst()}Total">0</span>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand craft${this.capitalizeFirst()}Cost">
-                <a class="mdl-button mdl-button--raised mdl-button--colored"
-                    onclick="craftingSystem.buyCrafting('${this.id}');">Research ${this.displayName}</a><br><br>
-                Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos
-                <br>
-            </div>
-        </div>`;
-        return html;
+        // Refactored to use UICard for card structure
+        const content = `
+            <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
+            Crafting Cost:<br>
+            ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br><br>
+            Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
+            Total Crafted: <span class="craft${this.capitalizeFirst()}Total">0</span>
+        `;
+        const actionSection = `<a class="mdl-button mdl-button--raised mdl-button--colored"
+            onclick="craftingSystem.buyCrafting('${this.id}');">Research ${this.displayName}</a><br><br>
+            Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos<br>`;
+        const card = UICard.create({
+            id: `${this.id}-card`,
+            title: this.displayName,
+            content: content,
+            actionSections: [{ content: actionSection, className: 'mdl-card__supporting-text mdl-card--expand craft' + this.capitalizeFirst() + 'Cost' }],
+            size: 'third',
+            extraClasses: ['cardBG', 'craft']
+        });
+        return card.outerHTML;
     }
 
     renderCraftingCards() {
@@ -293,38 +293,30 @@ class CraftingSystem {
         container.innerHTML = '';
         const artificerOwned = typeof exileData !== 'undefined' && 
                                exileData.some(e => e.name === 'Artificer' && e.owned === true);
-        const artificerCard = `
-        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG artificer">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">The Artificer</h2>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand">
-                The hideout warrior.<br>
-            </div>
-            ${artificerOwned ? '' : `
-            <div class="mdl-card__actions mdl-card--border ArtificerBuy">
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                    onclick="recruitExile('Artificer');">Recruit The Artificer</button>
-            </div>
-            <div class="mdl-card__actions mdl-card--border ArtificerHide">
-                1000 Total Levels Required<br>
-                Quad Stash Tab Required
-            </div>
-            `}
-        </div>`;
-        const descriptionCard = `
-        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet cardBG imgBG">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">Gear Crafting</h2>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand">
-                <p>Use the resources that the guild farms to produce high valued items.</p>
+        // Use UICard for Artificer and description cards
+        const artificerCard = UICard.create({
+            id: 'artificer-card',
+            title: 'The Artificer',
+            content: 'The hideout warrior.<br>',
+            actionSections: !artificerOwned ? [
+                { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="recruitExile('Artificer');">Recruit The Artificer</button>`, className: 'mdl-card__actions mdl-card--border ArtificerBuy' },
+                { content: '1000 Total Levels Required<br>Quad Stash Tab Required', className: 'mdl-card__actions mdl-card--border ArtificerHide' }
+            ] : [],
+            size: 'third',
+            extraClasses: ['cardBG', 'artificer']
+        });
+        const descriptionCard = UICard.create({
+            id: 'crafting-description-card',
+            title: 'Gear Crafting',
+            content: `<p>Use the resources that the guild farms to produce high valued items.</p>
                 <p>Research a crafting method to unlock it.</p>
-                <p>Crafts are completed (then sold) every 30 seconds.<br>Items are mirrored every 60
-                    seconds, the mirror fee increases by 5 Exalted every time.</p>
-            </div>
-        </div>`;
-        container.innerHTML = artificerCard + descriptionCard;
+                <p>Crafts are completed (then sold) every 30 seconds.<br>Items are mirrored every 60 seconds, the mirror fee increases by 5 Exalted every time.</p>`,
+            size: 'half',
+            extraClasses: ['cardBG', 'imgBG']
+        });
+        container.innerHTML = '';
+        container.appendChild(artificerCard);
+        container.appendChild(descriptionCard);
         componentHandler.upgradeElements(container);
     }
 }
