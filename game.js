@@ -335,7 +335,7 @@ window.showLinksUpgrades = showLinksUpgrades;
 window.showAllUpgrades = showAllUpgrades;
 
 //---Main (global state)
-window.totalLevel = 1000; // or your test value
+window.totalLevel = 0;
 window.dropRate = 0;
 window.playTime = 0;
 window.snackBarTimer = 0;
@@ -349,7 +349,7 @@ window.exileData.forEach(exile => {
 
 //---Main game loop
 setInterval(function gameTick() {
-	let tempLevel = 0;
+	let tempLevel = 1000;
 	let tempDropRate = 0; // Start efficiency at 0
 	// Add Upgrades.upgradeDropRate and Upgrades.incDropRate only if they are > 0
 	if (Upgrades.upgradeDropRate > 0) tempDropRate += Upgrades.upgradeDropRate;
@@ -418,13 +418,13 @@ function recruitExile(exileName) {
 		return;
 	}
 	if (window.totalLevel < exile.levelRequirement) {
-		SnackBar("Requirements not met.");
+		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${window.totalLevel}`);
 		return;
 	}
 	if (exile.specialRequirement) {
 		let [reqType, reqValue] = exile.specialRequirement;
 		if (window[reqType] !== reqValue) {
-			SnackBar("Requirements not met.");
+			SnackBar(`Special requirement not met. Required: ${reqType} = ${reqValue}, Current: ${window[reqType] || 0}`);
 			return;
 		}
 	}

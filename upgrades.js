@@ -33,13 +33,14 @@ const Upgrades = {
     if (window.totalLevel >= 250) {
       $("#UpgradeTable").append(
         '<tr id="currencyTab">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored currencyTabButton" onclick="Upgrades.buyCurrencyTab();">Currency Stash Tab</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored currencyTabButton" id="btn-currency-tab">Currency Stash Tab</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Purchase the Currency Stash Tab</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric">5 Stacked Deck</td>' +
         '</tr>'
       );
       this.hoverUpgrades("currencyTab", "StackedDeck");
+      document.getElementById('btn-currency-tab')?.addEventListener('click', () => this.buyCurrencyTab());
       this.currencyTab = this.noOp;
     }
   },
@@ -47,6 +48,7 @@ const Upgrades = {
     if (StackedDeck.total >= 5) {
       StackedDeck.total -= 5;
       this.currencyStashTab = 1;
+      window.currencyStashTab = this.currencyStashTab; // Synchronize with global window object
       this.upgradeDropRate += 1;
       SnackBar("Upgrade purchased!");
       $(".StackedDeck").removeClass("hover");
@@ -60,13 +62,14 @@ const Upgrades = {
     if (window.totalLevel >= 500) {
       $("#UpgradeTable").append(
         '<tr id="delveTab">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored delveTabButton" onclick="Upgrades.buyDelveTab();">Delve Stash Tab</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored delveTabButton" id="btn-delve-tab">Delve Stash Tab</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Purchase the Delve Stash Tab</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric">50 Stacked Deck<br>10 Orb of Annulment</td>' +
         '</tr>'
       );
       this.hoverUpgrades("delveTab", "StackedDeck", "Annulment");
+      document.getElementById('btn-delve-tab')?.addEventListener('click', () => this.buyDelveTab());
       this.delveTab = this.noOp;
     }
   },
@@ -75,6 +78,7 @@ const Upgrades = {
       StackedDeck.total -= 50;
       Annulment.total -= 10;
       this.delveStashTab = 1;
+      window.delveStashTab = this.delveStashTab; // Synchronize with global window object
       this.upgradeDropRate += 1;
       SnackBar("Upgrade purchased!");
       $(".StackedDeck").removeClass("hover");
@@ -90,13 +94,14 @@ const Upgrades = {
     if (window.totalLevel >= 1000) {
       $("#UpgradeTable").append(
         '<tr id="quadTab">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored quadTabButton" onclick="Upgrades.buyQuadTab();">Quad Stash Tab</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored quadTabButton" id="btn-quad-tab">Quad Stash Tab</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Purchase the Quad Stash Tab</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric">1 Eternal Orb</td>' +
         '</tr>'
       );
       this.hoverUpgrades("quadTab", "Eternal");
+      document.getElementById('btn-quad-tab')?.addEventListener('click', () => this.buyQuadTab());
       this.quadTab = this.noOp;
     }
   },
@@ -104,6 +109,7 @@ const Upgrades = {
     if (Eternal.total >= 1) {
       Eternal.total -= 1;
       this.quadStashTab = 1;
+      window.quadStashTab = this.quadStashTab; // Synchronize with global window object
       this.upgradeDropRate += 1;
       SnackBar("Upgrade purchased!");
       $(".Eternal").removeClass("hover");
@@ -117,13 +123,14 @@ const Upgrades = {
     if (this.delveStashTab == 1) {
       $("#UpgradeTable").append(
         '<tr id="delveScarab">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored nikoScarab" onclick="Upgrades.buyNikoScarab();">Rusted Sulphite Scarab</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored nikoScarab" id="btn-niko-scarab">Rusted Sulphite Scarab</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Use Sulphite Scarab to increase Sulphite quantity</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric delveScarabCost">1 Exalted</td>' +
         '</tr>'
       );
       this.hoverUpgrades("delveScarab", "Exalted");
+      document.getElementById('btn-niko-scarab')?.addEventListener('click', () => this.buyNikoScarab());
       this.delveScarab = this.noOp;
     }
   },
@@ -173,13 +180,14 @@ const Upgrades = {
     if (window.totalLevel >= 750) {
       $("#UpgradeTable").append(
         '<tr id="divTab">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored divTabButton" onclick="Upgrades.buyDivTab();">Divination Stash Tab</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored divTabButton" id="btn-div-tab">Divination Stash Tab</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Consume (1) Stacked Deck<br>(per tick)</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric">50 Orb of Annulment<br>1 Exalted</td>' +
         '</tr>'
       );
       this.hoverUpgrades("divTab", "Exalted", "Annulment");
+      document.getElementById('btn-div-tab')?.addEventListener('click', () => this.buyDivTab());
       this.divTab = this.noOp;
     }
   },
@@ -202,13 +210,14 @@ const Upgrades = {
     if (Ascendant.level >= 50) {
       $("#UpgradeTable").append(
         '<tr id="iiqUpgrade">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored iiqUpgradeButton" onclick="Upgrades.buyiiqUpgrade();">IIQ Gear</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored iiqUpgradeButton" id="btn-iiq-upgrade">IIQ Gear</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Buy Increased Item Quantity gear for exiles</td>' +
         '<td class="mdl-data-table__cell--non-numeric iiqDropRate">+1.0</td>' +
         '<td class="mdl-data-table__cell--non-numeric iiqUpgradeCostDisplay">+' + numeral(this.iiqCost).format('0,0') + ' Chaos</td>' +
         '</tr>'
       );
       this.hoverUpgrades("iiqUpgrade", "Chaos");
+      document.getElementById('btn-iiq-upgrade')?.addEventListener('click', () => this.buyiiqUpgrade());
       this.iiqUpgrade = this.noOp;
     }
   },
@@ -262,13 +271,14 @@ const Upgrades = {
     if (window.totalLevel >= 1000) {
       $("#UpgradeTable").append(
         '<tr id="flipSpeedUpgrade">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored flipSpeedUpgradeButton" onclick="Upgrades.buyflipSpeed();">Flipping Speed</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored flipSpeedUpgradeButton" id="btn-flip-speed">Flipping Speed</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric">Increase the rate The Singularity flips currency</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+0.5</td>' +
         '<td class="mdl-data-table__cell--non-numeric flipSpeedUpgradeCostDisplay">' + numeral(this.flippingSpeedCost).format('0,0') + ' Eternal</td>' +
         '</tr>'
       );
       this.hoverUpgrades("flipSpeedUpgrade", "Eternal");
+      document.getElementById('btn-flip-speed')?.addEventListener('click', () => this.buyflipSpeed());
       this.flipSpeed = this.noOp;
     }
   },
@@ -352,13 +362,14 @@ const Upgrades = {
     if (Ascendant.level >= 68) {
       $("#UpgradeTable").append(
         '<tr id="consumeMapCurrency">' +
-        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored consumeMapCurrencyButton" onclick="Upgrades.buyMapCurrency();">Alch/Scour Maps</button></td>' +
+        '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored consumeMapCurrencyButton" id="btn-consume-map-currency">Alch/Scour Maps</button></td>' +
         '<td class="mdl-data-table__cell--non-numeric consumeMapCurrenydiv">Consume (2) Alchemy, (1) Scour to increase drop rate from maps<br>(per tick)</td>' +
         '<td class="mdl-data-table__cell--non-numeric">+1.5</td>' +
         '<td class="mdl-data-table__cell--non-numeric mapCurrencyCost">1 Exalted</td>' +
         '</tr>'
       );
       this.hoverUpgrades("consumeMapCurrency", "Exalted");
+      document.getElementById('btn-consume-map-currency')?.addEventListener('click', () => this.buyMapCurrency());
       this.consumeMapCurrencyUpgrade = this.noOp;
     }
   },

@@ -92,7 +92,7 @@ class Currency {
     // -------------------------
     sellCurrency() {
         if (Singularity.level >= 1 && this.sellPercent == 1) {
-            for (let i = 0; i < flippingSpeed; i++) {
+            for (let i = 0; i < Upgrades.flippingSpeed; i++) { // Use Upgrades.flippingSpeed
                 const targetCurrency = window[this.tradingCurrency];
                 if (this.total >= this.sellLost) {
                     this.total -= this.sellLost;
@@ -104,7 +104,7 @@ class Currency {
 
     buyCurrency() {
         if (Singularity.level >= 1 && this.buyPercent == 1) {
-            for (let i = 0; i < flippingSpeed; i++) {
+            for (let i = 0; i < Upgrades.flippingSpeed; i++) { // Use Upgrades.flippingSpeed
                 const targetCurrency = window[this.tradingCurrency];
                 if (targetCurrency.total >= this.buyLost) {
                     this.total += this.buyGain;
