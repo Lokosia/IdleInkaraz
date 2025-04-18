@@ -63,7 +63,7 @@ class Currency {
             }
         } else if (this.name == "Sulphite") {
             if (c <= this.rate * (exileName.dropRate + Upgrades.upgradeDropRate)) {
-                this.total += Math.floor((Math.random() * (sulphiteDropRate - (sulphiteDropRate / 2)) + (sulphiteDropRate / 2)));
+                this.total += Math.floor((Math.random() * (Upgrades.sulphiteDropRate - (Upgrades.sulphiteDropRate / 2)) + (Upgrades.sulphiteDropRate / 2)));
             }
         }
     }

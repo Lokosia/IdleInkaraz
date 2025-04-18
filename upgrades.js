@@ -225,8 +225,12 @@ const Upgrades = {
     if (Chaos.total >= this.iiqCost) {
       Chaos.total -= this.iiqCost;
       this.iiqCost = Math.floor(this.iiqCost * 1.4);
-      this.upgradeDropRate += this.iiqDropRate;
-      this.iiqDropRate += 0.1;
+      if (this.iiqDropRate === 1) { // First upgrade gives a big bonus
+        this.upgradeDropRate += this.iiqDropRate;
+      } else { // Subsequent upgrades give smaller bonuses
+        this.upgradeDropRate += 0.1;
+      }
+      this.iiqDropRate += 0.1; // Increment the drop rate for display purposes
       SnackBar("Upgrade purchased!");
       document.getElementsByClassName('iiqUpgradeCostDisplay')[0].innerHTML = numeral(this.iiqCost).format('0,0') + ' Chaos';
       document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);

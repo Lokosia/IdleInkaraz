@@ -40,7 +40,14 @@ class CraftingItem {
         return this.id.charAt(0).toUpperCase() + this.id.slice(1);
     }
     hasIngredients() {
-        return this.ingredients.every(ing => window[ing.currency].total >= ing.amount);
+        return this.ingredients.every(ing => {
+            const item = window[ing.currency];
+            if (!item) {
+                SnackBar(`Ingredient not found: ${ing.currency}`);
+                return false;
+            }
+            return item.total >= ing.amount;
+        });
     }
     craft() {
         if (this.level >= 0 && this.hasIngredients()) {
