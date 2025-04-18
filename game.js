@@ -1,5 +1,7 @@
 import { generateExileCards } from './js/components/ExileUI.js';
 import { ExileFactory } from './js/components/ExileFactory.js';
+import { currencyData } from './js/components/currencyData.js';
+import { updateCurrencyClass, setupCurrencyUI } from './js/components/CurrencyUI.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -249,6 +251,7 @@ function SnackBar(input) {
  * Creates the welcome card and sets up event handlers
  */
 document.addEventListener('DOMContentLoaded', function() {
+    setupCurrencyUI();
     const welcomeCard = UICard.create({
         id: 'welcome-card',
         title: 'Welcome, Exile',
@@ -339,6 +342,16 @@ setInterval(function gameTick() {
     window.snackBarTimer -= 100;
     window.playTime += 0.1;
     document.getElementById("timePlayed").innerHTML = numeral(window.playTime).format('00:00:00');
+
+    // --- Currency operations (merged from currencyManager.js) ---
+    for (let i = 0; i < window.exileData.length; i++) {
+        if (window.exileData[i].dropRate > 0) {
+            processCurrencyOperation('rollCurrency', window.exileData[i]);
+        }
+    }
+    processCurrencyOperation('sellCurrency');
+    processCurrencyOperation('buyCurrency');
+    updateCurrencyClass();
 }, 100);
 
 //---Unlocking Exiles (moved from exiles.js)
@@ -418,3 +431,27 @@ function recruitExile(exileName) {
     exile.recruitExile();
 }
 window.recruitExile = recruitExile;
+
+function processCurrencyOperation(operation, param) {
+    for (let i = 0; i < currencyData.length; i++) {
+        if (param !== undefined) {
+            currencyData[i][operation](param);
+        } else {
+            currencyData[i][operation]();
+        }
+    }
+}
+
+function initTestMode() {
+    // Set 99999 of every currency
+    currencyData.forEach(currency => {
+        currency.total = 99999;
+    });
+    console.log('Test mode initialized with 99999 of each currency');
+}
+window.initTestMode = initTestMode;
+
+// Automatically run test mode if URL has ?test=true parameter
+if (window.location.search.includes('test=true')) {
+    document.addEventListener('DOMContentLoaded', initTestMode);
+}

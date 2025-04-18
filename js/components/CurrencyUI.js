@@ -82,4 +82,16 @@ function setupCurrencyUI() {
     });
 }
 
-export { setupCurrencyUI };
+function updateCurrencyClass() {
+    for (let i = 0; i < currencyData.length; i++) {
+        const el = document.getElementsByClassName(currencyData[i].name)[0];
+        if (el) {
+            el.innerHTML = numeral(currencyData[i].total).format('0,0', Math.floor);
+        } else {
+            // Optionally log a warning for missing element
+            // console.warn(`Currency UI element not found for: ${currencyData[i].name}`);
+        }
+    }
+}
+
+export { setupCurrencyUI, updateCurrencyClass };
