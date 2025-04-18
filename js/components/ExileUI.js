@@ -36,26 +36,41 @@ function generateExileCards(container, exileData) {
     );
     standardExiles.forEach(exile => {
         const content = `
-            Level: <span class="${exile.name}Level">0</span> <span class="${exile.name}Reroll hidden"></span><br>
-            EXP: <span class="${exile.name}EXP">0/525</span><br>
-            Efficiency: <span class="${exile.name}Efficiency">x0</span><br>
-            Links: <span class="${exile.name}Links">3L</span>
+            Level: <span class="${exile.name}Level">${exile.level}</span> <span class="${exile.name}Reroll${exile.rerollLevel > 0 ? '' : ' hidden'}">${exile.rerollLevel > 0 ? '(+' + exile.rerollLevel + ')' : ''}</span><br>
+            EXP: <span class="${exile.name}EXP">${exile.level < 100 ? (exile.exp + '/' + exile.expToLevel) : 'Max'}</span><br>
+            Efficiency: <span class="${exile.name}Efficiency">x${exile.dropRate.toFixed(1)}</span><br>
+            Links: <span class="${exile.name}Links">${exile.links + 3}L</span>
         `;
-        const actionSections = [
-            {
+        const actionSections = [];
+        if (exile.level < 1) {
+            actionSections.push({
                 content: `
                     <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton"
                         onclick="recruitExile('${exile.name}');">Recruit ${exile.name}</button>
                 `,
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
-            },
-            {
-                content: exile.levelRequirement > 0 
-                    ? `${exile.levelRequirement} Total Levels Required` 
-                    : 'A Scion washes up on the beach...',
-                className: `mdl-card__actions mdl-card--border ${exile.name}Hide`
-            }
-        ];
+            });
+        } else if (exile.level < 100) {
+            actionSections.push({
+                content: '',
+                className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection hidden`
+            });
+        } else {
+            // At max level, include reroll button markup
+            actionSections.push({
+                content: `
+                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton"
+                        onclick="window.exileData.find(e=>e.name==='${exile.name}').rerollExile();">Reroll ${exile.name}</button>
+                `,
+                className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
+            });
+        }
+        actionSections.push({
+            content: exile.levelRequirement > 0 
+                ? `${exile.levelRequirement} Total Levels Required` 
+                : 'A Scion washes up on the beach...',
+            className: `mdl-card__actions mdl-card--border ${exile.name}Hide`
+        });
         const card = UICard.create({
             id: `${exile.name.toLowerCase()}-card`,
             title: exile.name,

@@ -1,4 +1,5 @@
 import { generateExileCards } from './js/components/ExileUI.js';
+import { ExileFactory } from './js/components/ExileFactory.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -78,6 +79,8 @@ function showGuild() {
 	
 	// Generate exile cards dynamically
 	generateExileCards(guildGrid, window.exileData);
+	// Ensure reroll and other dynamic UI is correct after card generation
+	window.exileData.forEach(exile => exile.updateExileClass());
 }
 
 /**
@@ -301,3 +304,120 @@ window.showGeneralUpgrades = showGeneralUpgrades;
 window.showGearUpgrades = showGearUpgrades;
 window.showLinksUpgrades = showLinksUpgrades;
 window.showAllUpgrades = showAllUpgrades;
+
+//---Main (global state)
+window.totalLevel = 1000; // or your test value
+window.dropRate = 0;
+window.playTime = 0;
+window.snackBarTimer = 0;
+
+//---Define Exiles (global)
+window.exileData = ExileFactory.createAllExiles();
+// make exiles globally accessible
+window.exileData.forEach(exile => {
+    window[exile.name] = exile;
+});
+
+//---Main game loop
+setInterval(function gameTick() {
+    let tempLevel = 1000;
+    let tempDropRate = window.upgradeDropRate || 0;
+    for (let i = 0; i < window.exileData.length; i++) {
+        const exile = window.exileData[i];
+        if (exile.level >= 1) {
+            if (exile.name === 'Singularity' || exile.name === 'Artificer') {
+                // Don't add to tempDropRate for special exiles
+            } else {
+                exile.updateExileClass();
+                tempDropRate += exile.dropRate;
+                tempLevel += exile.level;
+                tempLevel += exile.rerollLevel;
+            }
+        }
+    }
+    window.totalLevel = tempLevel;
+    window.dropRate = tempDropRate;
+    document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(window.totalLevel).format('0,0');
+    document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(window.dropRate).format('0,0.0');
+    window.snackBarTimer -= 100;
+    window.playTime += 0.1;
+    document.getElementById("timePlayed").innerHTML = numeral(window.playTime).format('00:00:00');
+}, 100);
+
+//---Unlocking Exiles (moved from exiles.js)
+function recruitExile(exileName) {
+    const exile = window.exileData.find(e => e.name === exileName);
+    if (!exile) {
+        console.error(`Exile ${exileName} not found`);
+        return;
+    }
+    if (window.totalLevel < exile.levelRequirement) {
+        SnackBar("Requirements not met.");
+        return;
+    }
+    if (exile.specialRequirement) {
+        let [reqType, reqValue] = exile.specialRequirement;
+        if (window[reqType] !== reqValue) {
+            SnackBar("Requirements not met.");
+            return;
+        }
+    }
+    if (exileName === 'Singularity') {
+        exile.level++;
+        $(".SingularityHide").remove();
+        $(".SingularityBuy").remove();
+        $('.flip').removeClass('hidden');
+        return;
+    } else if (exileName === 'Artificer') {
+        exile.level++;
+        $(".ArtificerHide").hide();
+        $(".ArtificerBuy").hide();
+        exile.owned = true;
+        $(".craft").show();
+        return;
+    } else if (exileName === 'Melvin') {
+        exile.level += 1;
+        exile.dropRate += 0.1;
+        $(".MelvinBuy").hide();
+        $(".MelvinHide").html('Level ' + exile.level + ' ' + exile.name);
+        const firstGearUpgrade = exile.gearUpgrades[0];
+        const requirementsText = firstGearUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+        const firstLinksUpgrade = exile.linksUpgrades[0];
+        const linksRequirementsText = firstLinksUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+        $("#UpgradeGearTable").append(
+            '<tr id="' + exile.name + 'GearUpgrade">' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'GearButton" onclick="' + exile.name + '.lvlGear();">' + exile.name + ' Gear' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', exile.name) + '</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + exile.name + ')</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
+            '</tr>'
+        );
+        $("#UpgradeLinksTable").append(
+            '<tr id="' + exile.name + 'LinksUpgrade">' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'LinksButton" onclick="' + exile.name + '.lvlLinks();">' + exile.name + ' Links' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', exile.name) + '</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + exile.name + ')</td>' +
+            '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
+            '</tr>'
+        );
+        document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
+        document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
+        if (exile.level == 100) {
+            document.getElementsByClassName('MelvinEXP')[0].innerHTML = "Max";
+            $(".MelvinRerollButton").removeClass('hidden');
+        } else {
+            document.getElementsByClassName('MelvinEXP')[0].innerHTML = numeral(exile.exp).format('0,0') + "/" + numeral(exile.expToLevel).format('0,0');
+        }
+        const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
+        const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
+        exile.setupHover("Gear", ...gearCurrencies);
+        exile.setupHover("Links", ...linksCurrencies);
+        return;
+    }
+    exile.recruitExile();
+}
+window.recruitExile = recruitExile;

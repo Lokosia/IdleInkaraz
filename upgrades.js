@@ -71,7 +71,7 @@ function hoverUpgrades(name, a, b) {
 
 //---Upgrades
 function currencyTab() {
-	if (totalLevel >= 250) {
+	if (window.totalLevel >= 250) {
 		$("#UpgradeTable").append(
 			'<tr id="currencyTab">' +
 			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored currencyTabButton" onclick="buyCurrencyTab();">Currency Stash Tab</button></td>' +
@@ -100,7 +100,7 @@ function buyCurrencyTab() {
 }
 
 function delveTab() {
-	if (totalLevel >= 500) {
+	if (window.totalLevel >= 500) {
 		$("#UpgradeTable").append(
 			'<tr id="delveTab">' +
 			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored delveTabButton" onclick="buyDelveTab();">Delve Stash Tab</button></td>' +
@@ -132,7 +132,7 @@ function buyDelveTab() {
 }
 
 function quadTab() {
-	if (totalLevel >= 1000) {
+	if (window.totalLevel >= 1000) {
 		$("#UpgradeTable").append(
 			'<tr id="quadTab">' +
 			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored quadTabButton" onclick="buyQuadTab();">Quad Stash Tab</button></td>' +
@@ -219,7 +219,7 @@ function buyNikoScarab() {
 }
 
 function divTab() {
-	if (totalLevel >= 750) {
+	if (window.totalLevel >= 750) {
 		$("#UpgradeTable").append(
 			'<tr id="divTab">' +
 			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored divTabButton" onclick="buyDivTab();">Divination Stash Tab</button></td>' +
@@ -310,7 +310,7 @@ function buyIncubatorUpgrade() {
 }
 
 function flipSpeed() {
-	if (totalLevel >= 1000) {
+	if (window.totalLevel >= 1000) {
 		$("#UpgradeTable").append(
 			'<tr id="flipSpeedUpgrade">' +
 			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored flipSpeedUpgradeButton" onclick="buyflipSpeed();">Flipping Speed</button></td>' +
