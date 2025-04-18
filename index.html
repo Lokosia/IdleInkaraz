@@ -41,24 +41,24 @@
                 </div>
             </header>
             <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showMain();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-main"><i
                         class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Main</a>
 
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showGuild();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-guild"><i
                         class="mdl-color-text--blue-grey-400 material-icons" role="presentation">face</i>Guild</a>
 
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showFlipping();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-flipping"><i
                         class="mdl-color-text--blue-grey-400 material-icons"
                         role="presentation">trending_up</i>Flipping</a>
 
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showDelving();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-delving"><i
                         class="mdl-color-text--blue-grey-400 material-icons" role="presentation">timeline</i>Delving</a>
 
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showCrafting();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-crafting"><i
                         class="mdl-color-text--blue-grey-400 material-icons" role="presentation">gesture</i>Crafting</a>
 
                 <div class="mdl-layout-spacer"></div>
-                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" onclick="showInfo();"><i
+                <a class="mdl-navigation__link menuHover" href="javascript:void(0);" id="nav-info"><i
                         class="mdl-color-text--blue-grey-400 material-icons"
                         role="presentation">help_outline</i>Info</a>
             </nav>
@@ -92,7 +92,7 @@
                         </div>
                         <div class="mdl-card__actions mdl-card--border SingularityBuy">
                             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="recruitExile('Singularity');">Recruit The Singularity</button>
+                                id="recruit-singularity">Recruit The Singularity</button>
                         </div>
                         <div class="mdl-card__actions mdl-card--border SingularityHide">
                             250 Total Levels Required<br>
@@ -151,13 +151,13 @@
                         </div>
                         <div class="mdl-card__actions mdl-card--border">
                             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="showAllUpgrades();">All</button>
+                                id="btn-all-upgrades">All</button>
                             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="showGeneralUpgrades();">General</button>
+                                id="btn-general-upgrades">General</button>
                             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="showGearUpgrades();">Gear</button>
+                                id="btn-gear-upgrades">Gear</button>
                             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                onclick="showLinksUpgrades();">Links</button>
+                                id="btn-links-upgrades">Links</button>
                         </div>
                         <table class="mdl-data-table mdl-js-data-table cardBG">
                             <thead>
@@ -172,7 +172,7 @@
                                 <tr id="CrusaderUpgrade">
                                     <td class="mdl-data-table__cell--non-numeric"><button
                                             class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                            onclick="buyCrusader();">Crusader's Exalted Orb</button></td>
+                                            id="btn-crusader-upgrade">Crusader's Exalted Orb</button></td>
                                     <td class="mdl-data-table__cell--non-numeric">Use Crusader's Exalted Orb</td>
                                     <td class="mdl-data-table__cell--non-numeric">+1</td>
                                     <td class="mdl-data-table__cell--non-numeric">1 Crusader's Exalted Orb</td>
@@ -180,7 +180,7 @@
                                 <tr id="HunterUpgrade">
                                     <td class="mdl-data-table__cell--non-numeric"><button
                                             class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                            onclick="buyHunter();">Hunter's Exalted Orb</button></td>
+                                            id="btn-hunter-upgrade">Hunter's Exalted Orb</button></td>
                                     <td class="mdl-data-table__cell--non-numeric">Use Hunter's Exalted Orb</td>
                                     <td class="mdl-data-table__cell--non-numeric">+1</td>
                                     <td class="mdl-data-table__cell--non-numeric">1 Hunter's Exalted Orb</td>
@@ -188,7 +188,7 @@
                                 <tr id="RedeemerUpgrade">
                                     <td class="mdl-data-table__cell--non-numeric"><button
                                             class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                            onclick="buyRedeemer();">Redeemer's Exalted Orb</button></td>
+                                            id="btn-redeemer-upgrade">Redeemer's Exalted Orb</button></td>
                                     <td class="mdl-data-table__cell--non-numeric">Use Redeemer's Exalted Orb</td>
                                     <td class="mdl-data-table__cell--non-numeric">+1</td>
                                     <td class="mdl-data-table__cell--non-numeric">1 Redeemer's Exalted Orb</td>
@@ -196,7 +196,7 @@
                                 <tr id="WarlordUpgrade">
                                     <td class="mdl-data-table__cell--non-numeric"><button
                                             class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                            onclick="buyWarlord();">Warlord's Exalted Orb</button></td>
+                                            id="btn-warlord-upgrade">Warlord's Exalted Orb</button></td>
                                     <td class="mdl-data-table__cell--non-numeric">Use Warlord's Exalted Orb</td>
                                     <td class="mdl-data-table__cell--non-numeric">+1</td>
                                     <td class="mdl-data-table__cell--non-numeric">1 Warlord's Exalted Orb</td>
@@ -289,7 +289,7 @@
     <!-- Game Logic -->
     <script type="module" src="game.js"></script>
     <script type="module" src="js/components/CurrencyUI.js"></script>
-    <script type="text/javascript" src="upgrades.js"></script>
+    <script type="module" src="upgrades.js"></script>
     <script type="module" src="js/components/CraftingUI.js"></script>
     <!-- Framework abstraction -->
     <script src="js/config/ui-classes.js"></script>

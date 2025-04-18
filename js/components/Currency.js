@@ -1,4 +1,6 @@
 // Currency.js - Currency class module
+import Upgrades from '../../upgrades.js';
+
 /**
  * Represents a game currency with trading functionality
  */
@@ -53,14 +55,14 @@ class Currency {
     rollCurrency(exileName) {
         let c = this.rollCurrencyRNG();
         if (this.name != "Sulphite") {
-            if (c <= this.rate * (exileName.dropRate + upgradeDropRate)) {
-                this.total += 1 + (this.rate * (exileName.dropRate + upgradeDropRate));
+            if (c <= this.rate * (exileName.dropRate + Upgrades.upgradeDropRate)) {
+                this.total += 1 + (this.rate * (exileName.dropRate + Upgrades.upgradeDropRate));
                 if (this.name == 'Mirror') {
                     SnackBar("Mirror of Kalandra dropped!");
                 }
             }
         } else if (this.name == "Sulphite") {
-            if (c <= this.rate * (exileName.dropRate + upgradeDropRate)) {
+            if (c <= this.rate * (exileName.dropRate + Upgrades.upgradeDropRate)) {
                 this.total += Math.floor((Math.random() * (sulphiteDropRate - (sulphiteDropRate / 2)) + (sulphiteDropRate / 2)));
             }
         }
