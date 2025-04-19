@@ -1,8 +1,8 @@
 import { CraftingSystem } from './CraftingSystem.js';
 
-// Initialize crafting system and expose globally
+// Initialize crafting system
 const craftingSystem = new CraftingSystem();
-window.craftingSystem = craftingSystem;
+export default craftingSystem;
 
 // Call renderCraftingCards on page load to ensure cards are available for tests
 document.addEventListener('DOMContentLoaded', function() {

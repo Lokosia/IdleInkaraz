@@ -160,7 +160,7 @@ function showCrafting() {
 	}
 
 	// Check for Quad Stash Tab requirement
-	if (window.quadStashTab !== 1) {
+	if (Upgrades.quadStashTab !== 1) {
 		$("#heavierCrafting, .advancedCrafting").hide();
 	}
 }
@@ -391,7 +391,7 @@ setInterval(function gameTick() {
 setInterval(function delveTick() {
 	if (exileMap['Melvin'] && exileMap['Melvin'].level >= 1 && exileMap['Sulphite']) {
 		// Use upgradeDropRate if available, else 0
-		delve(exileMap['Sulphite'], exileMap['Melvin'], window.upgradeDropRate || 0);
+		delve(exileMap['Sulphite'], exileMap['Melvin'], Upgrades.upgradeDropRate || 0);
 	}
 }, 2500);
 

@@ -143,15 +143,12 @@ const Upgrades = {
 	// Methods for specific upgrades that need special handling
 	buyCurrencyTab() {
 		this.handleStashTabUpgrade('currency', StackedDeck, 5);
-		window.currencyStashTab = 1;
 	},
 	buyDelveTab() {
 		this.handleStashTabUpgrade('delve', StackedDeck, 50, Annulment, 10, () => this.delveScarab());
-		window.delveStashTab = 1
 	},
 	buyQuadTab() {
 		this.handleStashTabUpgrade('quad', Eternal, 1);
-		window.quadStashTab = 1;
 	},
 	buyDivTab() {
 		this.handleStashTabUpgrade('div', Annulment, 50, Exalted, 1);
@@ -168,9 +165,7 @@ const Upgrades = {
 			requirements,
 			onSuccess: () => {
 				this[`${tabType}StashTab`] = 1;
-				if (window[`${tabType}StashTab`] !== undefined) {
-					window[`${tabType}StashTab`] = 1;
-				}
+				// Removed window assignments for stash tab flags
 				this.upgradeDropRate += 1;
 			},
 			updateUI: () => {

@@ -283,7 +283,7 @@ class CraftingSystem {
                 $(`.${item.id}Stats`).removeClass("hidden");
             }
         });
-        if (window.quadStashTab !== 1) {
+        if (Upgrades.quadStashTab !== 1) {
             $("#heavierCrafting, .advancedCrafting").hide();
         }
     }

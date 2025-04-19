@@ -25,7 +25,7 @@ function createSwitch(currency, type) {
     const switchInstance = UISwitch.create({
         id: `${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`,
         text: `${currency.displayName} ${formattedRatio} ${baseType}`,
-        onChange: (e) => toggleCurrencyOperation(window[currency.name], type),
+        onChange: (e) => toggleCurrencyOperation(currency, type),
         extraClasses: [`${currency.name}${type.charAt(0).toUpperCase() + type.slice(1)}Slider`]
     });
 
