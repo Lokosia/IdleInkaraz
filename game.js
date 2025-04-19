@@ -85,9 +85,9 @@ function showGuild() {
 	const guildGrid = document.querySelector('#guild .mdl-grid');
 
 	// Generate exile cards dynamically
-	generateExileCards(guildGrid, window.exileData);
+	generateExileCards(guildGrid, exileData);
 	// Ensure reroll and other dynamic UI is correct after card generation
-	window.exileData.forEach(exile => exile.updateExileClass());
+	exileData.forEach(exile => exile.updateExileClass());
 }
 
 /**
@@ -242,12 +242,12 @@ function showLinksUpgrades() {
  * @param {string} input - The message to display in the snackbar
  */
 function SnackBar(input) {
-	if (window.snackBarTimer <= 0) {
+	if (snackBarTimer <= 0) {
 		'use strict';
 		var snackbarContainer = document.querySelector('#snackBar');
 		var data = { message: input, timeout: 1500 };
 		snackbarContainer.MaterialSnackbar.showSnackbar(data);
-		window.snackBarTimer = 1500;
+		snackBarTimer = 1500;
 	}
 }
 
@@ -318,10 +318,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('btn-links-upgrades')?.addEventListener('click', showLinksUpgrades);
 
 	// Upgrade buttons
-	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Crusader));
-	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Hunter));
-	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Redeemer));
-	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(Warlord));
+	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Crusader']));
+	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Hunter']));
+	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Redeemer']));
+	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Warlord']));
 });
 
 //----------------------------------Start Functions
@@ -340,27 +340,23 @@ window.showLinksUpgrades = showLinksUpgrades;
 window.showAllUpgrades = showAllUpgrades;
 
 //---Main (global state)
-window.totalLevel = 0;
-window.dropRate = 0;
-window.playTime = 0;
-window.snackBarTimer = 0;
+let totalLevel = 0;
+let dropRate = 0;
+let playTime = 0;
+let snackBarTimer = 0;
 
-//---Define Exiles (global)
-window.exileData = ExileFactory.createAllExiles();
-// make exiles globally accessible
-window.exileData.forEach(exile => {
-	window[exile.name] = exile;
-});
+//---Define Exiles (module scope, not global)
+const exileData = ExileFactory.createAllExiles();
+const exileMap = Object.fromEntries(exileData.map(e => [e.name, e]));
 
 //---Main game loop
 setInterval(function gameTick() {
 	let tempLevel = 1000;
 	let tempDropRate = 0; // Start efficiency at 0
-	// Add Upgrades.upgradeDropRate and Upgrades.incDropRate only if they are > 0
 	if (Upgrades.upgradeDropRate > 0) tempDropRate += Upgrades.upgradeDropRate;
 	if (Upgrades.incDropRate > 0) tempDropRate += Upgrades.incDropRate;
-	for (let i = 0; i < window.exileData.length; i++) {
-		const exile = window.exileData[i];
+	for (let i = 0; i < exileData.length; i++) {
+		const exile = exileData[i];
 		if (exile.level >= 1) {
 			if (exile.name === 'Singularity' || exile.name === 'Artificer') {
 				// Don't add to tempDropRate for special exiles
@@ -372,18 +368,18 @@ setInterval(function gameTick() {
 			}
 		}
 	}
-	window.totalLevel = tempLevel;
-	window.dropRate = tempDropRate;
-	document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(window.totalLevel).format('0,0');
-	document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(window.dropRate).format('0,0.0');
-	window.snackBarTimer -= 100;
-	window.playTime += 0.1;
-	document.getElementById("timePlayed").innerHTML = numeral(window.playTime).format('00:00:00');
+	totalLevel = tempLevel;
+	dropRate = tempDropRate;
+	document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(totalLevel).format('0,0');
+	document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(dropRate).format('0,0.0');
+	snackBarTimer -= 100;
+	playTime += 0.1;
+	document.getElementById("timePlayed").innerHTML = numeral(playTime).format('00:00:00');
 
 	// --- Currency operations (merged from currencyManager.js) ---
-	for (let i = 0; i < window.exileData.length; i++) {
-		if (window.exileData[i].dropRate > 0) {
-			processCurrencyOperation('rollCurrency', window.exileData[i]);
+	for (let i = 0; i < exileData.length; i++) {
+		if (exileData[i].dropRate > 0) {
+			processCurrencyOperation('rollCurrency', exileData[i]);
 		}
 	}
 	processCurrencyOperation('sellCurrency');
@@ -393,9 +389,9 @@ setInterval(function gameTick() {
 
 //---Delve system integration---
 setInterval(function delveTick() {
-	if (window.Melvin && window.Melvin.level >= 1 && window.Sulphite) {
+	if (exileMap['Melvin'] && exileMap['Melvin'].level >= 1 && exileMap['Sulphite']) {
 		// Use upgradeDropRate if available, else 0
-		delve(window.Sulphite, window.Melvin, window.upgradeDropRate || 0);
+		delve(exileMap['Sulphite'], exileMap['Melvin'], window.upgradeDropRate || 0);
 	}
 }, 2500);
 
@@ -417,19 +413,19 @@ setInterval(function delveLoadingBarAnimate() {
 
 //---Unlocking Exiles (moved from exiles.js)
 function recruitExile(exileName) {
-	const exile = window.exileData.find(e => e.name === exileName);
+	const exile = exileMap[exileName];
 	if (!exile) {
 		console.error(`Exile ${exileName} not found`);
 		return;
 	}
-	if (window.totalLevel < exile.levelRequirement) {
-		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${window.totalLevel}`);
+	if (totalLevel < exile.levelRequirement) {
+		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${totalLevel}`);
 		return;
 	}
 	if (exile.specialRequirement) {
 		let [reqType, reqValue] = exile.specialRequirement;
-		if (window[reqType] !== reqValue) {
-			SnackBar(`Special requirement not met. Required: ${reqType} = ${reqValue}, Current: ${window[reqType] || 0}`);
+		if ((Upgrades[reqType] ?? 0) !== reqValue) {
+			SnackBar(`Special requirement not met. Required: ${reqType} = ${reqValue}, Current: ${(Upgrades[reqType] ?? 0)}`);
 			return;
 		}
 	}
@@ -512,8 +508,6 @@ function initTestMode() {
 	
 	fossilData.forEach(fossil => {
 		fossil.total = 99999;
-		window[fossil.name] = fossil;
-		window[fossil.name + 'Fossil'] = fossil;
 		// Update the UI if the element exists
 		const el = document.getElementsByClassName(fossil.name + 'Total')[0];
 		if (el) {

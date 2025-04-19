@@ -1,5 +1,7 @@
 // Currency.js - Currency class module
 import Upgrades from '../Upgrades.js';
+import { exileMap } from '../../../Game.js';
+import { currencyMap } from './CurrencyData.js';
 
 /**
  * Represents a game currency with trading functionality
@@ -91,9 +93,9 @@ class Currency {
     // TRADING EXECUTION METHODS
     // -------------------------
     sellCurrency() {
-        if (Singularity.level >= 1 && this.sellPercent == 1) {
-            for (let i = 0; i < Upgrades.flippingSpeed; i++) { // Use Upgrades.flippingSpeed
-                const targetCurrency = window[this.tradingCurrency];
+        if (exileMap['Singularity'] && exileMap['Singularity'].level >= 1 && this.sellPercent == 1) {
+            for (let i = 0; i < Upgrades.flippingSpeed; i++) {
+                const targetCurrency = currencyMap[this.tradingCurrency];
                 if (this.total >= this.sellLost) {
                     this.total -= this.sellLost;
                     targetCurrency.total += this.sellGain;
@@ -103,9 +105,9 @@ class Currency {
     }
 
     buyCurrency() {
-        if (Singularity.level >= 1 && this.buyPercent == 1) {
-            for (let i = 0; i < Upgrades.flippingSpeed; i++) { // Use Upgrades.flippingSpeed
-                const targetCurrency = window[this.tradingCurrency];
+        if (exileMap['Singularity'] && exileMap['Singularity'].level >= 1 && this.buyPercent == 1) {
+            for (let i = 0; i < Upgrades.flippingSpeed; i++) {
+                const targetCurrency = currencyMap[this.tradingCurrency];
                 if (targetCurrency.total >= this.buyLost) {
                     this.total += this.buyGain;
                     targetCurrency.total -= this.buyLost;

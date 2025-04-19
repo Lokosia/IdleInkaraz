@@ -23,9 +23,9 @@ CURRENCY_CONFIG.forEach(config => {
     );
     currencyData.push(currency);
     currencyMap[config.name] = currency;
-    window[config.name] = currency; // For backward compatibility
+    // Removed window[config.name] assignment
 });
 
-window.currencyData = currencyData;
+// Removed window.currencyData assignment
 
 export { currencyData, currencyMap };
