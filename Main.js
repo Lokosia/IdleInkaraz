@@ -4,7 +4,7 @@ import { currencyData } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
 import { initDelvingUI } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
-import Upgrades from './js/components/Upgrades.js';
+import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 
