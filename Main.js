@@ -1,4 +1,4 @@
-import { generateExileCards } from './js/components/exile/ExileUI.js';
+import { generateExileCards, generateUpgradeHTML } from './js/components/exile/ExileUI.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
 import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
@@ -438,39 +438,38 @@ function recruitExile(exileName) {
 		$(".MelvinBuy").hide();
 		$(".MelvinHide").html('Level ' + exile.level + ' ' + exile.name);
 		const firstGearUpgrade = exile.gearUpgrades[0];
-		const requirementsText = firstGearUpgrade.requirements
+		const firstLinksUpgrade = exile.linksUpgrades[0];
+
+		// Use generateUpgradeHTML for Gear and Links upgrades
+		const gearRequirementsText = firstGearUpgrade.requirements
 			.map(req => `${req.amount} ${req.currency.name}`)
 			.join('<br>');
-		const firstLinksUpgrade = exile.linksUpgrades[0];
 		const linksRequirementsText = firstLinksUpgrade.requirements
 			.map(req => `${req.amount} ${req.currency.name}`)
 			.join('<br>');
-		$("#UpgradeGearTable").append(
-			'<tr id="' + exile.name + 'GearUpgrade">' +
-			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'GearButton" id="' + exile.name + 'GearBtn">' + exile.name + ' Gear' + '</button></td>' +
-			'<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', exile.name) + '</td>' +
-			'<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + exile.name + ')</td>' +
-			'<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
-			'</tr>'
-		);
-		// Add event listener for Gear upgrade
-		const gearBtn = document.getElementById(exile.name + 'GearBtn');
-		if (gearBtn && typeof exile.lvlGear === 'function') {
-			gearBtn.addEventListener('click', () => exile.lvlGear());
+		// Ensure the table rows exist before updating
+		if (!$(`#${exile.name}GearUpgrade`).length) {
+			$("#UpgradeGearTable").append(`<tr id="${exile.name}GearUpgrade"></tr>`);
 		}
-		$("#UpgradeLinksTable").append(
-			'<tr id="' + exile.name + 'LinksUpgrade">' +
-			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'LinksButton" id="' + exile.name + 'LinksBtn">' + exile.name + ' Links' + '</button></td>' +
-			'<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', exile.name) + '</td>' +
-			'<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + exile.name + ')</td>' +
-			'<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
-			'</tr>'
-		);
-		// Add event listener for Links upgrade
-		const linksBtn = document.getElementById(exile.name + 'LinksBtn');
-		if (linksBtn && typeof exile.lvlLinks === 'function') {
-			linksBtn.addEventListener('click', () => exile.lvlLinks());
+		if (!$(`#${exile.name}LinksUpgrade`).length) {
+			$("#UpgradeLinksTable").append(`<tr id="${exile.name}LinksUpgrade"></tr>`);
 		}
+		generateUpgradeHTML(
+			exile.name,
+			'Gear',
+			firstGearUpgrade.description.replace('{name}', exile.name),
+			`+${firstGearUpgrade.benefit} (${exile.name})`,
+			gearRequirementsText,
+			exile
+		);
+		generateUpgradeHTML(
+			exile.name,
+			'Links',
+			firstLinksUpgrade.description.replace('{name}', exile.name),
+			`+${firstLinksUpgrade.benefit} (${exile.name})`,
+			linksRequirementsText,
+			exile
+		);
 		document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
 		document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
 		if (exile.level == 100) {
