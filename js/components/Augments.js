@@ -1,3 +1,6 @@
+import { exileMap, totalLevel, SnackBar } from '../../Main.js'
+import { currencyMap, currencyData } from './currency/CurrencyData.js';
+
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
 	// State
@@ -83,35 +86,35 @@ const Upgrades = {
 		const consumables = [
 			{
 				level: 0, check: () => this.divStashTab >= 1,
-				items: [{ currency: StackedDeck, amount: 1 }]
+				items: [{ currency: currencyMap['StackedDeck'], amount: 1 }]
 			},
 			{
 				level: 1, check: () => this.mappingCurrencyLevel >= 1,
-				items: [{ currency: Alchemy, amount: 2 }, { currency: Scouring, amount: 1 }]
+				items: [{ currency: currencyMap['Alchemy'], amount: 2 }, { currency: currencyMap['Scouring'], amount: 1 }]
 			},
 			{
 				level: 2, check: () => this.mappingCurrencyLevel >= 2,
-				items: [{ currency: Chisel, amount: 4 }]
+				items: [{ currency: currencyMap['Chisel'], amount: 4 }]
 			},
 			{
 				level: 3, check: () => this.mappingCurrencyLevel >= 3,
-				items: [{ currency: SimpleSextant, amount: 1 }]
+				items: [{ currency: currencyMap['SimpleSextant'], amount: 1 }]
 			},
 			{
 				level: 4, check: () => this.mappingCurrencyLevel >= 4,
-				items: [{ currency: PrimeSextant, amount: 1 }]
+				items: [{ currency: currencyMap['PrimeSextant'], amount: 1 }]
 			},
 			{
 				level: 5, check: () => this.mappingCurrencyLevel >= 5,
-				items: [{ currency: AwakenedSextant, amount: 1 }]
+				items: [{ currency: currencyMap['AwakenedSextant'], amount: 1 }]
 			},
 			{
 				level: 6, check: () => this.mappingCurrencyLevel >= 6,
-				items: [{ currency: Vaal, amount: 1 }]
+				items: [{ currency: currencyMap['Vaal'], amount: 1 }]
 			},
 			{
 				level: 7, check: () => this.mappingCurrencyLevel >= 7,
-				items: [{ currency: SilverCoin, amount: 4 }]
+				items: [{ currency: currencyMap['SilverCoin'], amount: 4 }]
 			}
 		];
 
@@ -142,16 +145,16 @@ const Upgrades = {
 
 	// Methods for specific upgrades that need special handling
 	buyCurrencyTab() {
-		this.handleStashTabUpgrade('currency', StackedDeck, 5);
+		this.handleStashTabUpgrade('currency', currencyMap['StackedDeck'], 5);
 	},
 	buyDelveTab() {
-		this.handleStashTabUpgrade('delve', StackedDeck, 50, Annulment, 10, () => this.delveScarab());
+		this.handleStashTabUpgrade('delve', currencyMap['StackedDeck'], 50, currencyMap['Annulment'], 10, () => this.delveScarab());
 	},
 	buyQuadTab() {
-		this.handleStashTabUpgrade('quad', Eternal, 1);
+		this.handleStashTabUpgrade('quad', currencyMap['Eternal'], 1);
 	},
 	buyDivTab() {
-		this.handleStashTabUpgrade('div', Annulment, 50, Exalted, 1);
+		this.handleStashTabUpgrade('div', currencyMap['Annulment'], 50, currencyMap['Exalted'], 1);
 	},
 
 	// Generic stash tab upgrade handler
@@ -188,7 +191,7 @@ const Upgrades = {
 
 	// Map currency upgrade handler
 	consumeMapCurrencyUpgrade() {
-		if (Ascendant.level >= 68 && !this.mapCurrencyUpgradeShown) {
+		if (exileMap['Ascendant'].level >= 68 && !this.mapCurrencyUpgradeShown) {
 			$("#UpgradeTable").append(
 				'<tr id="consumeMapCurrency">' +
 				'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored consumeMapCurrencyButton" id="btn-consume-map-currency">Alch/Scour Maps</button></td>' +
@@ -245,7 +248,7 @@ const upgradeConfigs = [
 	{
 		key: 'iiq',
 		shownFlag: 'iiqUpgradeShown',
-		unlock: () => Ascendant.level >= 50,
+		unlock: () => exileMap['Ascendant'].level >= 50,
 		rowId: 'iiqUpgrade',
 		buttonId: 'btn-iiq-upgrade',
 		buttonClass: 'iiqUpgradeButton',
@@ -281,7 +284,7 @@ const upgradeConfigs = [
 	{
 		key: 'incubator',
 		shownFlag: 'incubatorUpgradeShown',
-		unlock: () => Ascendant.level >= 75,
+		unlock: () => exileMap['Ascendant'].level >= 75,
 		rowId: 'incubatorUpgrade',
 		buttonId: 'btn-incubator-upgrade',
 		buttonClass: 'incubatorUpgradeButton',
@@ -314,7 +317,7 @@ const upgradeConfigs = [
 	{
 		key: 'flipSpeed',
 		shownFlag: 'flipSpeedUpgradeShown',
-		unlock: () => window.totalLevel >= 1000,
+		unlock: (totalLevel) => totalLevel >= 1000,
 		rowId: 'flipSpeedUpgrade',
 		buttonId: 'btn-flip-speed',
 		buttonClass: 'flipSpeedUpgradeButton',
@@ -324,10 +327,10 @@ const upgradeConfigs = [
 		benefit: () => '+0.5',
 		costClass: 'flipSpeedUpgradeCostDisplay',
 		costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`,
-		requirements: () => [{ currency: Eternal, amount: Upgrades.flippingSpeedCost }],
+		requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
 		hover: () => Upgrades.hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
 		buy: () => Upgrades.handleUpgrade({
-			requirements: [{ currency: Eternal, amount: Upgrades.flippingSpeedCost }],
+			requirements: [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
 			onSuccess: () => {
 				Upgrades.flippingSpeedCost = Math.floor(Upgrades.flippingSpeedCost * 2);
 				Upgrades.flippingSpeed++;
@@ -346,7 +349,7 @@ const upgradeConfigs = [
 	{
 		key: 'currencyTab',
 		shownFlag: 'currencyTabShown',
-		unlock: () => window.totalLevel >= 250,
+		unlock: (totalLevel) => totalLevel >= 250,
 		rowId: 'currencyTab',
 		buttonId: 'btn-currency-tab',
 		buttonClass: 'currencyTabButton',
@@ -356,14 +359,14 @@ const upgradeConfigs = [
 		benefit: () => '+1.0',
 		costClass: '',
 		costText: () => '5 Stacked Deck',
-		requirements: () => [{ currency: StackedDeck, amount: 5 }],
+		requirements: () => [{ currency: currencyMap['StackedDeck'], amount: 5 }],
 		hover: () => Upgrades.hoverUpgrades('currencyTab', 'StackedDeck'),
 		buy: () => Upgrades.buyCurrencyTab()
 	},
 	{
 		key: 'delveTab',
 		shownFlag: 'delveTabShown',
-		unlock: () => window.totalLevel >= 500,
+		unlock: (totalLevel) => totalLevel >= 500,
 		rowId: 'delveTab',
 		buttonId: 'btn-delve-tab',
 		buttonClass: 'delveTabButton',
@@ -374,8 +377,8 @@ const upgradeConfigs = [
 		costClass: '',
 		costText: () => '50 Stacked Deck<br>10 Orb of Annulment',
 		requirements: () => [
-			{ currency: StackedDeck, amount: 50 },
-			{ currency: Annulment, amount: 10 }
+			{ currency: currencyMap['StackedDeck'], amount: 50 },
+			{ currency: currencyMap['Annulment'], amount: 10 }
 		],
 		hover: () => Upgrades.hoverUpgrades('delveTab', 'StackedDeck', 'Annulment'),
 		buy: () => Upgrades.buyDelveTab()
@@ -383,7 +386,7 @@ const upgradeConfigs = [
 	{
 		key: 'quadTab',
 		shownFlag: 'quadTabShown',
-		unlock: () => window.totalLevel >= 1000,
+		unlock: (totalLevel) => totalLevel >= 1000,
 		rowId: 'quadTab',
 		buttonId: 'btn-quad-tab',
 		buttonClass: 'quadTabButton',
@@ -393,14 +396,14 @@ const upgradeConfigs = [
 		benefit: () => '+1.0',
 		costClass: '',
 		costText: () => '1 Eternal Orb',
-		requirements: () => [{ currency: Eternal, amount: 1 }],
+		requirements: () => [{ currency: currencyMap['Eternal'], amount: 1 }],
 		hover: () => Upgrades.hoverUpgrades('quadTab', 'Eternal'),
 		buy: () => Upgrades.buyQuadTab()
 	},
 	{
 		key: 'divTab',
 		shownFlag: 'divTabShown',
-		unlock: () => window.totalLevel >= 750,
+		unlock: (totalLevel) => totalLevel >= 750,
 		rowId: 'divTab',
 		buttonId: 'btn-div-tab',
 		buttonClass: 'divTabButton',
@@ -411,8 +414,8 @@ const upgradeConfigs = [
 		costClass: '',
 		costText: () => '50 Orb of Annulment<br>1 Exalted',
 		requirements: () => [
-			{ currency: Annulment, amount: 50 },
-			{ currency: Exalted, amount: 1 }
+			{ currency: currencyMap['Annulment'], amount: 50 },
+			{ currency: currencyMap['Exalted'], amount: 1 }
 		],
 		hover: () => Upgrades.hoverUpgrades('divTab', 'Exalted', 'Annulment'),
 		buy: () => Upgrades.buyDivTab()
@@ -474,9 +477,10 @@ const upgradeConfigs = [
 ];
 
 // --- Generic Upgrade Renderer ---
-function renderUpgradeRow(cfg) {
+function renderUpgradeRow(cfg, totalLevel) {
 	if (Upgrades[cfg.shownFlag]) return;
-	if (!cfg.unlock()) return;
+	// Pass totalLevel to unlock if it expects it
+	if (cfg.unlock.length > 0 ? !cfg.unlock(totalLevel) : !cfg.unlock()) return;
 
 	$("#UpgradeTable").append(
 		`<tr id="${cfg.rowId}">
@@ -499,24 +503,25 @@ function renderUpgradeRow(cfg) {
 setInterval(function updateTick() {
 	// Render generic upgrades
 	for (const cfg of upgradeConfigs) {
-		renderUpgradeRow(cfg);
+		renderUpgradeRow(cfg, typeof totalLevel !== 'undefined' ? totalLevel : 0);
 	}
 	Upgrades.consumeMapCurrencyUpgrade();
 
 	// Handle conqueror upgrades
 	const conquerors = [
-		{ currency: Crusader, name: 'Crusader' },
-		{ currency: Hunter, name: 'Hunter' },
-		{ currency: Redeemer, name: 'Redeemer' },
-		{ currency: Warlord, name: 'Warlord' }
+		currencyMap['Crusader'],
+		currencyMap['Hunter'],
+		currencyMap['Redeemer'],
+		currencyMap['Warlord']
 	];
 
-	for (const conq of conquerors) {
-		if (conq.currency.total >= 1) {
-			$(`#${conq.name}Upgrade`).show();
-			Upgrades.hoverUpgrades(`${conq.name}Upgrade`, conq.name);
+	for (const currency of conquerors) {
+		const name = currency.name; // or use the key if you prefer
+		if (currency && currency.total >= 1) {
+			$(`#${name}Upgrade`).show();
+			Upgrades.hoverUpgrades(`${name}Upgrade`, name);
 		} else {
-			$(`#${conq.name}Upgrade`).hide();
+			$(`#${name}Upgrade`).hide();
 		}
 	}
 

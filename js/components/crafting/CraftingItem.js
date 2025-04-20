@@ -1,3 +1,8 @@
+import { UICard } from '../Cards.js';
+import { currencyMap } from '../currency/CurrencyData.js';
+import { SnackBar } from '../../../Main.js';
+import { fossilData } from '../delve/Fossil.js';
+
 class CraftingItem {
     constructor(id, researchCost, ingredients, reward, progressInterval = 300) {
         this.id = id;
@@ -25,8 +30,8 @@ class CraftingItem {
         }
     }
     buy() {
-        if (Chaos.total >= this.researchCost) {
-            Chaos.total -= this.researchCost;
+        if (currencyMap['Chaos'].total >= this.researchCost) {
+            currencyMap['Chaos'].total -= this.researchCost;
             this.level++;
             $(`.craft${this.capitalizeFirst()}Cost`).hide();
             $(`#${this.id}Loader`).removeClass("hidden");
@@ -41,7 +46,10 @@ class CraftingItem {
     }
     hasIngredients() {
         return this.ingredients.every(ing => {
-            const item = window[ing.currency];
+            let item = currencyMap[ing.currency];
+            if (!item && fossilData) {
+                item = fossilData.find(f => f.name === ing.currency);
+            }
             if (!item) {
                 SnackBar(`Ingredient not found: ${ing.currency}`);
                 return false;
@@ -52,7 +60,11 @@ class CraftingItem {
     craft() {
         if (this.level >= 0 && this.hasIngredients()) {
             this.ingredients.forEach(ing => {
-                window[ing.currency].total -= ing.amount;
+                let item = currencyMap[ing.currency];
+                if (!item && fossilData) {
+                    item = fossilData.find(f => f.name === ing.currency);
+                }
+                if (item) item.total -= ing.amount;
             });
             this.progress += 1;
             return true;
@@ -75,7 +87,15 @@ class CraftingItem {
         let e = document.querySelector(`#${this.id}Loader`);
         componentHandler.upgradeElement(e);
         e.MaterialProgress.setProgress(0);
-        window[this.reward.currency].total += this.reward.amount;
+        let rewardItem = currencyMap[this.reward.currency];
+        if (!rewardItem && fossilData) {
+            rewardItem = fossilData.find(f => f.name === this.reward.currency);
+        }
+        if (rewardItem) {
+            rewardItem.total += this.reward.amount;
+        } else {
+            SnackBar(`Reward not found: ${this.reward.currency}`);
+        }
         this.totalCrafted++;
         this.level++;
         document.getElementsByClassName(`craft${this.capitalizeFirst()}Total`)[0].innerHTML = numeral(this.totalCrafted).format('0,0');
@@ -87,26 +107,24 @@ class CraftingItem {
         return this.progress >= 1;
     }
     generateHTML() {
-        let html = `
-        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG craft">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">${this.displayName}</h2>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand">
-                <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
-                Crafting Cost:<br>
-                ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br><br>
-                Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
-                Total Crafted: <span class="craft${this.capitalizeFirst()}Total">0</span>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand craft${this.capitalizeFirst()}Cost">
-                <a class="mdl-button mdl-button--raised mdl-button--colored"
-                    onclick="craftingSystem.buyCrafting('${this.id}');">Research ${this.displayName}</a><br><br>
-                Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos
-                <br>
-            </div>
-        </div>`;
-        return html;
+        const content = `
+            <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
+            Crafting Cost:<br>
+            ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br><br>
+            Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
+            Total Crafted: <span class="craft${this.capitalizeFirst()}Total">${numeral(this.totalCrafted).format('0,0')}</span>
+        `;
+        const actionSection = `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Research ${this.displayName}</button><br><br>
+            Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos<br>`;
+        const card = UICard.create({
+            id: `${this.id}-card`,
+            title: this.displayName,
+            content: content,
+            actionSections: [{ content: actionSection, className: 'mdl-card__supporting-text mdl-card--expand craft' + this.capitalizeFirst() + 'Cost' }],
+            size: 'third',
+            extraClasses: ['cardBG', 'craft']
+        });
+        return card.outerHTML;
     }
 }
 
@@ -168,7 +186,15 @@ class MirrorItem extends CraftingItem {
         let e = document.querySelector(`#${this.id}Loader`);
         componentHandler.upgradeElement(e);
         e.MaterialProgress.setProgress(0);
-        Exalted.total += this.fee;
+        let rewardItem = currencyMap[this.reward.currency];
+        if (!rewardItem && fossilData) {
+            rewardItem = fossilData.find(f => f.name === this.reward.currency);
+        }
+        if (rewardItem) {
+            rewardItem.total += this.fee;
+        } else {
+            SnackBar(`Reward not found: ${this.reward.currency}`);
+        }
         this.fee += this.feeIncrease;
         this.reward.amount = this.fee;
         this.totalCrafted++;
@@ -179,7 +205,11 @@ class MirrorItem extends CraftingItem {
     buy() {
         if (this.hasIngredients()) {
             this.ingredients.forEach(ing => {
-                window[ing.currency].total -= ing.amount;
+                let item = currencyMap[ing.currency];
+                if (!item && fossilData) {
+                    item = fossilData.find(f => f.name === ing.currency);
+                }
+                if (item) item.total -= ing.amount;
             });
             this.level++;
             $(`.${this.id}Cost`).hide();
@@ -194,28 +224,26 @@ class MirrorItem extends CraftingItem {
         }
     }
     generateHTML() {
-        let html = `
-        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG craft">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">${this.displayName}</h2>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand">
-                <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
-                Mirror Fee: <span class="${this.id}Fee">20</span> Exalted<br>
-                Total Mirrored: <span class="${this.id}Total">0</span>
-            </div>
-            <div class="mdl-card__supporting-text mdl-card--expand ${this.id}Cost">
-                <a class="mdl-button mdl-button--raised mdl-button--colored"
-                    onclick="craftingSystem.buyMirror('${this.id}');">Craft ${this.displayName}</a><br><br>
-                Crafting Cost:<br>
-                ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}
-                <br>
-            </div>
-            <div class="mdl-card mdl-card--expand ${this.id}Stats hidden">
-                ${this.getItemStats()}
-            </div>
+        const content = `
+            <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
+            Mirror Fee: <span class="${this.id}Fee">${this.fee}</span> Exalted<br>
+            Total Mirrored: <span class="${this.id}Total">${numeral(this.totalCrafted).format('0,0')}</span>
+        `;
+        const actionSection = `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Craft ${this.displayName}</button><br><br>
+            Crafting Cost:<br>
+            ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br>`;
+        const statsSection = `<div class="mdl-card mdl-card--expand ${this.id}Stats hidden">
+            ${this.getItemStats()}
         </div>`;
-        return html;
+        const card = UICard.create({
+            id: `${this.id}-card`,
+            title: this.displayName,
+            content: content + statsSection,
+            actionSections: [{ content: actionSection, className: 'mdl-card__supporting-text mdl-card--expand ' + this.id + 'Cost' }],
+            size: 'third',
+            extraClasses: ['cardBG', 'craft']
+        });
+        return card.outerHTML;
     }
 }
 

@@ -1,12 +1,13 @@
 import { generateExileCards } from './js/components/exile/ExileUI.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
-import { currencyData } from './js/components/currency/CurrencyData.js';
+import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
 import { initDelvingUI } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
 import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
+import craftingSystem from './js/components/crafting/CraftingUI.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -84,8 +85,8 @@ function showGuild() {
 	// Get the guild grid container
 	const guildGrid = document.querySelector('#guild .mdl-grid');
 
-	// Generate exile cards dynamically
-	generateExileCards(guildGrid, exileData);
+	// Generate exile cards dynamically, passing recruitExile
+	generateExileCards(guildGrid, exileData, recruitExile);
 	// Ensure reroll and other dynamic UI is correct after card generation
 	exileData.forEach(exile => exile.updateExileClass());
 }
@@ -241,7 +242,7 @@ function showLinksUpgrades() {
  * 
  * @param {string} input - The message to display in the snackbar
  */
-function SnackBar(input) {
+export function SnackBar(input) {
 	if (snackBarTimer <= 0) {
 		'use strict';
 		var snackbarContainer = document.querySelector('#snackBar');
@@ -327,18 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //----------------------------------Start Functions
 gameStart();
 
-window.showMain = showMain;
-window.showGuild = showGuild;
-window.showFlipping = showFlipping;
-window.showDelving = showDelving;
-window.showCrafting = showCrafting;
-window.showInfo = showInfo;
-window.SnackBar = SnackBar;
-window.showGeneralUpgrades = showGeneralUpgrades;
-window.showGearUpgrades = showGearUpgrades;
-window.showLinksUpgrades = showLinksUpgrades;
-window.showAllUpgrades = showAllUpgrades;
-
 //---Main (global state)
 let totalLevel = 0;
 let dropRate = 0;
@@ -389,9 +378,8 @@ setInterval(function gameTick() {
 
 //---Delve system integration---
 setInterval(function delveTick() {
-	if (exileMap['Melvin'] && exileMap['Melvin'].level >= 1 && exileMap['Sulphite']) {
-		// Use upgradeDropRate if available, else 0
-		delve(exileMap['Sulphite'], exileMap['Melvin'], Upgrades.upgradeDropRate || 0);
+	if (exileMap['Melvin'] && exileMap['Melvin'].level >= 1 && currencyMap['Sulphite']) {
+		delve(currencyMap['Sulphite'], exileMap['Melvin'], Upgrades.upgradeDropRate || 0);
 	}
 }, 2500);
 
@@ -429,6 +417,7 @@ function recruitExile(exileName) {
 			return;
 		}
 	}
+	//TODO do they need level increased? Change to owned = true?
 	if (exileName === 'Singularity') {
 		exile.level++;
 		$(".SingularityHide").remove();
@@ -443,8 +432,9 @@ function recruitExile(exileName) {
 		$(".craft").show();
 		return;
 	} else if (exileName === 'Melvin') {
-		exile.level += 1;
-		exile.dropRate += 0.1;
+		// Always update the Melvin in exileMap so delving logic works
+		exile.level = 1;
+		exile.dropRate = 0.1;
 		$(".MelvinBuy").hide();
 		$(".MelvinHide").html('Level ' + exile.level + ' ' + exile.name);
 		const firstGearUpgrade = exile.gearUpgrades[0];
@@ -457,20 +447,30 @@ function recruitExile(exileName) {
 			.join('<br>');
 		$("#UpgradeGearTable").append(
 			'<tr id="' + exile.name + 'GearUpgrade">' +
-			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'GearButton" onclick="' + exile.name + '.lvlGear();">' + exile.name + ' Gear' + '</button></td>' +
+			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'GearButton" id="' + exile.name + 'GearBtn">' + exile.name + ' Gear' + '</button></td>' +
 			'<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', exile.name) + '</td>' +
 			'<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + exile.name + ')</td>' +
 			'<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
 			'</tr>'
 		);
+		// Add event listener for Gear upgrade
+		const gearBtn = document.getElementById(exile.name + 'GearBtn');
+		if (gearBtn && typeof exile.lvlGear === 'function') {
+			gearBtn.addEventListener('click', () => exile.lvlGear());
+		}
 		$("#UpgradeLinksTable").append(
 			'<tr id="' + exile.name + 'LinksUpgrade">' +
-			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'LinksButton" onclick="' + exile.name + '.lvlLinks();">' + exile.name + ' Links' + '</button></td>' +
+			'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + exile.name + 'LinksButton" id="' + exile.name + 'LinksBtn">' + exile.name + ' Links' + '</button></td>' +
 			'<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', exile.name) + '</td>' +
 			'<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + exile.name + ')</td>' +
 			'<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
 			'</tr>'
 		);
+		// Add event listener for Links upgrade
+		const linksBtn = document.getElementById(exile.name + 'LinksBtn');
+		if (linksBtn && typeof exile.lvlLinks === 'function') {
+			linksBtn.addEventListener('click', () => exile.lvlLinks());
+		}
 		document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
 		document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
 		if (exile.level == 100) {
@@ -485,9 +485,9 @@ function recruitExile(exileName) {
 		exile.setupHover("Links", ...linksCurrencies);
 		return;
 	}
-	exile.recruitExile();
+	// For all other exiles, call the new onRecruited method
+	exile.onRecruited();
 }
-window.recruitExile = recruitExile;
 
 function processCurrencyOperation(operation, param) {
 	for (let i = 0; i < currencyData.length; i++) {
@@ -516,9 +516,10 @@ function initTestMode() {
 	});
 	console.log('Test mode initialized with 99999 of each currency and fossil');
 }
-window.initTestMode = initTestMode;
 
 // Automatically run test mode if URL has ?test=true parameter
 if (window.location.search.includes('test=true')) {
 	document.addEventListener('DOMContentLoaded', initTestMode);
 }
+
+export { exileMap, exileData, totalLevel, recruitExile };

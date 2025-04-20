@@ -1,8 +1,9 @@
 // DelveUI.js - Contains UI creation and initialization for Delving
 import { fossilData } from './Fossil.js';
 import { UICard } from '../Cards.js';
+import { recruitExile, exileMap } from '../../../Main.js';
 
-function createMelvinSection() {
+function createMelvinSection(recruitExileFn, melvinObj) {
     const content = `
         Level: <span class="MelvinLevel">0</span> <span class="MelvinReroll hidden"></span><br>
         EXP: <span class="MelvinEXP">0/525</span><br>
@@ -10,9 +11,9 @@ function createMelvinSection() {
         Links: <span class="MelvinLinks">3L</span>
     `;
     const actionSections = [
-        { content: `<button class=\"mdl-button mdl-js-button mdl-button--raised mdl-button--colored\" onclick=\"recruitExile('Melvin');\">Recruit Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinBuy' },
+        { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRecruitBtn">Recruit Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinBuy' },
         { content: '500 Total Levels Required<br>Delve Stash Tab Required', className: 'mdl-card__actions mdl-card--border MelvinHide' },
-        { content: `<button class=\"mdl-button mdl-js-button mdl-button--raised mdl-button--colored\" onclick=\"Melvin.rerollExile();\">Reroll Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinRerollButton hidden' }
+        { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRerollBtn">Reroll Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinRerollButton hidden' }
     ];
     const card = UICard.create({
         id: 'melvin-card',
@@ -22,6 +23,15 @@ function createMelvinSection() {
         size: 'third',
         extraClasses: ['cardBG', 'melvin']
     });
+    // Add event listeners
+    const recruitBtn = card.querySelector('#MelvinRecruitBtn');
+    if (recruitBtn && typeof recruitExileFn === 'function') {
+        recruitBtn.addEventListener('click', () => recruitExileFn('Melvin'));
+    }
+    const rerollBtn = card.querySelector('#MelvinRerollBtn');
+    if (rerollBtn && melvinObj && typeof melvinObj.rerollExile === 'function') {
+        rerollBtn.addEventListener('click', () => melvinObj.rerollExile());
+    }
     return card;
 }
 
@@ -29,11 +39,11 @@ function createDeepDelvingSection() {
     const content = `
         <p>Spend Sulphite to traverse the mines.</p>
         <p>Collect currency and fossils.</p>
-        <div id=\"delveLoader\" class=\"mdl-progress mdl-js-progress hidden\"></div>
+        <div id="delveLoader" class="mdl-progress mdl-js-progress hidden"></div>
         <br>
-        Total Sulphite: <span class=\"Sulphite\">0</span><br>
-        Delve Depth: <span class=\"SulphiteDepth\">1</span><br>
-        Sulphite Cost: <span class=\"SulphiteCost\">110</span>
+        Total Sulphite: <span class="Sulphite">0</span><br>
+        Delve Depth: <span class="SulphiteDepth">1</span><br>
+        Sulphite Cost: <span class="SulphiteCost">110</span>
     `;
     const card = UICard.create({
         id: 'deep-delving-card',
@@ -54,11 +64,11 @@ function createFossilsSection() {
         !['Primitive', 'Potent', 'Powerful', 'Prime'].includes(fossil.name)
     );
     resonators.forEach(fossil => {
-        fossilsHTML += `${fossil.name}: <span class=\"${fossil.name}Total\">0</span><br>`;
+        fossilsHTML += `${fossil.name}: <span class="${fossil.name}Total">0</span><br>`;
     });
     fossilsHTML += '<br><b>Fossils:</b><br>';
     fossils.forEach(fossil => {
-        fossilsHTML += `${fossil.name}: <span class=\"${fossil.name}Total\">0</span><br>`;
+        fossilsHTML += `${fossil.name}: <span class="${fossil.name}Total">0</span><br>`;
     });
     const card = UICard.create({
         id: 'fossils-card',
@@ -73,7 +83,7 @@ function createFossilsSection() {
 function initDelvingUI() {
     const container = document.getElementById('delving-container');
     if (!container) return;
-    container.appendChild(createMelvinSection());
+    container.appendChild(createMelvinSection(recruitExile, exileMap['Melvin']));
     container.appendChild(createDeepDelvingSection());
     container.appendChild(createFossilsSection());
 }

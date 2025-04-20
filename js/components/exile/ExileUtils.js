@@ -1,3 +1,5 @@
+import { currencyMap } from '../currency/CurrencyData.js';
+
 // Exile utility functions for requirements, upgrades, and costs
 
 /**
@@ -58,8 +60,8 @@ function getMirrorUpgrade(gearLevel) {
         level: gearLevel,
         name: "Mirror gear",
         requirements: [
-            { currency: Exalted, amount: gearLevel },
-            { currency: Mirror, amount: 1 }
+            { currency: currencyMap['Exalted'], amount: gearLevel },
+            { currency: currencyMap['Mirror'], amount: 1 }
         ],
         specialIncrement: 10,
         benefit: 2.5,

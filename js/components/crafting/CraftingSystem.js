@@ -1,6 +1,8 @@
 import { CraftingItem, MirrorItem } from './CraftingItem.js';
 import { fossilData } from '../delve/Fossil.js';
 import { UICard } from '../Cards.js';
+import Upgrades from '../Augments.js';
+import { recruitExile } from '../../../Main.js';
 
 class CraftingSystem {
     constructor() {
@@ -243,8 +245,8 @@ class CraftingSystem {
             Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
             Total Crafted: <span class="craft${this.capitalizeFirst()}Total">0</span>
         `;
-        const actionSection = `<a class="mdl-button mdl-button--raised mdl-button--colored"
-            onclick="craftingSystem.buyCrafting('${this.id}');">Research ${this.displayName}</a><br><br>
+        // Remove inline onclick, add a unique id for the button
+        const actionSection = `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Research ${this.displayName}</button><br><br>
             Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos<br>`;
         const card = UICard.create({
             id: `${this.id}-card`,
@@ -275,12 +277,22 @@ class CraftingSystem {
                 $(`.craft${item.capitalizeFirst()}Cost`).hide();
                 $(`#${item.id}Loader`).removeClass("hidden");
             }
+            // Add event listener for research button
+            const btn = document.getElementById(`craft-research-btn-${item.id}`);
+            if (btn) {
+                btn.addEventListener('click', () => this.buyCrafting(item.id));
+            }
         });
         Object.values(this.mirrorItems).forEach(item => {
             if (item.isActive()) {
                 $(`.${item.id}Cost`).hide();
                 $(`#${item.id}Loader`).removeClass("hidden");
                 $(`.${item.id}Stats`).removeClass("hidden");
+            }
+            // Add event listener for mirror craft button
+            const btn = document.getElementById(`craft-research-btn-${item.id}`);
+            if (btn) {
+                btn.addEventListener('click', () => this.buyMirror(item.id));
             }
         });
         if (Upgrades.quadStashTab !== 1) {
@@ -300,7 +312,7 @@ class CraftingSystem {
             title: 'The Artificer',
             content: 'The hideout warrior.<br>',
             actionSections: !artificerOwned ? [
-                { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="recruitExile('Artificer');">Recruit The Artificer</button>`, className: 'mdl-card__actions mdl-card--border ArtificerBuy' },
+                { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="ArtificerRecruitBtn">Recruit The Artificer</button>`, className: 'mdl-card__actions mdl-card--border ArtificerBuy' },
                 { content: '1000 Total Levels Required<br>Quad Stash Tab Required', className: 'mdl-card__actions mdl-card--border ArtificerHide' }
             ] : [],
             size: 'third',
@@ -319,6 +331,13 @@ class CraftingSystem {
         container.appendChild(artificerCard);
         container.appendChild(descriptionCard);
         componentHandler.upgradeElements(container);
+        // Add event listener for Artificer recruit button
+        const recruitBtn = document.getElementById('ArtificerRecruitBtn');
+        if (recruitBtn) {
+            recruitBtn.addEventListener('click', () => {
+                if (typeof recruitExile === 'function') recruitExile('Artificer');
+            });
+        }
     }
 }
 

@@ -7,14 +7,14 @@ import { UICard } from '../Cards.js';
  * @param {string} description - Description of the upgrade
  * @param {string} benefit - The benefit gained from the upgrade
  * @param {string} requirements - The requirements text
+ * @param {object} exileObj - The exile object containing methods
  */
-function generateUpgradeHTML(exile, upgradeType, description, benefit, requirements) {
+function generateUpgradeHTML(exile, upgradeType, description, benefit, requirements, exileObj) {
     // Generate button text from exile name and upgradeType
     const buttonText = exile + ' ' + upgradeType;
     const html = `
         <td class="mdl-data-table__cell--non-numeric">
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" 
-                    onclick="${exile}.lvl${upgradeType}();">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" id="${exile}${upgradeType}Btn">
                 ${buttonText}
             </button>
         </td>
@@ -23,13 +23,18 @@ function generateUpgradeHTML(exile, upgradeType, description, benefit, requireme
         <td class="mdl-data-table__cell--non-numeric">${requirements}</td>
     `;
     $(`#${exile}${upgradeType}Upgrade`).html(html);
+    // Add event listener for the button
+    const btn = document.getElementById(`${exile}${upgradeType}Btn`);
+    if (btn && exileObj && typeof exileObj[`lvl${upgradeType}`] === 'function') {
+        btn.addEventListener('click', () => exileObj[`lvl${upgradeType}`]());
+    }
 }
 
 /**
  * Generates cards for all standard exiles to populate the Guild section
  * @param {HTMLElement} container - The container element to append cards to
  */
-function generateExileCards(container, exileData) {
+function generateExileCards(container, exileData, recruitExile) {
     container.innerHTML = '';
     const standardExiles = exileData.filter(exile => 
         !['Melvin', 'Singularity', 'Artificer'].includes(exile.name)
@@ -45,8 +50,8 @@ function generateExileCards(container, exileData) {
         if (exile.level < 1) {
             actionSections.push({
                 content: `
-                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton"
-                        onclick="recruitExile('${exile.name}');">Recruit ${exile.name}</button>
+                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton">
+                        Recruit ${exile.name}</button>
                 `,
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
             });
@@ -56,11 +61,11 @@ function generateExileCards(container, exileData) {
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection hidden`
             });
         } else {
-            // At max level, include reroll button markup
+            // At max level, include reroll button markup (no inline onclick)
             actionSections.push({
                 content: `
-                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton"
-                        onclick="window.exileData.find(e=>e.name==='${exile.name}').rerollExile();">Reroll ${exile.name}</button>
+                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton">
+                        Reroll ${exile.name}</button>
                 `,
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
             });
@@ -80,6 +85,19 @@ function generateExileCards(container, exileData) {
             extraClasses: ['cardBG', exile.name.toLowerCase()]
         });
         container.appendChild(card);
+        // Add event listeners for action buttons
+        const actionBtn = card.querySelector(`#${exile.name}ActionButton`);
+        if (actionBtn) {
+            if (exile.level < 1) {
+                actionBtn.addEventListener('click', () => {
+                    if (typeof recruitExile === 'function') recruitExile(exile.name);
+                });
+            } else if (exile.level >= 100) {
+                actionBtn.addEventListener('click', () => {
+                    if (typeof exile.rerollExile === 'function') exile.rerollExile();
+                });
+            }
+        }
     });
 }
 

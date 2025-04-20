@@ -1,5 +1,6 @@
 import { processUpgrade, getMirrorUpgrade } from './ExileUtils.js';
 import { generateUpgradeHTML } from './ExileUI.js';
+import { SnackBar } from '../../../Main.js';
 
 /**
  * Represents an Exile character in the game
@@ -140,13 +141,14 @@ class Exile {
             upgradeType,
             nextUpgrade.description.replace('{name}', this.name),
             `+${nextUpgrade.benefit} (${this.name})`,
-            requirementsText
+            requirementsText,
+            this
         );
         const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
         this.setupHover(upgradeType, ...hoverCurrencies);
     }
 
-    recruitExile() {
+    onRecruited() {
         this.level += 1;
         this.dropRate += 0.1;
         $('.' + this.name + 'ActionSection').hide();
@@ -161,7 +163,7 @@ class Exile {
             .join('<br>');
         $("#UpgradeGearTable").append(
             '<tr id="' + this.name + 'GearUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" onclick="' + this.name + '.lvlGear();">' + this.name + ' Gear' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" id="' + this.name + 'GearBtn">' + this.name + ' Gear' + '</button></td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', this.name) + '</td>' +
             '<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + this.name + ')</td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
@@ -169,12 +171,21 @@ class Exile {
         );
         $("#UpgradeLinksTable").append(
             '<tr id="' + this.name + 'LinksUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" onclick="' + this.name + '.lvlLinks();">' + this.name + ' Links' + '</button></td>' +
+            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" id="' + this.name + 'LinksBtn">' + this.name + ' Links' + '</button></td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', this.name) + '</td>' +
             '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + this.name + ')</td>' +
             '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
             '</tr>'
         );
+        // Add event listeners for Gear and Links upgrade buttons
+        const gearBtn = document.getElementById(this.name + 'GearBtn');
+        if (gearBtn && typeof this.lvlGear === 'function') {
+            gearBtn.addEventListener('click', () => this.lvlGear());
+        }
+        const linksBtn = document.getElementById(this.name + 'LinksBtn');
+        if (linksBtn && typeof this.lvlLinks === 'function') {
+            linksBtn.addEventListener('click', () => this.lvlLinks());
+        }
         document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + this.dropRate.toFixed(1);
         document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
