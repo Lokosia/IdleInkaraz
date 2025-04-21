@@ -3,25 +3,47 @@ import { fossilData } from '../delve/Fossil.js';
 import { UICard } from '../Cards.js';
 import Upgrades from '../Augments.js';
 import { recruitExile } from '../../../Main.js';
+import { currencyMap } from '../currency/CurrencyData.js'; // Import currencyMap if needed for checks
+
+// Assuming componentHandler, $, numeral, and exileData are globally available
+// declare var componentHandler: any;
+// declare var $: any;
+// declare var numeral: any;
+// declare var exileData: any[];
 
 class CraftingSystem {
+    // Singleton instance property
+    // Removed private modifier and type annotation
+    static instance;
+
+    // Removed type annotations
+    craftingItems;
+    mirrorItems;
+
     constructor() {
-        // Singleton instance
+        // Singleton pattern
         if (CraftingSystem.instance) {
             return CraftingSystem.instance;
         }
         CraftingSystem.instance = this;
 
-        // Initialize crafting items
+        // Initialize collections
         this.craftingItems = {};
         this.mirrorItems = {};
-        
+
         this.initializeCraftingItems();
         this.initializeMirrorItems();
         this.startIntervals();
+
+        // Initial UI render - Render structure first
+        this.renderCraftingHeader();
+        this.renderCraftingCards();
+        // Defer conditional UI updates until after constructor completes
+        // this.updateUIConditionally(); // Call this externally after instantiation
     }
 
     initializeCraftingItems() {
+        // Definitions remain the same, using the CraftingItem constructor
         this.craftingItems = {
             flask: new CraftingItem('flask', 400,
                 [{ currency: 'Transmutation', amount: 1 }, { currency: 'Alteration', amount: 20 }, { currency: 'Augmentation', amount: 10 }],
@@ -63,249 +85,205 @@ class CraftingSystem {
     }
 
     initializeMirrorItems() {
+        // Definitions remain the same, using the MirrorItem constructor
         this.mirrorItems = {
             mirrorSword: new MirrorItem('mirrorSword', [
-                { currency: 'Prime', amount: 50 }, { currency: 'Jagged', amount: 50 }, 
-                { currency: 'Serrated', amount: 50 }, { currency: 'Shuddering', amount: 50 }, 
-                { currency: 'Corroded', amount: 50 }, { currency: 'Eternal', amount: 25 }, 
+                { currency: 'Primitive', amount: 50 }, { currency: 'Jagged', amount: 50 }, // Corrected Prime to Primitive based on other recipes
+                { currency: 'Serrated', amount: 50 }, { currency: 'Shuddering', amount: 50 },
+                { currency: 'Corroded', amount: 50 }, { currency: 'Eternal', amount: 25 },
                 { currency: 'Exalted', amount: 500 }
             ]),
             mirrorShield: new MirrorItem('mirrorShield', [
-                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 }, 
-                { currency: 'Crusader', amount: 1 }, { currency: 'Potent', amount: 50 }, 
-                { currency: 'Dense', amount: 50 }, { currency: 'Lucent', amount: 50 }, 
+                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 },
+                { currency: 'Crusader', amount: 1 }, { currency: 'Potent', amount: 50 },
+                { currency: 'Dense', amount: 50 }, { currency: 'Lucent', amount: 50 },
                 { currency: 'Eternal', amount: 30 }, { currency: 'Exalted', amount: 600 }
             ]),
             mirrorChest: new MirrorItem('mirrorChest', [
-                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 }, 
-                { currency: 'Crusader', amount: 1 }, { currency: 'Prime', amount: 50 }, 
-                { currency: 'Jagged', amount: 50 }, { currency: 'Bound', amount: 50 }, 
-                { currency: 'Pristine', amount: 50 }, { currency: 'Serrated', amount: 50 }, 
+                { currency: 'Awakener', amount: 1 }, { currency: 'Hunter', amount: 1 },
+                { currency: 'Crusader', amount: 1 }, { currency: 'Primitive', amount: 50 }, // Corrected Prime to Primitive
+                { currency: 'Jagged', amount: 50 }, { currency: 'Bound', amount: 50 },
+                { currency: 'Pristine', amount: 50 }, { currency: 'Serrated', amount: 50 },
                 { currency: 'Eternal', amount: 35 }, { currency: 'Exalted', amount: 700 }
             ])
         };
     }
 
     startIntervals() {
-        setInterval(() => this.craftingTick(), 30000);
-        setInterval(() => this.mirrorTick(), 60000);
-        setInterval(() => this.updateCraftingProgressBars(), 300);
-        setInterval(() => this.updateMirrorProgressBars(), 600);
-        setInterval(() => this.updateFossilCounts(), 30000);
+        // Intervals call the tick methods which delegate to items
+        setInterval(() => this.craftingTick(), 300); // Standard crafts (30s total)
+        setInterval(() => this.mirrorTick(), 600); // Mirror progress (60s total)
+
+        // Use a single interval and method for updating all progress bars
+        setInterval(() => this.updateAllProgressBars(), 300); // Check frequently
+
+        // Fossil counts update remains a system-level task
+        setInterval(() => this.updateFossilCounts(), 300);
     }
 
+    // Tick for standard crafting items
     craftingTick() {
-        Object.values(this.craftingItems).forEach(item => item.craft());
+        Object.values(this.craftingItems).forEach(item => {
+            // If not currently crafting, try to start a new craft (consumes ingredients)
+            if (!item.isCrafting) {
+                item.startCraft();
+            }
+            // Always call craft - it will only increment progress if isCrafting is true
+            item.craft();
+        });
     }
 
+    // Tick for mirror items
     mirrorTick() {
         Object.values(this.mirrorItems).forEach(item => {
-            if (item.isActive()) {
-                item.progress += 1;
-            }
+            item.craft();
         });
     }
 
-    updateCraftingProgressBars() {
-        Object.values(this.craftingItems).forEach(item => {
+    updateAllProgressBars() {
+        const updateItemProgressBar = (item) => {
+            // Only update the DOM if the item is active and its progress has changed
             if (item.isActive() && item.hasProgressChanged()) {
                 item.updateProgressBar();
             }
-        });
+        };
+
+        Object.values(this.craftingItems).forEach(updateItemProgressBar);
+        Object.values(this.mirrorItems).forEach(updateItemProgressBar);
     }
 
-    updateMirrorProgressBars() {
-        Object.values(this.mirrorItems).forEach(item => {
-            if (item.isActive() && item.hasProgressChanged()) {
-                item.updateProgressBar();
-            }
-        });
-    }
-
+    // Update fossil counts in the UI (remains a system responsibility)
     updateFossilCounts() {
-        for (let i = 0; i < fossilData.length; i++) {
-            document.getElementsByClassName(fossilData[i].name + 'Total')[0].innerHTML = numeral(fossilData[i].total).format('0,0', Math.floor);
-        }
-    }
+        // Ensure fossilData is loaded and elements exist
+        if (!fossilData || fossilData.length === 0) return;
 
-    buyCrafting(id) {
-        if (this.craftingItems[id]) {
-            return this.craftingItems[id].buy();
-        }
-        return false;
-    }
-
-    buyMirror(id) {
-        if (this.mirrorItems[id]) {
-            return this.mirrorItems[id].buy();
-        }
-        return false;
-    }
-
-    // Get a user-friendly name for display
-    getDisplayName() {
-        switch(this.id) {
-            case 'flask': return 'Flask';
-            case 'gem': return '21/20% Gem';
-            case 'enchant': return 'Enchanted Helmet';
-            case 'perfect': return '30% Vaal Regalia';
-            case 'chaos': return '-9% Chaos Res Helmet';
-            case 'cold': return '-9% Cold Res Helmet';
-            case 'light': return '-9% Lightning Res Helmet';
-            case 'fire': return '-9% Fire Res Helmet';
-            case 'wand': return '+2 Gem Wand';
-            default: return this.capitalizeFirst();
-        }
-    }
-
-    // Buy/research the crafting item
-    buy() {
-        if (Chaos.total >= this.researchCost) {
-            Chaos.total -= this.researchCost;
-            this.level++;
-            $(`.craft${this.capitalizeFirst()}Cost`).hide();
-            $(`#${this.id}Loader`).removeClass("hidden");
-            return true;
-        } else {
-            SnackBar("Requirements not met.");
-            return false;
-        }
-    }
-
-    // Helper method to capitalize first letter
-    capitalizeFirst() {
-        return this.id.charAt(0).toUpperCase() + this.id.slice(1);
-    }
-
-    // Check if we have all ingredients for crafting
-    hasIngredients() {
-        return this.ingredients.every(ing => window[ing.currency].total >= ing.amount);
-    }
-
-    // Consume ingredients and increment progress
-    craft() {
-        if (this.level >= 0 && this.hasIngredients()) {
-            this.ingredients.forEach(ing => {
-                window[ing.currency].total -= ing.amount;
-            });
-            this.progress += 1;
-            return true;
-        }
-        return false;
-    }
-
-    // Update the progress bar in the UI
-    updateProgressBar() {
-        if (this.progress >= 1) {
-            this.progress += 1;
-            let e = document.querySelector(`#${this.id}Loader`);
-            componentHandler.upgradeElement(e);
-            e.MaterialProgress.setProgress(this.progress);
-            
-            // Complete crafting when progress reaches 99%
-            if (this.progress >= 99) {
-                this.completeCrafting();
+        fossilData.forEach(fossil => {
+            const element = document.querySelector(`.${fossil.name}Total`); // Use querySelector for consistency
+            if (element && typeof numeral !== 'undefined') {
+                element.innerHTML = numeral(fossil.total).format('0,0');
+            } else if (!element) {
+                // console.warn(`Element for fossil count .${fossil.name}Total not found.`);
             }
-        }
-    }
-
-    // Complete the crafting process and give rewards
-    completeCrafting() {
-        this.progress = 0;
-        let e = document.querySelector(`#${this.id}Loader`);
-        componentHandler.upgradeElement(e);
-        e.MaterialProgress.setProgress(0);
-        
-        // Add reward
-        window[this.reward.currency].total += this.reward.amount;
-        this.totalCrafted++;
-        this.level++;
-        
-        // Update UI
-        document.getElementsByClassName(`craft${this.capitalizeFirst()}Total`)[0].innerHTML = numeral(this.totalCrafted).format('0,0');
-    }
-
-    // Check if the crafting item is active (researched)
-    isActive() {
-        return this.level >= 0;
-    }
-
-    // Check if progress has changed
-    hasProgressChanged() {
-        return this.progress >= 1;
-    }
-
-    // Generate HTML for this crafting item
-    generateHTML() {
-        // Refactored to use UICard for card structure
-        const content = `
-            <div id="${this.id}Loader" class="mdl-progress mdl-js-progress hidden"></div><br>
-            Crafting Cost:<br>
-            ${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br><br>
-            Sale Price: ${this.reward.amount} ${this.reward.currency}<br>
-            Total Crafted: <span class="craft${this.capitalizeFirst()}Total">0</span>
-        `;
-        // Remove inline onclick, add a unique id for the button
-        const actionSection = `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Research ${this.displayName}</button><br><br>
-            Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos<br>`;
-        const card = UICard.create({
-            id: `${this.id}-card`,
-            title: this.displayName,
-            content: content,
-            actionSections: [{ content: actionSection, className: 'mdl-card__supporting-text mdl-card--expand craft' + this.capitalizeFirst() + 'Cost' }],
-            size: 'third',
-            extraClasses: ['cardBG', 'craft']
         });
-        return card.outerHTML;
     }
 
+    // Delegate buying to the specific crafting item
+    buyCrafting(id) { // Removed type annotation
+        if (this.craftingItems[id]) {
+            const success = this.craftingItems[id].buy();
+            // Optionally trigger a re-render or specific UI update if buy changes card structure
+            // if (success) this.renderCraftingCards(); // Re-render might be too heavy, item.buy() handles basic UI changes
+            return success;
+        }
+        console.error(`Crafting item with id ${id} not found for buying.`);
+        return false;
+    }
+
+    // Delegate buying (initial craft) to the specific mirror item
+    buyMirror(id) { // Removed type annotation
+        if (this.mirrorItems[id]) {
+            const success = this.mirrorItems[id].buy();
+            // Optionally trigger a re-render or specific UI update
+            // if (success) this.renderCraftingCards(); // Re-render might be too heavy, item.buy() handles basic UI changes
+            return success;
+        }
+        console.error(`Mirror item with id ${id} not found for buying.`);
+        return false;
+    }
+
+    // Render the cards for all crafting and mirror items
     renderCraftingCards() {
         const container = document.getElementById('crafting-cards-container');
-        if (!container) return;
-        container.innerHTML = '';
+        if (!container) {
+            console.error('Crafting cards container not found!');
+            return;
+        }
+
+        let cardsHTML = '';
+        // Generate HTML for each crafting item
         Object.values(this.craftingItems).forEach(item => {
-            container.innerHTML += item.generateHTML();
+            cardsHTML += item.generateHTML();
+        });
+        // Generate HTML for each mirror item
+        Object.values(this.mirrorItems).forEach(item => {
+            cardsHTML += item.generateHTML();
+        });
+
+        // Add placeholder divs (if still needed by other logic)
+        cardsHTML += `<div id="heavierCrafting" class="hidden"></div>
+                      <div class="advancedCrafting hidden"></div>`;
+
+        container.innerHTML = cardsHTML;
+
+        // Upgrade MDL components on the newly added elements
+        if (typeof componentHandler !== 'undefined') {
+            try {
+                 componentHandler.upgradeElements(container);
+            } catch (e) {
+                console.error("Error during componentHandler.upgradeElements:", e);
+            }
+        } else {
+            console.warn("componentHandler not defined, skipping MDL upgrade.");
+        }
+
+        // Add event listeners for the research/craft buttons
+        Object.values(this.craftingItems).forEach(item => {
+            // Only add listener if the button exists (i.e., item is not yet active)
+            if (!item.isActive()) {
+                const btn = document.getElementById(`craft-research-btn-${item.id}`);
+                if (btn) {
+                    // Remove existing listener before adding a new one to prevent duplicates if re-rendered
+                    btn.replaceWith(btn.cloneNode(true)); // Simple way to remove listeners
+                    const newBtn = document.getElementById(`craft-research-btn-${item.id}`);
+                    if (newBtn) newBtn.addEventListener('click', () => this.buyCrafting(item.id));
+                }
+            }
         });
         Object.values(this.mirrorItems).forEach(item => {
-            container.innerHTML += item.generateHTML();
-        });
-        container.innerHTML += `<div id="heavierCrafting" class="hidden"></div>
-                               <div class="advancedCrafting hidden"></div>`;
-        componentHandler.upgradeElements(container);
-        Object.values(this.craftingItems).forEach(item => {
-            if (item.isActive()) {
-                $(`.craft${item.capitalizeFirst()}Cost`).hide();
-                $(`#${item.id}Loader`).removeClass("hidden");
-            }
-            // Add event listener for research button
-            const btn = document.getElementById(`craft-research-btn-${item.id}`);
-            if (btn) {
-                btn.addEventListener('click', () => this.buyCrafting(item.id));
+            // Only add listener if the button exists (i.e., item is not yet active)
+            if (!item.isActive()) {
+                const btn = document.getElementById(`craft-research-btn-${item.id}`);
+                if (btn) {
+                     // Remove existing listener before adding a new one
+                    btn.replaceWith(btn.cloneNode(true));
+                    const newBtn = document.getElementById(`craft-research-btn-${item.id}`);
+                   if (newBtn) newBtn.addEventListener('click', () => this.buyMirror(item.id));
+                }
             }
         });
-        Object.values(this.mirrorItems).forEach(item => {
-            if (item.isActive()) {
-                $(`.${item.id}Cost`).hide();
-                $(`#${item.id}Loader`).removeClass("hidden");
-                $(`.${item.id}Stats`).removeClass("hidden");
-            }
-            // Add event listener for mirror craft button
-            const btn = document.getElementById(`craft-research-btn-${item.id}`);
-            if (btn) {
-                btn.addEventListener('click', () => this.buyMirror(item.id));
-            }
-        });
-        if (Upgrades.quadStashTab !== 1) {
-            $("#heavierCrafting, .advancedCrafting").hide();
+    }
+
+    // New method to handle UI updates based on Upgrades
+    updateUIConditionally() {
+        // Hide sections based on upgrades
+        // Check if Upgrades is defined and accessible now
+        if (typeof Upgrades !== 'undefined' && Upgrades.quadStashTab !== 1) {
+            const heavierCrafting = document.getElementById('heavierCrafting');
+            const advancedCrafting = document.querySelector('.advancedCrafting');
+            if (heavierCrafting) heavierCrafting.style.display = 'none';
+            if (advancedCrafting) advancedCrafting.style.display = 'none';
+        } else {
+            const heavierCrafting = document.getElementById('heavierCrafting');
+            const advancedCrafting = document.querySelector('.advancedCrafting');
+            // Ensure they are shown if the upgrade *is* present
+            if (heavierCrafting) heavierCrafting.style.display = ''; // Reset display
+            if (advancedCrafting) advancedCrafting.style.display = '';
         }
     }
 
+    // Render the header/description section (remains system logic)
     renderCraftingHeader() {
         const container = document.getElementById('crafting-main-container');
-        if (!container) return;
-        container.innerHTML = '';
-        const artificerOwned = typeof exileData !== 'undefined' && 
+        if (!container) {
+             console.error('Crafting main container not found!');
+            return;
+        }
+
+        // Check Artificer ownership
+        const artificerOwned = typeof exileData !== 'undefined' &&
+                               Array.isArray(exileData) &&
                                exileData.some(e => e.name === 'Artificer' && e.owned === true);
+
         // Use UICard for Artificer and description cards
         const artificerCard = UICard.create({
             id: 'artificer-card',
@@ -318,27 +296,44 @@ class CraftingSystem {
             size: 'third',
             extraClasses: ['cardBG', 'artificer']
         });
+
         const descriptionCard = UICard.create({
             id: 'crafting-description-card',
             title: 'Gear Crafting',
             content: `<p>Use the resources that the guild farms to produce high valued items.</p>
                 <p>Research a crafting method to unlock it.</p>
-                <p>Crafts are completed (then sold) every 30 seconds.<br>Items are mirrored every 60 seconds, the mirror fee increases by 5 Exalted every time.</p>`,
+                <p>Crafts are completed (then sold) every 30 seconds (assuming 100 progress).<br>Items are mirrored every 60 seconds (assuming 100 progress), the mirror fee increases by 5 Exalted every time.</p>`, // Updated description slightly
             size: 'half',
             extraClasses: ['cardBG', 'imgBG']
         });
+
+        // Clear container and append new cards
         container.innerHTML = '';
-        container.appendChild(artificerCard);
+        container.appendChild(artificerCard); // Appending DOM elements directly is better than innerHTML += for complex objects
         container.appendChild(descriptionCard);
-        componentHandler.upgradeElements(container);
-        // Add event listener for Artificer recruit button
-        const recruitBtn = document.getElementById('ArtificerRecruitBtn');
-        if (recruitBtn) {
-            recruitBtn.addEventListener('click', () => {
-                if (typeof recruitExile === 'function') recruitExile('Artificer');
-            });
+
+        // Upgrade MDL components
+        if (typeof componentHandler !== 'undefined') {
+            componentHandler.upgradeElements(container);
+        }
+
+        // Add event listener for Artificer recruit button if it exists
+        if (!artificerOwned) {
+            const recruitBtn = document.getElementById('ArtificerRecruitBtn');
+            if (recruitBtn) {
+                // Ensure recruitExile function exists before adding listener
+                if (typeof recruitExile === 'function') {
+                     // Remove potential existing listener before adding
+                    recruitBtn.replaceWith(recruitBtn.cloneNode(true));
+                    const newRecruitBtn = document.getElementById('ArtificerRecruitBtn');
+                    if (newRecruitBtn) newRecruitBtn.addEventListener('click', () => recruitExile('Artificer'));
+                } else {
+                    console.warn('recruitExile function not found.');
+                }
+            }
         }
     }
 }
 
+// Export the class for use elsewhere (e.g., in Main.js to instantiate)
 export { CraftingSystem };
