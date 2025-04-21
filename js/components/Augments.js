@@ -1,6 +1,6 @@
 import { exileMap, totalLevel, SnackBar } from '../../Main.js'
 import { currencyMap, currencyData } from './currency/CurrencyData.js';
-import { generateUpgradeHTML } from './UpgradeUI.js';
+import { generateUpgradeCellsHTML } from './UpgradeUI.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -251,38 +251,6 @@ const Upgrades = {
 		}
 	],
 
-	showOrUpdateMapCurrencyUpgrade() {
-		// Only show if Ascendant is at least level 68
-		if (!exileMap['Ascendant'] || exileMap['Ascendant'].level < 68) {
-			return;
-		}
-		const idx = this.mappingCurrencyLevel;
-		if (idx >= this.mapCurrencyUpgradeLevels.length) {
-			$('#MapCurrencyMapUpgrade').remove();
-			return;
-		}
-		const level = this.mapCurrencyUpgradeLevels[idx];
-		const rowId = 'MapCurrencyMapUpgrade';
-		if (!$(`#${rowId}`).length) {
-			$("#UpgradeTable").append(`<tr id="${rowId}"></tr>`);
-		}
-		const requirements = `${level.cost} Exalted`;
-		const handler = {
-			onUpgradeClick: () => this.buyMapCurrency()
-		};
-		// Use generateUpgradeHTML for rendering, passing buttonText
-		generateUpgradeHTML(
-			'MapCurrency',
-			'Map',
-			level.description,
-			'+1.5',
-			requirements,
-			handler,
-			level.buttonText
-		);
-		this.hoverUpgrades(rowId, "Exalted");
-	},
-
 	buyMapCurrency() {
 		const idx = this.mappingCurrencyLevel;
 		const level = this.mapCurrencyUpgradeLevels[idx];
@@ -311,14 +279,56 @@ const Upgrades = {
 			this.showOrUpdateMapCurrencyUpgrade();
 		} else {
 			$(".Exalted").removeClass("hover");
-			$('#consumeMapCurrency').remove();
+			$('#MapCurrencyMapUpgrade').remove(); // Changed from consumeMapCurrency
 		}
 		document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
 	},
 
+	showOrUpdateMapCurrencyUpgrade() {
+		// Only show if Ascendant is at least level 68
+		if (!exileMap['Ascendant'] || exileMap['Ascendant'].level < 68) {
+			return;
+		}
+		const idx = this.mappingCurrencyLevel;
+		if (idx >= this.mapCurrencyUpgradeLevels.length) {
+			$('#MapCurrencyMapUpgrade').remove();
+			return;
+		}
+		const level = this.mapCurrencyUpgradeLevels[idx];
+		const rowId = 'MapCurrencyMapUpgrade';
+		if (!$(`#${rowId}`).length) {
+			$("#UpgradeTable").append(`<tr id="${rowId}"></tr>`);
+		}
+		const requirements = `${level.cost} Exalted`;
+
+		// Use generateUpgradeCellsHTML for rendering, passing buttonText
+		const cellsHTML = generateUpgradeCellsHTML(
+			'MapCurrency',
+			'Map',
+			level.description,
+			'+1.5',
+			requirements,
+			level.buttonText,
+			'MapCurrencyMapBtn' // Provide the button ID
+		);
+		// Set the innerHTML of the row
+		$(`#${rowId}`).html(cellsHTML);
+
+		// Explicitly bind 'this' for the event handler
+		const boundHandler = this.buyMapCurrency.bind(this); // Should work now
+
+		// Attach the listener separately
+		const btn = document.getElementById('MapCurrencyMapBtn');
+		if (btn) {
+			btn.onclick = boundHandler; // Use onclick for simplicity
+		}
+
+		this.hoverUpgrades(rowId, "Exalted");
+	},
+
 };
 
-// --- Upgrade Configurations ---
+// --- Upgrade Configurations --- 
 const upgradeConfigs = [
 	{
 		key: 'iiq',
@@ -347,12 +357,24 @@ const upgradeConfigs = [
 				Upgrades.iiqDropRate += 0.1;
 			},
 			updateUI: () => {
-				document.getElementsByClassName('iiqUpgradeCostDisplay')[0].innerHTML =
-					numeral(Upgrades.iiqCost).format('0,0') + ' Chaos';
-				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML =
-					Upgrades.upgradeDropRate.toFixed(1);
-				document.getElementsByClassName('iiqDropRate')[0].innerHTML =
-					Upgrades.iiqDropRate.toFixed(1);
+				const row = document.getElementById('iiqUpgrade');
+				if (!row) return; // Safety check
+
+				const costCell = row.querySelector('.iiqUpgradeCostDisplay');
+				if (costCell) {
+					costCell.innerHTML = numeral(Upgrades.iiqCost).format('0,0') + ' Chaos';
+				}
+
+				// Update global display separately
+				const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+				if (globalUpgradeRateElem) {
+					 globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+				}
+
+				const benefitCell = row.querySelector('.iiqDropRate');
+				if (benefitCell) {
+					benefitCell.innerHTML = `+${Upgrades.iiqDropRate.toFixed(1)}`; // Update the benefit cell
+				}
 			}
 		})
 	},
@@ -382,10 +404,18 @@ const upgradeConfigs = [
 				}
 			},
 			updateUI: () => {
-				document.getElementsByClassName('incubatorUpgradeCostDisplay')[0].innerHTML =
-					numeral(Upgrades.incubatorCost).format('0,0') + ' Chaos';
-				document.getElementsByClassName('incDropRate')[0].innerHTML =
-					Upgrades.incDropRate.toFixed(1);
+				const row = document.getElementById('incubatorUpgrade');
+				if (!row) return;
+
+				const costCell = row.querySelector('.incubatorUpgradeCostDisplay');
+				if (costCell) {
+					costCell.innerHTML = `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`;
+				}
+
+				const benefitCell = row.querySelector('.incDropRate');
+				if (benefitCell) {
+					benefitCell.innerHTML = `+${Upgrades.incDropRate.toFixed(1)}`;
+				}
 			}
 		})
 	},
@@ -412,12 +442,25 @@ const upgradeConfigs = [
 				Upgrades.upgradeDropRate += 0.5;
 			},
 			updateUI: () => {
-				document.getElementsByClassName('flipSpeedUpgradeCostDisplay')[0].innerHTML =
-					numeral(Upgrades.flippingSpeedCost).format('0,0') + ' Eternal';
-				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML =
-					Upgrades.upgradeDropRate.toFixed(1);
-				document.getElementsByClassName('flipSpeedMulti')[0].innerHTML =
-					Upgrades.flippingSpeed;
+				const row = document.getElementById('flipSpeedUpgrade');
+				if (!row) return;
+
+				const costCell = row.querySelector('.flipSpeedUpgradeCostDisplay');
+				if (costCell) {
+					costCell.innerHTML = `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`;
+				}
+
+				// Update global display separately
+				const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+				if (globalUpgradeRateElem) {
+					 globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+				}
+
+				const benefitCell = row.querySelector('.flipSpeedMulti');
+				if (benefitCell) {
+					 // Correctly display the benefit per level, not the total speed level
+					benefitCell.innerHTML = '+0.5';
+				}
 			}
 		})
 	},
@@ -533,48 +576,87 @@ const upgradeConfigs = [
 					Upgrades.upgradeDropRate += 1;
 				},
 				updateUI: () => {
+					const row = document.getElementById('delveScarab');
+					if (!row && Upgrades.nikoScarab < scarabTypes.length) return; // Exit if row not found unless maxed
+
 					if (Upgrades.nikoScarab >= scarabTypes.length) {
 						$(".Exalted").removeClass("hover");
-						$('#delveScarab').remove();
-						Upgrades.delveScarabShown = true;
+						if (row) $(row).remove(); // Use jQuery remove on the found row
+						Upgrades.delveScarabShown = true; // Mark as shown only when maxed and removed
 					} else {
-						document.getElementsByClassName('delveScarabCost')[0].innerHTML =
-							`${costs[Upgrades.nikoScarab]} Exalted`;
-						document.getElementsByClassName('nikoScarab')[0].innerHTML =
-							scarabTypes[Upgrades.nikoScarab];
+						// Update cost cell within the row
+						const costCell = row.querySelector('.delveScarabCost');
+						if (costCell) {
+							costCell.innerHTML = `${costs[Upgrades.nikoScarab]} Exalted`;
+						}
+						// Update button text within the row
+						const button = row.querySelector('.nikoScarab'); // Button has the nikoScarab class
+						if (button) {
+							button.innerHTML = scarabTypes[Upgrades.nikoScarab];
+						}
 					}
-					document.getElementsByClassName('UpgradeDropRate')[0].innerHTML =
-						Upgrades.upgradeDropRate.toFixed(1);
+					// Update global display separately (always attempt)
+					const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+					if (globalUpgradeRateElem) {
+						globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+					}
 				}
 			});
 		}
 	}
 ];
 
-// --- Generic Upgrade Renderer ---
+// --- Generic Upgrade Renderer --- 
 function renderUpgradeRow(cfg, totalLevel) {
 	if (Upgrades[cfg.shownFlag]) return;
 	// Pass totalLevel to unlock if it expects it
 	if (cfg.unlock.length > 0 ? !cfg.unlock(totalLevel) : !cfg.unlock()) return;
 
-	$("#UpgradeTable").append(
-		`<tr id="${cfg.rowId}">
-		<td class="mdl-data-table__cell--non-numeric">
-		  <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${cfg.buttonClass}" 
-			id="${cfg.buttonId}">${typeof cfg.buttonText === 'function' ? cfg.buttonText() : cfg.buttonText}</button>
-		</td>
-		<td class="mdl-data-table__cell--non-numeric">${cfg.description}</td>
-		<td class="mdl-data-table__cell--non-numeric ${cfg.benefitClass}">${cfg.benefit()}</td>
-		<td class="mdl-data-table__cell--non-numeric ${cfg.costClass}">${typeof cfg.costText === 'function' ? cfg.costText() : cfg.costText
-		}</td>
-	  </tr>`
+	// Create the row element
+	const row = $(`<tr id="${cfg.rowId}"></tr>`);
+
+	// Evaluate dynamic values
+	const buttonText = typeof cfg.buttonText === 'function' ? cfg.buttonText() : cfg.buttonText;
+	const description = cfg.description;
+	const benefit = cfg.benefit();
+	const costText = typeof cfg.costText === 'function' ? cfg.costText() : cfg.costText;
+
+	// Generate the inner HTML using the new function
+	const cellsHTML = generateUpgradeCellsHTML(
+		cfg.key,
+		'Augment', // Use a generic type or derive if needed
+		description,
+		benefit,
+		costText,
+		buttonText,
+		cfg.buttonId // Pass the specific button ID from config
 	);
+
+	// Set the inner HTML of the row
+	row.html(cellsHTML);
+
+	// Add CSS classes to specific cells if needed (using the generated HTML structure)
+	if (cfg.benefitClass) {
+		row.children().eq(2).addClass(cfg.benefitClass);
+	}
+	if (cfg.costClass) {
+		row.children().eq(3).addClass(cfg.costClass);
+	}
+
+	// Append the row to the table
+	$("#UpgradeTable").append(row);
+
+	// Apply hover effects
 	cfg.hover();
+
+	// Attach the click listener to the button using its ID
 	document.getElementById(cfg.buttonId)?.addEventListener('click', cfg.buy);
+
+	// Mark as shown
 	Upgrades[cfg.shownFlag] = true;
 }
 
-// --- Upgrade Loop ---
+// --- Upgrade Loop --- 
 setInterval(function updateTick() {
 	// Render generic upgrades
 	for (const cfg of upgradeConfigs) {
@@ -598,6 +680,12 @@ setInterval(function updateTick() {
 		} else {
 			$(`#${name}Upgrade`).hide();
 		}
+	}
+
+	// Update Flipping Speed display in the Flipping tab
+	const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
+	if (flipSpeedDisplayElem) {
+		flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
 	}
 
 	// Run map currency logic

@@ -8,7 +8,7 @@ import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 import craftingSystem from './js/components/crafting/CraftingUI.js';
-import { generateUpgradeHTML } from './js/components/UpgradeUI.js';
+// Removed unused import for generateUpgradeHTML
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -319,11 +319,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('btn-gear-upgrades')?.addEventListener('click', showGearUpgrades);
 	document.getElementById('btn-links-upgrades')?.addEventListener('click', showLinksUpgrades);
 
-	// Upgrade buttons
-	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Crusader']));
-	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Hunter']));
-	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Redeemer']));
-	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(exileMap['Warlord']));
+	// Upgrade buttons - Pass currencyMap entries instead of exileMap entries
+	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Crusader']));
+	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Hunter']));
+	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Redeemer']));
+	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Warlord']));
 });
 
 //----------------------------------Start Functions

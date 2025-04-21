@@ -1,5 +1,6 @@
 import { processUpgrade, getMirrorUpgrade } from './ExileUtils.js';
-import { generateUpgradeHTML } from '../UpgradeUI.js';
+// Import the refactored function
+import { generateUpgradeCellsHTML } from '../UpgradeUI.js';
 import { SnackBar } from '../../../Main.js';
 
 /**
@@ -136,14 +137,35 @@ class Exile {
         const requirementsText = nextUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
-        generateUpgradeHTML(
+        const buttonId = `${this.name}${upgradeType}Btn`; // Define button ID
+
+        // Generate cells HTML
+        const cellsHTML = generateUpgradeCellsHTML(
             this.name,
             upgradeType,
             nextUpgrade.description.replace('{name}', this.name),
             `+${nextUpgrade.benefit} (${this.name})`,
             requirementsText,
-            this
+            null, // No custom button text needed here
+            buttonId // Pass the button ID
         );
+
+        // Update row content
+        const rowId = `${this.name}${upgradeType}Upgrade`;
+        $(`#${rowId}`).html(cellsHTML);
+
+        // Re-attach listener
+        const btn = document.getElementById(buttonId);
+        if (btn) {
+            const handler = upgradeType === 'Gear' ? this.lvlGear.bind(this) : this.lvlLinks.bind(this);
+            // Remove previous listener if any (important for updates)
+            // A simple way is to replace the button node, or manage listeners carefully.
+            // For simplicity here, let's assume replacing content implicitly removes old listeners
+            // or we ensure handlers are idempotent if added multiple times (which they are here).
+            // A cleaner way might involve storing and removing specific listeners if needed.
+            btn.addEventListener('click', handler);
+        }
+
         const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
         this.setupHover(upgradeType, ...hoverCurrencies);
     }
@@ -155,36 +177,60 @@ class Exile {
         $('.' + this.name + 'Hide').html('Level ' + this.level + ' ' + this.name);
         const firstGearUpgrade = this.gearUpgrades[0];
         const firstLinksUpgrade = this.linksUpgrades[0];
-        // Use generateUpgradeHTML for Gear and Links upgrades
+
+        // --- Gear Upgrade Setup ---
+        const gearRowId = `${this.name}GearUpgrade`;
+        const gearButtonId = `${this.name}GearBtn`;
         const gearRequirementsText = firstGearUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
-        const linksRequirementsText = firstLinksUpgrade.requirements
-            .map(req => `${req.amount} ${req.currency.name}`)
-            .join('<br>');
-        // Ensure the table rows exist before updating
-        if (!$(`#${this.name}GearUpgrade`).length) {
-            $("#UpgradeGearTable").append(`<tr id="${this.name}GearUpgrade"></tr>`);
+
+        if (!$(`#${gearRowId}`).length) {
+            $("#UpgradeGearTable").append(`<tr id="${gearRowId}"></tr>`);
         }
-        if (!$(`#${this.name}LinksUpgrade`).length) {
-            $("#UpgradeLinksTable").append(`<tr id="${this.name}LinksUpgrade"></tr>`);
-        }
-        generateUpgradeHTML(
+
+        const gearCellsHTML = generateUpgradeCellsHTML(
             this.name,
             'Gear',
             firstGearUpgrade.description.replace('{name}', this.name),
             `+${firstGearUpgrade.benefit} (${this.name})`,
             gearRequirementsText,
-            this
+            null,
+            gearButtonId
         );
-        generateUpgradeHTML(
+        $(`#${gearRowId}`).html(gearCellsHTML);
+        const gearBtn = document.getElementById(gearButtonId);
+        if (gearBtn) {
+            gearBtn.addEventListener('click', this.lvlGear.bind(this));
+        }
+
+        // --- Links Upgrade Setup ---
+        const linksRowId = `${this.name}LinksUpgrade`;
+        const linksButtonId = `${this.name}LinksBtn`;
+        const linksRequirementsText = firstLinksUpgrade.requirements
+            .map(req => `${req.amount} ${req.currency.name}`)
+            .join('<br>');
+
+        if (!$(`#${linksRowId}`).length) {
+            $("#UpgradeLinksTable").append(`<tr id="${linksRowId}"></tr>`);
+        }
+
+        const linksCellsHTML = generateUpgradeCellsHTML(
             this.name,
             'Links',
             firstLinksUpgrade.description.replace('{name}', this.name),
             `+${firstLinksUpgrade.benefit} (${this.name})`,
             linksRequirementsText,
-            this
+            null,
+            linksButtonId
         );
+        $(`#${linksRowId}`).html(linksCellsHTML);
+        const linksBtn = document.getElementById(linksButtonId);
+        if (linksBtn) {
+            linksBtn.addEventListener('click', this.lvlLinks.bind(this));
+        }
+
+        // --- Post-setup UI updates ---
         document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + this.dropRate.toFixed(1);
         document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
