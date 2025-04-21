@@ -28,7 +28,7 @@ function gameStart() {
 	// Don't hide craft cards here - let the crafting tab logic control this
 	// $(".craft").hide();
 
-	$("#loader").hide();
+	// $("#loader").hide(); // Removed: Loader is now hidden in layoutInitializer.js
 
 }
 

@@ -22,46 +22,12 @@
 <body>
     <!-- Side Panel & Header -->
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-        <header class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200">
-            <div class="mdl-layout__header-row">
-                <span class="mdl-layout-title">Total <span class="TotalLevel">Levels: 0</span> | Total <span
-                        class="TotalDR">Efficiency: x0.0</span></span>
-                <div class="mdl-layout-spacer"></div>
-
-                &nbsp;&nbsp;<div id="loader" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-
+        <header class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200" id="header-placeholder">
+            <!-- Header content will be injected by JS -->
         </header>
 
-        <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-            <header class="demo-drawer-header">
-                <img src="images/exalted.png" class="demo-avatar">
-                <div class="demo-avatar-dropdown">
-                    <span>Idle Exile</span>
-                    <div class="mdl-layout-spacer"></div>
-                </div>
-            </header>
-            <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-main"><i
-                        class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Main</a>
-
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-guild"><i
-                        class="mdl-color-text--blue-grey-400 material-icons" role="presentation">face</i>Guild</a>
-
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-flipping"><i
-                        class="mdl-color-text--blue-grey-400 material-icons"
-                        role="presentation">trending_up</i>Flipping</a>
-
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-delving"><i
-                        class="mdl-color-text--blue-grey-400 material-icons" role="presentation">timeline</i>Delving</a>
-
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-crafting"><i
-                        class="mdl-color-text--blue-grey-400 material-icons" role="presentation">gesture</i>Crafting</a>
-
-                <div class="mdl-layout-spacer"></div>
-                <a class="mdl-navigation__link menuHover" href="#" id="nav-info"><i
-                        class="mdl-color-text--blue-grey-400 material-icons"
-                        role="presentation">help_outline</i>Info</a>
-            </nav>
+        <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50" id="side-panel-placeholder">
+            <!-- Side panel content will be injected by JS -->
         </div><!-- /Side Panel & Header -->
 
         <!-- Main -->
@@ -251,7 +217,10 @@
     <!-- Core -->
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
+
+    <!-- Layout Initializer -->
+    <script type="module" src="js/layoutInitializer.js"></script>
+
     <!-- Libraries -->
     <script type="text/javascript" src="js/libs/Numerals.js"></script>
 
@@ -259,7 +228,7 @@
     <script type="module" src="js/components/Augments.js"></script>
     <script type="module" src="Main.js"></script>
     <script type="module" src="js/components/currency/CurrencyUI.js"></script>
-    
+
     <script type="module" src="js/components/crafting/CraftingUI.js"></script>
     <!-- Framework abstraction -->
     <script src="js/components/UIClasses.js"></script>
