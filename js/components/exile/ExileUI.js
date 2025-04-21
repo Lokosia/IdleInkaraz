@@ -1,36 +1,6 @@
 // Exile UI utilities for rendering and updating Exile-related UI
 import { UICard } from '../Cards.js';
 /**
- * Generates and updates HTML for upgrade buttons and descriptions
- * @param {string} exile - The exile name
- * @param {string} upgradeType - The type of upgrade (e.g., 'Gear', 'Links')
- * @param {string} description - Description of the upgrade
- * @param {string} benefit - The benefit gained from the upgrade
- * @param {string} requirements - The requirements text
- * @param {object} exileObj - The exile object containing methods
- */
-function generateUpgradeHTML(exile, upgradeType, description, benefit, requirements, exileObj) {
-    // Generate button text from exile name and upgradeType
-    const buttonText = exile + ' ' + upgradeType;
-    const html = `
-        <td class="mdl-data-table__cell--non-numeric">
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile}${upgradeType}Button" id="${exile}${upgradeType}Btn">
-                ${buttonText}
-            </button>
-        </td>
-        <td class="mdl-data-table__cell--non-numeric">${description}</td>
-        <td class="mdl-data-table__cell--non-numeric">${benefit}</td>
-        <td class="mdl-data-table__cell--non-numeric">${requirements}</td>
-    `;
-    $(`#${exile}${upgradeType}Upgrade`).html(html);
-    // Add event listener for the button
-    const btn = document.getElementById(`${exile}${upgradeType}Btn`);
-    if (btn && exileObj && typeof exileObj[`lvl${upgradeType}`] === 'function') {
-        btn.addEventListener('click', () => exileObj[`lvl${upgradeType}`]());
-    }
-}
-
-/**
  * Generates cards for all standard exiles to populate the Guild section
  * @param {HTMLElement} container - The container element to append cards to
  */
@@ -101,4 +71,4 @@ function generateExileCards(container, exileData, recruitExile) {
     });
 }
 
-export { generateUpgradeHTML, generateExileCards };
+export { generateExileCards };

@@ -1,5 +1,6 @@
 import { exileMap, totalLevel, SnackBar } from '../../Main.js'
 import { currencyMap, currencyData } from './currency/CurrencyData.js';
+import { generateUpgradeHTML } from './UpgradeUI.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -189,58 +190,131 @@ const Upgrades = {
 		}
 	},
 
-	// Map currency upgrade handler
-	consumeMapCurrencyUpgrade() {
-		if (exileMap['Ascendant'].level >= 68 && !this.mapCurrencyUpgradeShown) {
-			$("#UpgradeTable").append(
-				'<tr id="consumeMapCurrency">' +
-				'<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored consumeMapCurrencyButton" id="btn-consume-map-currency">Alch/Scour Maps</button></td>' +
-				'<td class="mdl-data-table__cell--non-numeric consumeMapCurrenydiv">Consume (2) Alchemy, (1) Scour to increase drop rate from maps<br>(per tick)</td>' +
-				'<td class="mdl-data-table__cell--non-numeric">+1.5</td>' +
-				'<td class="mdl-data-table__cell--non-numeric mapCurrencyCost">1 Exalted</td>' +
-				'</tr>'
-			);
-			this.hoverUpgrades("consumeMapCurrency", "Exalted");
-			document.getElementById('btn-consume-map-currency')?.addEventListener('click', () => this.buyMapCurrency());
-			this.mapCurrencyUpgradeShown = true;
+	// Map currency upgrade handler (refactored to be fully data-driven)
+	mapCurrencyUpgradeLevels: [
+		{
+			cost: 1,
+			buttonText: "Alch/Scour Maps",
+			description: "Consume (2) Alchemy, (1) Scour to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['Alchemy'], amount: 2 },
+				{ currency: currencyMap['Scouring'], amount: 1 }
+			]
+		},
+		{
+			cost: 1,
+			buttonText: "Chisel Maps",
+			description: "Consume (4) Cartographer's Chisel to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['Chisel'], amount: 4 }
+			]
+		},
+		{
+			cost: 1,
+			buttonText: "Simple Sextant Maps",
+			description: "Consume (1) Simple Sextant to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['SimpleSextant'], amount: 1 }
+			]
+		},
+		{
+			cost: 2,
+			buttonText: "Prime Sextant Maps",
+			description: "Consume (1) Prime Sextant to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['PrimeSextant'], amount: 1 }
+			]
+		},
+		{
+			cost: 2,
+			buttonText: "Awakened Sextant Maps",
+			description: "Consume (1) Awakened Sextant to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['AwakenedSextant'], amount: 1 }
+			]
+		},
+		{
+			cost: 2,
+			buttonText: "Vaal Maps",
+			description: "Consume (1) Vaal Orb to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['Vaal'], amount: 1 }
+			]
+		},
+		{
+			cost: 3,
+			buttonText: "Use Prophecies",
+			description: "Consume (4) Silver Coins to increase drop rate from maps<br>(per tick)",
+			consume: [
+				{ currency: currencyMap['SilverCoin'], amount: 4 }
+			]
+		}
+	],
+
+	showOrUpdateMapCurrencyUpgrade() {
+		const idx = this.mappingCurrencyLevel;
+		// If all upgrades are purchased, remove the row and return
+		if (idx >= this.mapCurrencyUpgradeLevels.length) {
+			$('#MapCurrencyUpgrade').remove();
+			return;
+		}
+		const level = this.mapCurrencyUpgradeLevels[idx];
+		const rowId = 'MapCurrencyUpgrade';
+		if (!$(`#${rowId}`).length) {
+			$("#UpgradeTable").append(`<tr id="${rowId}"></tr>`);
+		}
+		const rowElem = document.getElementById(rowId);
+		if (rowElem) {
+			const html = `
+				<td class="mdl-data-table__cell--non-numeric">
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored MapCurrencyUpgradeButton" id="MapCurrencyUpgradeBtn">
+						${level.buttonText}
+					</button>
+				</td>
+				<td class="mdl-data-table__cell--non-numeric consumeMapCurrenydiv">${level.description}</td>
+				<td class="mdl-data-table__cell--non-numeric">+1.5</td>
+				<td class="mdl-data-table__cell--non-numeric mapCurrencyCost">${level.cost} Exalted</td>
+			`;
+			rowElem.innerHTML = html;
+			// Attach click handler
+			document.getElementById('MapCurrencyUpgradeBtn').onclick = () => this.buyMapCurrency();
+			this.hoverUpgrades(rowId, "Exalted");
 		}
 	},
 
 	buyMapCurrency() {
-		const levels = [
-			{ cost: 1, nextText: "Chisel Maps", nextDesc: "Consume (4) Cartographer's Chisel to increase drop rate from maps<br>(per tick)" },
-			{ cost: 1, nextText: "Simple Sextant Maps", nextDesc: "Consume (1) Simple Sextant to increase drop rate from maps<br>(per tick)" },
-			{ cost: 2, nextText: "Prime Sextant Maps", nextDesc: "Consume (1) Prime Sextant to increase drop rate from maps<br>(per tick)" },
-			{ cost: 2, nextText: "Awakened Sextant Maps", nextDesc: "Consume (1) Awakened Sextant to increase drop rate from maps<br>(per tick)" },
-			{ cost: 2, nextText: "Vaal Maps", nextDesc: "Consume (1) Vaal Orb to increase drop rate from maps<br>(per tick)" },
-			{ cost: 2, nextText: "Use Prophecies", nextDesc: "Consume (4) Silver Coins to increase drop rate from maps<br>(per tick)" },
-			{ cost: 3, nextText: "", nextDesc: "" }
-		];
-
-		if (this.mappingCurrencyLevel < levels.length) {
-			const level = levels[this.mappingCurrencyLevel];
-			if (Exalted.total >= level.cost) {
-				Exalted.total -= level.cost;
-				this.mappingCurrencyLevel++;
-				this.upgradeDropRate += 1.5;
-				SnackBar("Upgrade purchased!");
-
-				if (this.mappingCurrencyLevel < levels.length) {
-					const nextLevel = levels[this.mappingCurrencyLevel];
-					document.getElementsByClassName('mapCurrencyCost')[0].innerHTML = `${nextLevel.cost} Exalted`;
-					document.getElementsByClassName('consumeMapCurrencyButton')[0].innerHTML = nextLevel.nextText;
-					document.getElementsByClassName('consumeMapCurrenydiv')[0].innerHTML = nextLevel.nextDesc;
-				} else {
-					$(".Exalted").removeClass("hover");
-					$('#consumeMapCurrency').remove();
-				}
-
-				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
-			} else {
+		const idx = this.mappingCurrencyLevel;
+		const level = this.mapCurrencyUpgradeLevels[idx];
+		if (!level) return;
+		if (currencyMap['Exalted'].total < level.cost) {
+			SnackBar("Requirements not met.");
+			return;
+		}
+		// Check consumables
+		for (const req of level.consume) {
+			if (req.currency.total < req.amount) {
 				SnackBar("Requirements not met.");
+				return;
 			}
 		}
+		// Deduct exalted
+		currencyMap['Exalted'].total -= level.cost;
+		// Deduct consumables
+		for (const req of level.consume) {
+			req.currency.total -= req.amount;
+		}
+		this.mappingCurrencyLevel++;
+		this.upgradeDropRate += 1.5;
+		SnackBar("Upgrade purchased!");
+		if (this.mappingCurrencyLevel < this.mapCurrencyUpgradeLevels.length) {
+			this.showOrUpdateMapCurrencyUpgrade();
+		} else {
+			$(".Exalted").removeClass("hover");
+			$('#consumeMapCurrency').remove();
+		}
+		document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
 	},
+
 };
 
 // --- Upgrade Configurations ---
@@ -258,10 +332,10 @@ const upgradeConfigs = [
 		benefit: () => `+${Upgrades.iiqDropRate.toFixed(1)}`,
 		costClass: 'iiqUpgradeCostDisplay',
 		costText: () => `+${numeral(Upgrades.iiqCost).format('0,0')} Chaos`,
-		requirements: () => [{ currency: Chaos, amount: Upgrades.iiqCost }],
+		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
 		hover: () => Upgrades.hoverUpgrades('iiqUpgrade', 'Chaos'),
 		buy: () => Upgrades.handleUpgrade({
-			requirements: [{ currency: Chaos, amount: Upgrades.iiqCost }],
+			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
 			onSuccess: () => {
 				Upgrades.iiqCost = Math.floor(Upgrades.iiqCost * 1.4);
 				if (Upgrades.iiqDropRate === 1) {
@@ -294,10 +368,10 @@ const upgradeConfigs = [
 		benefit: () => `+${Upgrades.incDropRate.toFixed(1)}`,
 		costClass: 'incubatorUpgradeCostDisplay',
 		costText: () => `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`,
-		requirements: () => [{ currency: Chaos, amount: Upgrades.incubatorCost }],
+		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
 		hover: () => Upgrades.hoverUpgrades('incubatorUpgrade', 'Chaos'),
 		buy: () => Upgrades.handleUpgrade({
-			requirements: [{ currency: Chaos, amount: Upgrades.incubatorCost }],
+			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
 			onSuccess: () => {
 				Upgrades.incubatorCost = Math.floor(Upgrades.incubatorCost * 1.2);
 				if (Upgrades.incDropRate === 0) {
@@ -442,7 +516,7 @@ const upgradeConfigs = [
 		requirements: () => {
 			const costs = [1, 5, 10];
 			return Upgrades.nikoScarab < costs.length
-				? [{ currency: Exalted, amount: costs[Upgrades.nikoScarab] }]
+				? [{ currency: currencyMap['Exalted'], amount: costs[Upgrades.nikoScarab] }]
 				: [];
 		},
 		hover: () => Upgrades.hoverUpgrades('delveScarab', 'Exalted'),
@@ -451,7 +525,7 @@ const upgradeConfigs = [
 			const costs = [1, 5, 10];
 
 			Upgrades.handleUpgrade({
-				requirements: [{ currency: Exalted, amount: costs[Upgrades.nikoScarab] || 99999 }],
+				requirements: [{ currency: currencyMap['Exalted'], amount: costs[Upgrades.nikoScarab] || 99999 }],
 				onSuccess: () => {
 					Upgrades.nikoScarab++;
 					Upgrades.sulphiteDropRate += 100;
@@ -505,7 +579,7 @@ setInterval(function updateTick() {
 	for (const cfg of upgradeConfigs) {
 		renderUpgradeRow(cfg, typeof totalLevel !== 'undefined' ? totalLevel : 0);
 	}
-	Upgrades.consumeMapCurrencyUpgrade();
+	Upgrades.showOrUpdateMapCurrencyUpgrade();
 
 	// Handle conqueror upgrades
 	const conquerors = [

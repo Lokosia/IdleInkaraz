@@ -1,4 +1,4 @@
-import { generateExileCards, generateUpgradeHTML } from './js/components/exile/ExileUI.js';
+import { generateExileCards } from './js/components/exile/ExileUI.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
 import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
@@ -8,6 +8,7 @@ import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 import craftingSystem from './js/components/crafting/CraftingUI.js';
+import { generateUpgradeHTML } from './js/components/UpgradeUI.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen

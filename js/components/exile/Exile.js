@@ -1,5 +1,5 @@
 import { processUpgrade, getMirrorUpgrade } from './ExileUtils.js';
-import { generateUpgradeHTML } from './ExileUI.js';
+import { generateUpgradeHTML } from '../UpgradeUI.js';
 import { SnackBar } from '../../../Main.js';
 
 /**
@@ -154,38 +154,37 @@ class Exile {
         $('.' + this.name + 'ActionSection').hide();
         $('.' + this.name + 'Hide').html('Level ' + this.level + ' ' + this.name);
         const firstGearUpgrade = this.gearUpgrades[0];
-        const requirementsText = firstGearUpgrade.requirements
+        const firstLinksUpgrade = this.linksUpgrades[0];
+        // Use generateUpgradeHTML for Gear and Links upgrades
+        const gearRequirementsText = firstGearUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
-        const firstLinksUpgrade = this.linksUpgrades[0];
         const linksRequirementsText = firstLinksUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
             .join('<br>');
-        $("#UpgradeGearTable").append(
-            '<tr id="' + this.name + 'GearUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'GearButton" id="' + this.name + 'GearBtn">' + this.name + ' Gear' + '</button></td>' +
-            '<td class="mdl-data-table__cell--non-numeric">' + firstGearUpgrade.description.replace('{name}', this.name) + '</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">+' + firstGearUpgrade.benefit + ' (' + this.name + ')</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">' + requirementsText + '</td>' +
-            '</tr>'
-        );
-        $("#UpgradeLinksTable").append(
-            '<tr id="' + this.name + 'LinksUpgrade">' +
-            '<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ' + this.name + 'LinksButton" id="' + this.name + 'LinksBtn">' + this.name + ' Links' + '</button></td>' +
-            '<td class="mdl-data-table__cell--non-numeric">' + firstLinksUpgrade.description.replace('{name}', this.name) + '</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">+' + firstLinksUpgrade.benefit + ' (' + this.name + ')</td>' +
-            '<td class="mdl-data-table__cell--non-numeric">' + linksRequirementsText + '</td>' +
-            '</tr>'
-        );
-        // Add event listeners for Gear and Links upgrade buttons
-        const gearBtn = document.getElementById(this.name + 'GearBtn');
-        if (gearBtn && typeof this.lvlGear === 'function') {
-            gearBtn.addEventListener('click', () => this.lvlGear());
+        // Ensure the table rows exist before updating
+        if (!$(`#${this.name}GearUpgrade`).length) {
+            $("#UpgradeGearTable").append(`<tr id="${this.name}GearUpgrade"></tr>`);
         }
-        const linksBtn = document.getElementById(this.name + 'LinksBtn');
-        if (linksBtn && typeof this.lvlLinks === 'function') {
-            linksBtn.addEventListener('click', () => this.lvlLinks());
+        if (!$(`#${this.name}LinksUpgrade`).length) {
+            $("#UpgradeLinksTable").append(`<tr id="${this.name}LinksUpgrade"></tr>`);
         }
+        generateUpgradeHTML(
+            this.name,
+            'Gear',
+            firstGearUpgrade.description.replace('{name}', this.name),
+            `+${firstGearUpgrade.benefit} (${this.name})`,
+            gearRequirementsText,
+            this
+        );
+        generateUpgradeHTML(
+            this.name,
+            'Links',
+            firstLinksUpgrade.description.replace('{name}', this.name),
+            `+${firstLinksUpgrade.benefit} (${this.name})`,
+            linksRequirementsText,
+            this
+        );
         document.getElementsByClassName(this.name + 'Efficiency')[0].innerHTML = "x" + this.dropRate.toFixed(1);
         document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
