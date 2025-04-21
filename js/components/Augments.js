@@ -652,12 +652,36 @@ setInterval(function updateTick() {
 	];
 
 	for (const currency of conquerors) {
-		const name = currency.name; // or use the key if you prefer
+		const name = currency.name;
+		const rowId = `${name}Upgrade`;
+		if (!$(`#${rowId}`).length) {
+			const row = $(`<tr id="${rowId}"></tr>`);
+			const buttonId = `btn-${name.toLowerCase()}-upgrade`;
+			const buttonText = `${name}'s Exalted Orb`;
+			const description = `Use ${name}'s Exalted Orb`;
+			const benefit = '+1';
+			const cost = `1 ${name}'s Exalted Orb`;
+			const cellsHTML = `
+				<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="${buttonId}">${buttonText}</button></td>
+				<td class="mdl-data-table__cell--non-numeric">${description}</td>
+				<td class="mdl-data-table__cell--non-numeric">${benefit}</td>
+				<td class="mdl-data-table__cell--non-numeric">${cost}</td>
+			`;
+			row.html(cellsHTML);
+			// Insert at the top of the table, before any other rows
+			const table = $('#UpgradeTable');
+			if (table.children().length > 0) {
+				table.prepend(row);
+			} else {
+				table.append(row);
+			}
+			document.getElementById(buttonId)?.addEventListener('click', () => Upgrades.buyConqueror(currency));
+		}
 		if (currency && currency.total >= 1) {
-			$(`#${name}Upgrade`).show();
-			Upgrades.hoverUpgrades(`${name}Upgrade`, name);
+			$(`#${rowId}`).show();
+			Upgrades.hoverUpgrades(rowId, name);
 		} else {
-			$(`#${name}Upgrade`).hide();
+			$(`#${rowId}`).hide();
 		}
 	}
 

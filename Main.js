@@ -8,8 +8,6 @@ import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 import craftingSystem from './js/components/crafting/CraftingUI.js';
-import { generateUpgradeCellsHTML } from './js/components/UpgradeUI.js'; // Ensure this is imported
-// Removed unused import for generateUpgradeHTML
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
