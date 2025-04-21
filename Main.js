@@ -8,6 +8,7 @@ import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
 import craftingSystem from './js/components/crafting/CraftingUI.js';
+import { generateUpgradeCellsHTML } from './js/components/UpgradeUI.js'; // Ensure this is imported
 // Removed unused import for generateUpgradeHTML
 
 /**
@@ -153,9 +154,6 @@ function showCrafting() {
 		// Force display:block on all craft cards to ensure they're visible
 		$(".craft").css("display", "block");
 		$(".craft").show();
-
-		// Double-check visibility
-		console.log("After showing craft cards:", $(".craft").is(":visible"));
 	} else {
 		// When the Artificer is not owned, hide crafting cards
 		$(".craft").hide();
@@ -407,86 +405,57 @@ function recruitExile(exileName) {
 		console.error(`Exile ${exileName} not found`);
 		return;
 	}
+	// Check level requirement
 	if (totalLevel < exile.levelRequirement) {
 		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${totalLevel}`);
 		return;
 	}
+	// Check special requirement (e.g., stash tabs for Melvin)
 	if (exile.specialRequirement) {
 		let [reqType, reqValue] = exile.specialRequirement;
-		if ((Upgrades[reqType] ?? 0) !== reqValue) {
-			SnackBar(`Special requirement not met. Required: ${reqType} = ${reqValue}, Current: ${(Upgrades[reqType] ?? 0)}`);
+		if ((Upgrades[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
+			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${(Upgrades[reqType] ?? 0)}`);
 			return;
 		}
 	}
-	//TODO do they need level increased? Change to owned = true?
+
+	// Handle specific recruitment logic
 	if (exileName === 'Singularity') {
-		exile.level++;
+		exile.level = 1; // Set level explicitly
+		exile.owned = true; // Mark as owned
 		$(".SingularityHide").remove();
 		$(".SingularityBuy").remove();
 		$('.flip').removeClass('hidden');
+		SnackBar("Singularity recruited!");
+		// No need to call onRecruited as Singularity doesn't have standard upgrades
 		return;
 	} else if (exileName === 'Artificer') {
-		exile.level++;
+		exile.level = 1; // Set level explicitly
+		exile.owned = true; // Mark as owned
 		$(".ArtificerHide").hide();
 		$(".ArtificerBuy").hide();
-		exile.owned = true;
-		$(".craft").show();
+		$(".craft").show(); // Show crafting cards
+		SnackBar("Artificer recruited!");
+		// No need to call onRecruited as Artificer doesn't have standard upgrades
 		return;
 	} else if (exileName === 'Melvin') {
-		// Always update the Melvin in exileMap so delving logic works
-		exile.level = 1;
-		exile.dropRate = 0.1;
-		$(".MelvinBuy").hide();
-		$(".MelvinHide").html('Level ' + exile.level + ' ' + exile.name);
-		const firstGearUpgrade = exile.gearUpgrades[0];
-		const firstLinksUpgrade = exile.linksUpgrades[0];
-
-		// Use generateUpgradeHTML for Gear and Links upgrades
-		const gearRequirementsText = firstGearUpgrade.requirements
-			.map(req => `${req.amount} ${req.currency.name}`)
-			.join('<br>');
-		const linksRequirementsText = firstLinksUpgrade.requirements
-			.map(req => `${req.amount} ${req.currency.name}`)
-			.join('<br>');
-		// Ensure the table rows exist before updating
-		if (!$(`#${exile.name}GearUpgrade`).length) {
-			$("#UpgradeGearTable").append(`<tr id="${exile.name}GearUpgrade"></tr>`);
-		}
-		if (!$(`#${exile.name}LinksUpgrade`).length) {
-			$("#UpgradeLinksTable").append(`<tr id="${exile.name}LinksUpgrade"></tr>`);
-		}
-		generateUpgradeHTML(
-			exile.name,
-			'Gear',
-			firstGearUpgrade.description.replace('{name}', exile.name),
-			`+${firstGearUpgrade.benefit} (${exile.name})`,
-			gearRequirementsText,
-			exile
-		);
-		generateUpgradeHTML(
-			exile.name,
-			'Links',
-			firstLinksUpgrade.description.replace('{name}', exile.name),
-			`+${firstLinksUpgrade.benefit} (${exile.name})`,
-			linksRequirementsText,
-			exile
-		);
-		document.getElementsByClassName(exile.name + 'Efficiency')[0].innerHTML = "x" + exile.dropRate.toFixed(1);
-		document.getElementsByClassName(exile.name + 'Level')[0].innerHTML = exile.level;
-		if (exile.level == 100) {
-			document.getElementsByClassName('MelvinEXP')[0].innerHTML = "Max";
-			$(".MelvinRerollButton").removeClass('hidden');
-		} else {
-			document.getElementsByClassName('MelvinEXP')[0].innerHTML = numeral(exile.exp).format('0,0') + "/" + numeral(exile.expToLevel).format('0,0');
-		}
-		const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
-		const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
-		exile.setupHover("Gear", ...gearCurrencies);
-		exile.setupHover("Links", ...linksCurrencies);
+		// Melvin has standard upgrades, so use onRecruited
+		exile.owned = true; // Mark as owned before calling onRecruited
+		exile.onRecruited(); // This now handles level increase, UI updates, and initial upgrade setup
+		$(".MelvinBuy").hide(); // Hide the recruitment button
+		SnackBar("Melvin recruited!");
+		// The specific UI updates previously here are now handled within onRecruited
 		return;
 	}
-	// For all other exiles, call the new onRecruited method
-	exile.onRecruited();
+
+	// For all other standard exiles
+	if (!exile.owned) { // Prevent re-recruiting
+		exile.owned = true; // Mark as owned before calling onRecruited
+		exile.onRecruited();
+		SnackBar(`${exileName} recruited!`);
+	} else {
+		SnackBar(`${exileName} is already recruited.`);
+	}
 }
 
 function processCurrencyOperation(operation, param) {

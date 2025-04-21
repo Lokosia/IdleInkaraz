@@ -1,4 +1,4 @@
-import { processUpgrade, getMirrorUpgrade } from './ExileUtils.js';
+import { handleGenericUpgrade, getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 // Import the refactored function
 import { generateUpgradeCellsHTML } from '../UpgradeUI.js';
 import { SnackBar } from '../../../Main.js';
@@ -105,32 +105,46 @@ class Exile {
         this.dropRate += upgrade.benefit;
         const linksElem = document.getElementsByClassName(this.name + 'Links')[0];
         if (linksElem) linksElem.innerHTML = upgrade.displayValue;
-        if (upgrade.finalUpgrade) {
-            $(".hover").removeClass("hover");
-            $(`#${this.name}LinksUpgrade`).off('mouseenter mouseleave');
-            $('#' + this.name + 'LinksUpgrade').remove();
-            SnackBar(this.name + " Links upgrades completed!");
-        }
+        // Final upgrade UI removal logic moved to upgradeExile's updateUI callback
     }
 
+    // REFACTORED upgradeExile method
     upgradeExile(upgradeType, getNextUpgrade, applyUpgrade) {
-        const propertyName = upgradeType.toLowerCase();
+        const propertyName = upgradeType.toLowerCase(); // 'gear' or 'links'
         const currentLevel = this[propertyName];
-        const upgradesArrayName = propertyName + 'Upgrades';
+        const upgradesArrayName = propertyName + 'Upgrades'; // 'gearUpgrades' or 'linksUpgrades'
         const currentUpgrade = getNextUpgrade(currentLevel, this[upgradesArrayName]);
-        if (!currentUpgrade) return;
-        const success = processUpgrade(currentUpgrade, (upgrade) => {
-            applyUpgrade(upgrade);
-            this[propertyName] += upgrade.specialIncrement || 1;
-            const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
-            if (nextUpgrade) {
-                this.updateUpgradeUI(upgradeType, nextUpgrade);
-            }
-            SnackBar(this.name + " " + upgradeType + " upgraded!");
-        });
-        if (!success) {
-            SnackBar("Requirements not met.");
+
+        if (!currentUpgrade) {
+            console.warn(`No next ${upgradeType} upgrade found for ${this.name} at level ${currentLevel}`);
+            // Optionally show a message if needed, but likely just means it's maxed or config error
+            // SnackBar(`${upgradeType} upgrades already maxed or unavailable.`);
+            return; // No upgrade available
         }
+
+        handleGenericUpgrade({
+            requirements: currentUpgrade.requirements,
+            onSuccess: () => {
+                applyUpgrade(currentUpgrade); // Apply benefit (e.g., increase dropRate, update links display)
+                this[propertyName] += currentUpgrade.specialIncrement || 1; // Increment gear/links level
+            },
+            updateUI: () => {
+                const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
+                if (nextUpgrade) {
+                    this.updateUpgradeUI(upgradeType, nextUpgrade);
+                } else {
+                    // Handle final upgrade UI removal
+                    const rowId = `${this.name}${upgradeType}Upgrade`;
+                    $(`#${rowId}`).off('mouseenter mouseleave'); // Remove hover listeners
+                    $(`#${rowId}`).remove(); // Remove the row
+                    // Remove hover effect from related currency elements of the *last* upgrade
+                    currentUpgrade.requirements.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
+                    SnackBar(`${this.name} ${upgradeType} upgrades completed!`); // Specific completion message
+                }
+            },
+            successMessage: `${this.name} ${upgradeType} upgraded!` // Specific success message
+            // onFailure is handled by the default SnackBar in handleGenericUpgrade
+        });
     }
 
     updateUpgradeUI(upgradeType, nextUpgrade) {

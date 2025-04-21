@@ -1,6 +1,7 @@
 import { exileMap, totalLevel, SnackBar } from '../../Main.js'
 import { currencyMap, currencyData } from './currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from './UpgradeUI.js';
+import { handleGenericUpgrade } from './exile/ExileUtils.js'; // Import the new handler
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -44,30 +45,6 @@ const Upgrades = {
 				if (b) $("." + b).removeClass('hover');
 			}
 		);
-	},
-
-	// Generic handler for upgrades to reduce code duplication
-	handleUpgrade({
-		requirements = [],
-		onSuccess = () => { },
-		onFail = () => SnackBar("Requirements not met."),
-		onComplete = () => { },
-		costDeduct = () => { },
-		updateUI = () => { },
-		check = () => true
-	}) {
-		if (check() && requirements.every(req => req.currency.total >= req.amount)) {
-			requirements.forEach(req => req.currency.total -= req.amount);
-			costDeduct();
-			onSuccess();
-			updateUI();
-			onComplete();
-			SnackBar("Upgrade purchased!");
-			return true;
-		} else {
-			onFail();
-			return false;
-		}
 	},
 
 	// Map currency logic
@@ -132,16 +109,20 @@ const Upgrades = {
 
 	// Method to handle conqueror upgrades
 	buyConqueror(conqueror) {
-		if (conqueror.total >= 1) {
-			conqueror.total -= 1;
-			this.upgradeDropRate += 1;
-			SnackBar("Upgrade purchased!");
-			document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
-			if (conqueror.total < 1) {
-				$(`#${conqueror.name}Upgrade`).hide();
-				$(`.${conqueror.name}`).removeClass("hover");
-			}
-		}
+		handleGenericUpgrade({
+			requirements: [{ currency: conqueror, amount: 1 }],
+			onSuccess: () => {
+				this.upgradeDropRate += 1;
+			},
+			updateUI: () => {
+				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
+				if (conqueror.total < 1) { // Check remaining amount *after* deduction
+					$(`#${conqueror.name}Upgrade`).hide();
+					$(`.${conqueror.name}`).removeClass("hover");
+				}
+			},
+			successMessage: "Conqueror influence consumed!"
+		});
 	},
 
 	// Methods for specific upgrades that need special handling
@@ -165,20 +146,20 @@ const Upgrades = {
 			requirements.push({ currency: currency2, amount: amount2 });
 		}
 
-		this.handleUpgrade({
+		handleGenericUpgrade({
 			requirements,
 			onSuccess: () => {
 				this[`${tabType}StashTab`] = 1;
-				// Removed window assignments for stash tab flags
 				this.upgradeDropRate += 1;
+				if (extraAction) extraAction(); // Call extra action on success
 			},
 			updateUI: () => {
 				$(`.${currency1.name}`).removeClass("hover");
 				if (currency2) $(`.${currency2.name}`).removeClass("hover");
 				$(`#${tabType}Tab`).remove();
 				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
-				if (extraAction) extraAction();
-			}
+			},
+			successMessage: "Stash tab purchased!"
 		});
 	},
 
@@ -255,33 +236,31 @@ const Upgrades = {
 		const idx = this.mappingCurrencyLevel;
 		const level = this.mapCurrencyUpgradeLevels[idx];
 		if (!level) return;
-		if (currencyMap['Exalted'].total < level.cost) {
-			SnackBar("Requirements not met.");
-			return;
-		}
-		// Check consumables
-		for (const req of level.consume) {
-			if (req.currency.total < req.amount) {
-				SnackBar("Requirements not met.");
-				return;
-			}
-		}
-		// Deduct exalted
-		currencyMap['Exalted'].total -= level.cost;
-		// Deduct consumables
-		for (const req of level.consume) {
-			req.currency.total -= req.amount;
-		}
-		this.mappingCurrencyLevel++;
-		this.upgradeDropRate += 1.5;
-		SnackBar("Upgrade purchased!");
-		if (this.mappingCurrencyLevel < this.mapCurrencyUpgradeLevels.length) {
-			this.showOrUpdateMapCurrencyUpgrade();
-		} else {
-			$(".Exalted").removeClass("hover");
-			$('#MapCurrencyMapUpgrade').remove(); // Changed from consumeMapCurrency
-		}
-		document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
+
+		const requirements = [
+			{ currency: currencyMap['Exalted'], amount: level.cost },
+			...level.consume // Add consumable requirements
+		];
+
+		handleGenericUpgrade({
+			requirements,
+			onSuccess: () => {
+				this.mappingCurrencyLevel++;
+				this.upgradeDropRate += 1.5;
+			},
+			updateUI: () => {
+				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
+				if (this.mappingCurrencyLevel < this.mapCurrencyUpgradeLevels.length) {
+					this.showOrUpdateMapCurrencyUpgrade();
+				} else {
+					$(".Exalted").removeClass("hover");
+					// Remove hover from consumables as well
+					level.consume.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
+					$('#MapCurrencyMapUpgrade').remove();
+				}
+			},
+			successMessage: "Map strategy upgraded!"
+		});
 	},
 
 	showOrUpdateMapCurrencyUpgrade() {
@@ -345,7 +324,7 @@ const upgradeConfigs = [
 		costText: () => `+${numeral(Upgrades.iiqCost).format('0,0')} Chaos`,
 		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
 		hover: () => Upgrades.hoverUpgrades('iiqUpgrade', 'Chaos'),
-		buy: () => Upgrades.handleUpgrade({
+		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
 			onSuccess: () => {
 				Upgrades.iiqCost = Math.floor(Upgrades.iiqCost * 1.4);
@@ -393,7 +372,7 @@ const upgradeConfigs = [
 		costText: () => `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`,
 		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
 		hover: () => Upgrades.hoverUpgrades('incubatorUpgrade', 'Chaos'),
-		buy: () => Upgrades.handleUpgrade({
+		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
 			onSuccess: () => {
 				Upgrades.incubatorCost = Math.floor(Upgrades.incubatorCost * 1.2);
@@ -434,7 +413,7 @@ const upgradeConfigs = [
 		costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`,
 		requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
 		hover: () => Upgrades.hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
-		buy: () => Upgrades.handleUpgrade({
+		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
 			onSuccess: () => {
 				Upgrades.flippingSpeedCost = Math.floor(Upgrades.flippingSpeedCost * 2);
@@ -567,9 +546,11 @@ const upgradeConfigs = [
 		buy: () => {
 			const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
 			const costs = [1, 5, 10];
+			const currentCost = costs[Upgrades.nikoScarab];
 
-			Upgrades.handleUpgrade({
-				requirements: [{ currency: currencyMap['Exalted'], amount: costs[Upgrades.nikoScarab] || 99999 }],
+			handleGenericUpgrade({
+				requirements: currentCost !== undefined ? [{ currency: currencyMap['Exalted'], amount: currentCost }] : [],
+				check: () => Upgrades.nikoScarab < scarabTypes.length, // Ensure not maxed
 				onSuccess: () => {
 					Upgrades.nikoScarab++;
 					Upgrades.sulphiteDropRate += 100;
@@ -577,28 +558,26 @@ const upgradeConfigs = [
 				},
 				updateUI: () => {
 					const row = document.getElementById('delveScarab');
-					if (!row && Upgrades.nikoScarab < scarabTypes.length) return; // Exit if row not found unless maxed
+					if (!row) return;
 
 					if (Upgrades.nikoScarab >= scarabTypes.length) {
 						$(".Exalted").removeClass("hover");
-						if (row) $(row).remove(); // Use jQuery remove on the found row
+						$(row).remove();
 						Upgrades.delveScarabShown = true; // Mark as shown only when maxed and removed
 					} else {
-						// Update cost cell within the row
 						const costCell = row.querySelector('.delveScarabCost');
-						if (costCell) {
-							costCell.innerHTML = `${costs[Upgrades.nikoScarab]} Exalted`;
-						}
-						// Update button text within the row
-						const button = row.querySelector('.nikoScarab'); // Button has the nikoScarab class
-						if (button) {
-							button.innerHTML = scarabTypes[Upgrades.nikoScarab];
-						}
+						if (costCell) costCell.innerHTML = `${costs[Upgrades.nikoScarab]} Exalted`;
+						const button = row.querySelector('.nikoScarab');
+						if (button) button.innerHTML = scarabTypes[Upgrades.nikoScarab];
 					}
-					// Update global display separately (always attempt)
 					const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-					if (globalUpgradeRateElem) {
-						globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+					if (globalUpgradeRateElem) globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+				},
+				onFailure: () => {
+					if (Upgrades.nikoScarab >= scarabTypes.length) {
+						SnackBar("Scarab upgrades already maxed!");
+					} else {
+						SnackBar("Requirements not met.");
 					}
 				}
 			});
