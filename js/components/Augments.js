@@ -252,8 +252,12 @@ const Upgrades = {
 	],
 
 	showOrUpdateMapCurrencyUpgrade() {
+		// Only show if Ascendant is at least level 68
+		if (!exileMap['Ascendant'] || exileMap['Ascendant'].level < 68) {
+			// Do not create or update the row at all if requirements are not met
+			return;
+		}
 		const idx = this.mappingCurrencyLevel;
-		// If all upgrades are purchased, remove the row and return
 		if (idx >= this.mapCurrencyUpgradeLevels.length) {
 			$('#MapCurrencyUpgrade').remove();
 			return;
