@@ -254,36 +254,33 @@ const Upgrades = {
 	showOrUpdateMapCurrencyUpgrade() {
 		// Only show if Ascendant is at least level 68
 		if (!exileMap['Ascendant'] || exileMap['Ascendant'].level < 68) {
-			// Do not create or update the row at all if requirements are not met
 			return;
 		}
 		const idx = this.mappingCurrencyLevel;
 		if (idx >= this.mapCurrencyUpgradeLevels.length) {
-			$('#MapCurrencyUpgrade').remove();
+			$('#MapCurrencyMapUpgrade').remove();
 			return;
 		}
 		const level = this.mapCurrencyUpgradeLevels[idx];
-		const rowId = 'MapCurrencyUpgrade';
+		const rowId = 'MapCurrencyMapUpgrade';
 		if (!$(`#${rowId}`).length) {
 			$("#UpgradeTable").append(`<tr id="${rowId}"></tr>`);
 		}
-		const rowElem = document.getElementById(rowId);
-		if (rowElem) {
-			const html = `
-				<td class="mdl-data-table__cell--non-numeric">
-					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored MapCurrencyUpgradeButton" id="MapCurrencyUpgradeBtn">
-						${level.buttonText}
-					</button>
-				</td>
-				<td class="mdl-data-table__cell--non-numeric consumeMapCurrenydiv">${level.description}</td>
-				<td class="mdl-data-table__cell--non-numeric">+1.5</td>
-				<td class="mdl-data-table__cell--non-numeric mapCurrencyCost">${level.cost} Exalted</td>
-			`;
-			rowElem.innerHTML = html;
-			// Attach click handler
-			document.getElementById('MapCurrencyUpgradeBtn').onclick = () => this.buyMapCurrency();
-			this.hoverUpgrades(rowId, "Exalted");
-		}
+		const requirements = `${level.cost} Exalted`;
+		const handler = {
+			onUpgradeClick: () => this.buyMapCurrency()
+		};
+		// Use generateUpgradeHTML for rendering, passing buttonText
+		generateUpgradeHTML(
+			'MapCurrency',
+			'Map',
+			level.description,
+			'+1.5',
+			requirements,
+			handler,
+			level.buttonText
+		);
+		this.hoverUpgrades(rowId, "Exalted");
 	},
 
 	buyMapCurrency() {

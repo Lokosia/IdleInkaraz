@@ -6,13 +6,14 @@
  * @param {string} benefit - The benefit gained from the upgrade
  * @param {string} requirements - The requirements text
  * @param {object} handlerObj - The object containing the upgrade method (should have lvl{upgradeType} or a custom handler)
+ * @param {string} [buttonText] - Optional custom button text
  */
-function generateUpgradeHTML(upgradeKey, upgradeType, description, benefit, requirements, handlerObj) {
-    const buttonText = upgradeKey + ' ' + upgradeType;
+function generateUpgradeHTML(upgradeKey, upgradeType, description, benefit, requirements, handlerObj, buttonText) {
+    const btnLabel = buttonText ? buttonText : (upgradeKey + ' ' + upgradeType);
     const html = `
         <td class="mdl-data-table__cell--non-numeric">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${upgradeKey}${upgradeType}Button" id="${upgradeKey}${upgradeType}Btn">
-                ${buttonText}
+                ${btnLabel}
             </button>
         </td>
         <td class="mdl-data-table__cell--non-numeric">${description}</td>
