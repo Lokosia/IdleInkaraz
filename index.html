@@ -36,114 +36,18 @@
             <!-- Dynamic loading of each page -->
 
             <!-- Main -->
-
+            <!-- Welcome -->
             <div id="welcomePre">
                 <div class="mdl-grid center-items">
                     <div id="welcome-card"></div>
                 </div>
-            </div><!-- /Welcome -->
-
+            </div>
+            <!-- /Welcome -->
 
             <div id="main" class="hidden">
                 <!-- Grid -->
-                <div class="mdl-grid center-items">
-
-                    <div id="divSingularity"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG singularity">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">The Singularity</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            Beep beep boop.
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border SingularityBuy">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                id="recruit-singularity">Recruit The Singularity</button>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border SingularityHide">
-                            250 Total Levels Required<br>
-                            Currency Stash Tab Required
-                        </div>
-                    </div>
-
-                    <div id="divFlipping"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Currency Flipping</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <p>Automate buying and selling currency on the trade market.</p>
-                            <p>Toggle the slider to sell your currency.</p>
-                            <p>Flipping Speed Multiplier: x<span class="flipSpeedMulti">1</span>
-                        </div>
-                    </div>
-
-                    <div id="divSellCurrency"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Sell Currency</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <div class="flip hidden" id="sellCurrencyContainer">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="MainCurrency"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--3-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Currency</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand" id="currencyDisplayContainer">
-                        </div>
-                    </div>
-
-                    <div id="divBuyCurrency"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Buy Currency</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text mdl-card--expand">
-                            <div class="flip hidden" id="buyCurrencyContainer">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="divTheorycrafting"
-                        class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--9-col mdl-cell--9-col-tablet cardBG imgBG">
-                        <div class="mdl-card__title">
-                            <h2 class="mdl-card__title-text">Theorycrafting (Upgrade Efficiency:&nbsp;x<span
-                                    class="UpgradeDropRate">0.0</span>)</h2>
-                        </div>
-                        <div class="mdl-card__actions mdl-card--border">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                id="btn-all-upgrades">All</button>
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                id="btn-general-upgrades">General</button>
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                id="btn-gear-upgrades">Gear</button>
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                                id="btn-links-upgrades">Links</button>
-                        </div>
-                        <table class="mdl-data-table mdl-js-data-table cardBG">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Upgrade</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Description</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Efficiency</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Cost</th>
-                                </tr>
-                            </thead>
-                            <tbody id="UpgradeTable">
-                                <!-- Upgrade rows will be generated dynamically by JS -->
-                            </tbody>
-                            <tbody id="UpgradeGearTable">
-                            </tbody>
-                            <tbody id="UpgradeLinksTable">
-                            </tbody>
-                        </table>
-                    </div>
-
+                <div id="mainGrid" class="mdl-grid center-items">
+                    <!-- Cards will be generated dynamically by JS -->
                 </div>
                 <!-- /Grid -->
 
