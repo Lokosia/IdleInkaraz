@@ -2,6 +2,7 @@
 import { fossilData } from './Fossil.js';
 import { UICard } from '../Cards.js';
 import { recruitExile, exileMap } from '../../../Main.js';
+import UIManager from '../UIManager.js';
 
 function createMelvinSection(recruitExileFn, melvinObj) {
     const content = `
@@ -83,9 +84,53 @@ function createFossilsSection() {
 function initDelvingUI() {
     const container = document.getElementById('delving-container');
     if (!container) return;
+
+    // Clear existing content to prevent duplicates
+    container.innerHTML = '';
+
+    // Add Delving sections
     container.appendChild(createMelvinSection(recruitExile, exileMap['Melvin']));
     container.appendChild(createDeepDelvingSection());
     container.appendChild(createFossilsSection());
+
+    // Update fossil counts in the UI to reflect the current state
+    fossilData.forEach(fossil => {
+        const element = document.querySelector(`.${fossil.name}Total`);
+        if (element) {
+            element.innerHTML = numeral(fossil.total).format('0,0');
+        }
+    });
 }
 
-export { createMelvinSection, createDeepDelvingSection, createFossilsSection, initDelvingUI };
+function updateDelveProgressBar(progress) {
+    const delveLoader = document.getElementById('delveLoader');
+    if (delveLoader) {
+        delveLoader.classList.remove('hidden'); // Ensure the progress bar is visible
+        delveLoader.style.display = 'block'; // Explicitly set display to block
+        if (typeof componentHandler !== 'undefined') {
+            try {
+                componentHandler.upgradeElement(delveLoader);
+            } catch (e) {
+                console.error('Error upgrading MDL component:', e);
+            }
+        }
+        if (delveLoader.MaterialProgress) {
+            delveLoader.MaterialProgress.setProgress(progress);
+        } else {
+            console.warn('MaterialProgress is not initialized on delveLoader.');
+        }
+    } else {
+        console.error('delveLoader element not found.');
+    }
+}
+
+/**
+ * Handles the logic for showing the delving section.
+ * Initializes and displays delve-related UI components.
+ */
+function showDelving() {
+    UIManager.show('delving');
+    initDelvingUI();
+}
+
+export { createMelvinSection, createDeepDelvingSection, createFossilsSection, initDelvingUI, showDelving, updateDelveProgressBar };

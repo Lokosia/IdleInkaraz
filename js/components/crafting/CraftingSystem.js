@@ -337,3 +337,6 @@ class CraftingSystem {
 
 // Export the class for use elsewhere (e.g., in Main.js to instantiate)
 export { CraftingSystem };
+
+const craftingSystem = new CraftingSystem();
+export default craftingSystem;

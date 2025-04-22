@@ -13,7 +13,7 @@ function rollFossilTick(dropRate, upgradeDropRate) {
 
 function delve(Sulphite, Melvin, upgradeDropRate) {
     if (Sulphite.total >= sulphiteCost) {
-        Sulphite.total -= sulphiteCost;
+                Sulphite.total -= sulphiteCost;
         sulphiteCost = Math.floor((50 + sulphiteDepth) * 2.2);
         sulphiteDepth++;
         Melvin.dropRate += 0.05;
@@ -21,10 +21,12 @@ function delve(Sulphite, Melvin, upgradeDropRate) {
         // Show the loading bar when delving starts
         const loader = document.getElementById('delveLoader');
         if (loader) loader.classList.remove('hidden');
+
         document.getElementsByClassName('Sulphite')[0].innerHTML = numeral(Sulphite.total).format('0,0');
         document.getElementsByClassName('SulphiteDepth')[0].innerHTML = numeral(sulphiteDepth).format('0,0');
         document.getElementsByClassName('SulphiteCost')[0].innerHTML = numeral(sulphiteCost).format('0,0');
         document.getElementsByClassName('MelvinEfficiency')[0].innerHTML = "x" + numeral(Melvin.dropRate).format('0,0.0');
+
         rollFossilTick(Melvin.dropRate, upgradeDropRate);
     }
 }
@@ -49,7 +51,12 @@ function delveLoadingBarAnimate() {
 }
 
 function getDelveState() {
-    return { sulphiteDepth, sulphiteCost, delveLoadingProgress };
+    return {
+        sulphiteDepth,
+        sulphiteCost,
+        delveLoadingProgress,
+        isDelving: delveLoadingProgress > 0 // Add isDelving property
+    };
 }
 
 function setDelveLoadingProgress(val) {

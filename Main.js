@@ -2,12 +2,14 @@ import { generateExileCards } from './js/components/exile/ExileUI.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
 import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
-import { initDelvingUI } from './js/components/delve/DelveUI.js';
+import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
 import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { UICard } from './js/components/Cards.js';
-import craftingSystem from './js/components/crafting/CraftingUI.js';
+import craftingSystem, { showCrafting } from './js/components/crafting/CraftingUI.js';
+import UIManager from './js/components/UIManager.js';
+import { showGuild } from './js/components/exile/ExileUI.js';
 
 /**
  * Initializes the game by hiding all UI sections except the welcome screen
@@ -44,7 +46,7 @@ function welcome() {
 	$("#crafting").removeClass("hidden");
 	$("#delving").removeClass("hidden");
 	$("#info").removeClass("hidden");
-	showGuild();
+	showGuild(exileData, recruitExile);
 }
 
 //----------------------------------Menu
@@ -53,42 +55,13 @@ function welcome() {
  * Configures layout for the main currency display
  */
 function showMain() {
-
-	$("#main").show();
-	$("#guild").hide();
-	$("#crafting").hide();
-	$("#delving").hide();
-	$("#info").hide();
-	$("#divBuyCurrency").hide();
-	$("#divSellCurrency").hide();
-	$("#divTheorycrafting").show();
-	$("#divSingularity").hide();
-	$("#divFlipping").hide();
-	$("#MainCurrency").removeClass("mdl-cell--4-col");
-	$("#MainCurrency").removeClass("mdl-cell--4-col-tablet");
-	$("#MainCurrency").addClass("mdl-cell--3-col");
-	$("#MainCurrency").addClass("mdl-cell--3-col-tablet");
-}
-
-/**
- * Shows the guild management screen where players recruit and manage Exiles
- * Dynamically generates exile cards in the guild grid
- */
-function showGuild() {
-
-	$("#main").hide();
-	$("#guild").show();
-	$("#crafting").hide();
-	$("#delving").hide();
-	$("#info").hide();
-
-	// Get the guild grid container
-	const guildGrid = document.querySelector('#guild .mdl-grid');
-
-	// Generate exile cards dynamically, passing recruitExile
-	generateExileCards(guildGrid, exileData, recruitExile);
-	// Ensure reroll and other dynamic UI is correct after card generation
-	exileData.forEach(exile => exile.updateExileClass());
+    UIManager.show('main');
+    $("#divBuyCurrency").hide();
+    $("#divSellCurrency").hide();
+    $("#divTheorycrafting").show();
+    $("#divSingularity").hide();
+    $("#divFlipping").hide();
+    $("#MainCurrency").removeClass("mdl-cell--4-col mdl-cell--4-col-tablet").addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
 }
 
 /**
@@ -115,78 +88,10 @@ function showFlipping() {
 }
 
 /**
- * Shows the crafting interface where players can craft items
- * Renders the crafting UI components and applies visibility rules based on player progress
- */
-function showCrafting() {
-	// Hide all other sections
-	$("#main").hide();
-	$("#guild").hide();
-	$("#delving").hide();
-	$("#info").hide();
-
-	// Show crafting section
-	$("#crafting").show();
-
-	// Avoid running the code if the welcome screen is visible
-	// (this handles the test for crafting requiring guild creation)
-	if ($("#welcomePre").is(":visible")) {
-		return;
-	}
-
-	// Generate the header cards (Artificer and description)
-	craftingSystem.renderCraftingHeader();
-
-	// Generate the crafting cards dynamically
-	craftingSystem.renderCraftingCards();
-
-	// Get the current Artificer owned state
-	const artificerOwned = typeof exileData !== 'undefined' &&
-		exileData.some(e => e.name === 'Artificer' && e.owned === true);
-
-	// Always apply visibility rules based on current state
-	if (artificerOwned) {
-		// When the Artificer is owned, hide all recruitment elements
-		$(".ArtificerBuy, .ArtificerHide").hide();
-
-		// Force display:block on all craft cards to ensure they're visible
-		$(".craft").css("display", "block");
-		$(".craft").show();
-	} else {
-		// When the Artificer is not owned, hide crafting cards
-		$(".craft").hide();
-	}
-
-	// Check for Quad Stash Tab requirement
-	if (Upgrades.quadStashTab !== 1) {
-		$("#heavierCrafting, .advancedCrafting").hide();
-	}
-}
-
-/**
- * Shows the delving interface where players can manage delve-related activities
- */
-function showDelving() {
-
-	$("#main").hide();
-	$("#guild").hide();
-	$("#crafting").hide();
-	$("#delving").show();
-	$("#info").hide();
-
-}
-
-/**
  * Shows the information screen with game details and help
  */
 function showInfo() {
-
-	$("#main").hide();
-	$("#guild").hide();
-	$("#crafting").hide();
-	$("#delving").hide();
-	$("#info").show();
-
+    UIManager.show('info');
 }
 
 //---Show upgrades
@@ -300,10 +205,12 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', () => {
 	// Navigation
 	document.getElementById('nav-main')?.addEventListener('click', showMain);
-	document.getElementById('nav-guild')?.addEventListener('click', showGuild);
+	document.getElementById('nav-guild')?.addEventListener('click', () => {
+		showGuild(exileData, recruitExile);
+	});
 	document.getElementById('nav-flipping')?.addEventListener('click', showFlipping);
 	document.getElementById('nav-delving')?.addEventListener('click', showDelving);
-	document.getElementById('nav-crafting')?.addEventListener('click', showCrafting);
+	document.getElementById('nav-crafting')?.addEventListener('click', () => showCrafting(exileData, Upgrades));
 	document.getElementById('nav-info')?.addEventListener('click', showInfo);
 
 	// Recruit Singularity
@@ -381,19 +288,45 @@ setInterval(function delveTick() {
 }, 2500);
 
 setInterval(function delveLoadingBarAnimate() {
-	const { delveLoadingProgress } = getDelveState();
-	if (delveLoadingProgress >= 1) {
-		incrementDelveLoadingProgress(5);
-		let e = document.querySelector('#delveLoader');
-		if (e && e.MaterialProgress) {
-			componentHandler.upgradeElement(e);
-			e.MaterialProgress.setProgress(getDelveState().delveLoadingProgress);
-			if (getDelveState().delveLoadingProgress >= 100) {
-				setDelveLoadingProgress(0);
-				e.MaterialProgress.setProgress(0);
-			}
-		}
-	}
+    const { delveLoadingProgress, isDelving } = getDelveState(); // Check if delving is active
+    const delveLoader = document.querySelector('#delveLoader');
+
+    if (!isDelving) {
+        // Reset progress bar if delving is not active
+        if (delveLoader && delveLoader.MaterialProgress) {
+            delveLoader.MaterialProgress.setProgress(0);
+        }
+        return;
+    }
+
+    if (delveLoader) {
+        delveLoader.classList.remove('hidden'); // Ensure the progress bar is visible
+        delveLoader.style.display = 'block'; // Explicitly set display to block
+
+        if (typeof componentHandler !== 'undefined') {
+            try {
+                componentHandler.upgradeElement(delveLoader);
+            } catch (e) {
+                console.error('Error upgrading MDL component:', e);
+            }
+        }
+
+        if (delveLoader.MaterialProgress) {
+            const increment = 100 / (2500 / 100); // Calculate increment for 2.5 seconds
+            const newProgress = Math.min(delveLoadingProgress + increment, 100);
+            setDelveLoadingProgress(newProgress);
+            delveLoader.MaterialProgress.setProgress(newProgress);
+
+            if (newProgress >= 100) {
+                setDelveLoadingProgress(0);
+                delveLoader.MaterialProgress.setProgress(0);
+            }
+        } else {
+            console.warn('MaterialProgress is not initialized on delveLoader.');
+        }
+    } else {
+        console.error('delveLoader element not found.');
+    }
 }, 100);
 
 //---Unlocking Exiles (moved from exiles.js)
