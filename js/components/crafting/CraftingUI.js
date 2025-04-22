@@ -1,5 +1,5 @@
 import { CraftingSystem } from './CraftingSystem.js';
-import UIManager from '../UIManager.js';
+import UIManager from '../ui/UIManager.js';
 import craftingSystem from './CraftingSystem.js';
 
 /**

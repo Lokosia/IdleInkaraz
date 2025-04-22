@@ -1,6 +1,6 @@
 import { CraftingItem, MirrorItem } from './CraftingItem.js';
 import { fossilData } from '../delve/Fossil.js';
-import { UICard } from '../Cards.js';
+import { UICard } from '../ui/Cards.js';
 import Upgrades from '../Augments.js';
 import { recruitExile } from '../../../Main.js';
 import { currencyMap } from '../currency/CurrencyData.js'; // Import currencyMap if needed for checks

@@ -1,6 +1,6 @@
 // Exile UI utilities for rendering and updating Exile-related UI
-import { UICard } from '../Cards.js';
-import UIManager from '../UIManager.js';
+import { UICard } from '../ui/Cards.js';
+import UIManager from '../ui/UIManager.js';
 
 /**
  * Generates cards for all standard exiles to populate the Guild section

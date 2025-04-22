@@ -1,6 +1,6 @@
 import { exileMap, totalLevel, SnackBar } from '../../Main.js'
 import { currencyMap, currencyData } from './currency/CurrencyData.js';
-import { generateUpgradeCellsHTML } from './UpgradeUI.js';
+import { generateUpgradeCellsHTML } from './ui/UpgradeUI.js';
 import { handleGenericUpgrade } from './exile/ExileUtils.js'; // Import the new handler
 
 // Upgrades module encapsulating all state and logic

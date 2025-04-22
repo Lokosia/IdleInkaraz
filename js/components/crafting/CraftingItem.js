@@ -1,4 +1,4 @@
-import { UICard } from '../Cards.js';
+import { UICard } from '../ui/Cards.js';
 import { currencyMap } from '../currency/CurrencyData.js';
 import { SnackBar } from '../../../Main.js';
 import { fossilData } from '../delve/Fossil.js';

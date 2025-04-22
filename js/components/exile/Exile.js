@@ -1,6 +1,6 @@
 import { handleGenericUpgrade, getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 // Import the refactored function
-import { generateUpgradeCellsHTML } from '../UpgradeUI.js';
+import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { SnackBar } from '../../../Main.js';
 
 /**

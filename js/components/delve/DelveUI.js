@@ -1,8 +1,8 @@
 // DelveUI.js - Contains UI creation and initialization for Delving
 import { fossilData } from './Fossil.js';
-import { UICard } from '../Cards.js';
+import { UICard } from '../ui/Cards.js';
 import { recruitExile, exileMap } from '../../../Main.js';
-import UIManager from '../UIManager.js';
+import UIManager from '../ui/UIManager.js';
 
 function createMelvinSection(recruitExileFn, melvinObj) {
     const content = `

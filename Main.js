@@ -6,9 +6,9 @@ import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
 import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
-import { UICard } from './js/components/Cards.js';
+import { UICard } from './js/components/ui/Cards.js';
 import craftingSystem, { showCrafting } from './js/components/crafting/CraftingUI.js';
-import UIManager from './js/components/UIManager.js';
+import UIManager from './js/components/ui/UIManager.js';
 import { showGuild } from './js/components/exile/ExileUI.js';
 
 /**
