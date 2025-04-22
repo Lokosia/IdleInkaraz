@@ -12,8 +12,21 @@ const UIManager = {
      * @param {string} section - The key of the section to show (e.g., 'main', 'guild').
      */
     show(section) {
-        Object.values(this.sections).forEach(id => $(id).hide());
-        $(this.sections[section]).show();
+        const targetSelector = this.sections[section];
+        if (!targetSelector) {
+            console.error(`UIManager: Section key '${section}' not found.`);
+            return;
+        }
+
+        // Hide all other sections first
+        Object.values(this.sections).forEach(id => {
+            if (id !== targetSelector) {
+                $(id).hide(); // Keep using hide for others
+            }
+        });
+
+        // Show the target section and remove the 'hidden' class
+        $(targetSelector).removeClass('hidden').show();
     }
 };
 

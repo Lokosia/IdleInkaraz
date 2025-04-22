@@ -94,4 +94,28 @@ function updateCurrencyClass() {
     }
 }
 
-export { setupCurrencyUI, updateCurrencyClass };
+// Show the default currency view (main screen)
+function showDefaultCurrencyView() {
+    $("#divBuyCurrency").hide();
+    $("#divSellCurrency").hide();
+    $("#divTheorycrafting").show();
+    $("#divSingularity").hide();
+    $("#divFlipping").hide();
+    $("#MainCurrency")
+        .removeClass("mdl-cell--4-col mdl-cell--4-col-tablet")
+        .addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
+}
+
+// Show the flipping view (currency trading)
+function showFlippingView() {
+    $("#divBuyCurrency").show();
+    $("#divSellCurrency").show();
+    $("#divTheorycrafting").hide();
+    $("#divSingularity").show();
+    $("#divFlipping").show();
+    $("#MainCurrency")
+        .removeClass("mdl-cell--3-col mdl-cell--3-col-tablet")
+        .addClass("mdl-cell--4-col mdl-cell--4-col-tablet");
+}
+
+export { setupCurrencyUI, updateCurrencyClass, showDefaultCurrencyView, showFlippingView };

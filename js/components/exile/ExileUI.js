@@ -78,8 +78,12 @@ function generateExileCards(container, exileData, recruitExile) {
  * Dynamically generates exile cards and updates their UI.
  */
 function showGuild(exileData, recruitExile) {
-    UIManager.show('guild');
+    // UIManager.show('guild'); // Removed: This is now called by the event listener/welcome function before calling showGuild
     const guildGrid = document.querySelector('#guild .mdl-grid');
+    if (!guildGrid) {
+        console.error("Guild grid container not found!");
+        return;
+    }
     generateExileCards(guildGrid, exileData, recruitExile);
     exileData.forEach(exile => exile.updateExileClass());
 }

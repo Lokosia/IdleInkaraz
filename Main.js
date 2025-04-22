@@ -1,141 +1,26 @@
-import { generateExileCards } from './js/components/exile/ExileUI.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
 import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
-import { updateCurrencyClass, setupCurrencyUI } from './js/components/currency/CurrencyUI.js';
+import { updateCurrencyClass, setupCurrencyUI, showDefaultCurrencyView, showFlippingView } from './js/components/currency/CurrencyUI.js';
 import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
-import { delve, getDelveState, setDelveLoadingProgress, incrementDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
+import { delve, getDelveState, setDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
 import Upgrades from './js/components/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
-import { UICard } from './js/components/ui/Cards.js';
-import craftingSystem, { showCrafting } from './js/components/crafting/CraftingUI.js';
+import { createWelcomeCard } from './js/components/ui/Cards.js';
+import { showCrafting } from './js/components/crafting/CraftingUI.js';
 import UIManager from './js/components/ui/UIManager.js';
 import { showGuild } from './js/components/exile/ExileUI.js';
-
-/**
- * Initializes the game by hiding all UI sections except the welcome screen
- * Called when the page first loads
- */
-function gameStart() {
-
-	$("#main").hide();
-	$("#guild").hide();
-	$("#crafting").hide();
-	$("#delving").hide();
-	$("#info").hide();
-	$("#CrusaderUpgrade").hide();
-	$("#HunterUpgrade").hide();
-	$("#RedeemerUpgrade").hide();
-	$("#WarlordUpgrade").hide();
-
-	// Don't hide craft cards here - let the crafting tab logic control this
-	// $(".craft").hide();
-
-	// $("#loader").hide(); // Removed: Loader is now hidden in layoutInitializer.js
-
-}
+import { showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades } from './js/components/ui/UpgradeUI.js';
 
 /**
  * Initiates the game after the player creates a guild
  * Reveals all main UI sections and navigates to the guild screen
  */
 function welcome() {
-
 	$("#welcomePre").hide();
-	$("#main").removeClass("hidden");
-	$("#guild").removeClass("hidden");
-	$("#crafting").removeClass("hidden");
-	$("#delving").removeClass("hidden");
-	$("#info").removeClass("hidden");
+	// Show the guild section using UIManager
+	UIManager.show('guild');
 	showGuild(exileData, recruitExile);
 }
-
-//----------------------------------Menu
-/**
- * Shows the main game screen and hides all other sections
- * Configures layout for the main currency display
- */
-function showMain() {
-    UIManager.show('main');
-    $("#divBuyCurrency").hide();
-    $("#divSellCurrency").hide();
-    $("#divTheorycrafting").show();
-    $("#divSingularity").hide();
-    $("#divFlipping").hide();
-    $("#MainCurrency").removeClass("mdl-cell--4-col mdl-cell--4-col-tablet").addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
-}
-
-/**
- * Shows the currency flipping interface where players can trade currencies
- * Configures the layout and visibility of trading components
- */
-function showFlipping() {
-
-	$("#main").show();
-	$("#guild").hide();
-	$("#crafting").hide();
-	$("#delving").hide();
-	$("#info").hide();
-	$("#divBuyCurrency").show();
-	$("#divSellCurrency").show();
-	$("#divTheorycrafting").hide();
-	$("#divSingularity").show();
-	$("#divFlipping").show();
-	$("#MainCurrency").removeClass("mdl-cell--3-col");
-	$("#MainCurrency").removeClass("mdl-cell--3-col-tablet");
-	$("#MainCurrency").addClass("mdl-cell--4-col");
-	$("#MainCurrency").addClass("mdl-cell--4-col-tablet");
-
-}
-
-/**
- * Shows the information screen with game details and help
- */
-function showInfo() {
-    UIManager.show('info');
-}
-
-//---Show upgrades
-/**
- * Shows all upgrade tables in the upgrade interface
- * Displays general, gear, and links upgrade options
- */
-function showAllUpgrades() {
-	$("#UpgradeTable").show();
-	$("#UpgradeGearTable").show();
-	$("#UpgradeLinksTable").show();
-}
-
-/**
- * Shows only the general upgrades table
- * Hides gear and links upgrade options
- */
-function showGeneralUpgrades() {
-	$("#UpgradeTable").show();
-	$("#UpgradeGearTable").hide();
-	$("#UpgradeLinksTable").hide();
-}
-
-/**
- * Shows only the gear upgrades table
- * Hides general and links upgrade options
- */
-function showGearUpgrades() {
-	$("#UpgradeTable").hide();
-	$("#UpgradeGearTable").show();
-	$("#UpgradeLinksTable").hide();
-}
-
-/**
- * Shows only the links upgrades table
- * Hides general and gear upgrade options
- */
-function showLinksUpgrades() {
-	$("#UpgradeTable").hide();
-	$("#UpgradeGearTable").hide();
-	$("#UpgradeLinksTable").show();
-}
-
-//---Misc.
 
 //---Snackbar
 /**
@@ -154,83 +39,60 @@ export function SnackBar(input) {
 	}
 }
 
-/**
- * Initializes the welcome screen UI when the DOM is loaded
- * Creates the welcome card and sets up event handlers
- */
-document.addEventListener('DOMContentLoaded', function () {
-	setupCurrencyUI();
-	const welcomeCard = UICard.create({
-		id: 'welcome-card',
-		title: 'Welcome, Exile',
-		content: `
-            <p>It's the start of a new league in Path of Exile, you decide to create a guild with the
-                sole intention of sharing resources and growing as a team.</p>
-            <p>Recruit Exiles, Delvers, Currency Flippers, and Crafters. Dominate the economy and
-                upgrade your guild members.</p>
-            <div id="create-guild-button"></div>
-        `,
-		size: 'full',
-		extraClasses: ['cardBG', 'imgBG']
-	});
+function addClickListener(id, handler) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', handler);
+}
 
+document.addEventListener('DOMContentLoaded', function () {
+	setupCurrencyUI(); // Initialize currency UI
+
+	// Initialize the welcome card and add it to the UI
+	const welcomeCard = createWelcomeCard(welcome);
 	document.querySelector('#welcomePre .mdl-grid').appendChild(welcomeCard);
 
-	// Initialize the button inside the card
-	const createGuildButton = document.createElement('button');
-	createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
-	createGuildButton.textContent = 'Create Guild';
-	createGuildButton.onclick = welcome;
-	document.getElementById('create-guild-button').appendChild(createGuildButton);
-
-	/**
-	 * Adds hover effects to currency text elements
-	 * 
-	 * @param {HTMLElement} switchElement - The switch element to attach hover events to
-	 * @param {string} currencyName - The name of the currency to highlight on hover
-	 */
-	function addCurrencyHoverEffect(switchElement, currencyName) {
-		$(switchElement).hover(
-			function () {
-				$(`.${currencyName}Text`).addClass('mdl-color-text--blue-grey-600');
-			},
-			function () {
-				$(`.${currencyName}Text`).removeClass('mdl-color-text--blue-grey-600');
-			}
-		);
-	}
 	initDelvingUI(); // Initialize Delving UI
-});
 
-document.addEventListener('DOMContentLoaded', () => {
 	// Navigation
-	document.getElementById('nav-main')?.addEventListener('click', showMain);
-	document.getElementById('nav-guild')?.addEventListener('click', () => {
-		showGuild(exileData, recruitExile);
-	});
-	document.getElementById('nav-flipping')?.addEventListener('click', showFlipping);
-	document.getElementById('nav-delving')?.addEventListener('click', showDelving);
-	document.getElementById('nav-crafting')?.addEventListener('click', () => showCrafting(exileData, Upgrades));
-	document.getElementById('nav-info')?.addEventListener('click', showInfo);
+    addClickListener('nav-main', () => {
+        UIManager.show('main');
+        showDefaultCurrencyView();
+    });
+    addClickListener('nav-guild', () => {
+        UIManager.show('guild');
+        showGuild(exileData, recruitExile);
+    });
+    addClickListener('nav-flipping', () => {
+        UIManager.show('main');
+        showFlippingView();
+    });
+    addClickListener('nav-delving', () => {
+        UIManager.show('delving');
+        showDelving();
+    });
+    addClickListener('nav-crafting', () => {
+        UIManager.show('crafting');
+        showCrafting(exileData, Upgrades);
+    });
+    addClickListener('nav-info', () => {
+        UIManager.show('info');
+    });
 
-	// Recruit Singularity
-	document.getElementById('recruit-singularity')?.addEventListener('click', () => recruitExile('Singularity'));
+    // Recruit Singularity
+    addClickListener('recruit-singularity', () => recruitExile('Singularity'));
 
-	// Main tab upgrade filters
-	document.getElementById('btn-all-upgrades')?.addEventListener('click', showAllUpgrades);
-	document.getElementById('btn-general-upgrades')?.addEventListener('click', showGeneralUpgrades);
-	document.getElementById('btn-gear-upgrades')?.addEventListener('click', showGearUpgrades);
-	document.getElementById('btn-links-upgrades')?.addEventListener('click', showLinksUpgrades);
+    // Main tab upgrade filters
+    addClickListener('btn-all-upgrades', showAllUpgrades);
+    addClickListener('btn-general-upgrades', showGeneralUpgrades);
+    addClickListener('btn-gear-upgrades', showGearUpgrades);
+    addClickListener('btn-links-upgrades', showLinksUpgrades);
 
-	// Upgrade buttons - Pass currencyMap entries instead of exileMap entries
-	document.getElementById('btn-crusader-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Crusader']));
-	document.getElementById('btn-hunter-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Hunter']));
-	document.getElementById('btn-redeemer-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Redeemer']));
-	document.getElementById('btn-warlord-upgrade')?.addEventListener('click', () => Upgrades.buyConqueror(currencyMap['Warlord']));
+    // Upgrade buttons - Pass currencyMap entries instead of exileMap entries
+    addClickListener('btn-crusader-upgrade', () => Upgrades.buyConqueror(currencyMap['Crusader']));
+    addClickListener('btn-hunter-upgrade', () => Upgrades.buyConqueror(currencyMap['Hunter']));
+    addClickListener('btn-redeemer-upgrade', () => Upgrades.buyConqueror(currencyMap['Redeemer']));
+    addClickListener('btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord']));
 });
-
-//----------------------------------Start Functions
-gameStart();
 
 //---Main (global state)
 let totalLevel = 0;
@@ -338,6 +200,7 @@ function recruitExile(exileName) {
 	}
 	// Check level requirement
 	if (totalLevel < exile.levelRequirement) {
+		// Corrected template literal syntax
 		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${totalLevel}`);
 		return;
 	}
@@ -345,7 +208,8 @@ function recruitExile(exileName) {
 	if (exile.specialRequirement) {
 		let [reqType, reqValue] = exile.specialRequirement;
 		if ((Upgrades[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
-			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${(Upgrades[reqType] ?? 0)}`);
+			// Corrected template literal syntax
+			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${Upgrades[reqType] ?? 0}`);
 			return;
 		}
 	}
@@ -383,8 +247,10 @@ function recruitExile(exileName) {
 	if (!exile.owned) { // Prevent re-recruiting
 		exile.owned = true; // Mark as owned before calling onRecruited
 		exile.onRecruited();
+		// Corrected template literal syntax
 		SnackBar(`${exileName} recruited!`);
 	} else {
+		// Corrected template literal syntax
 		SnackBar(`${exileName} is already recruited.`);
 	}
 }
@@ -404,8 +270,8 @@ function initTestMode() {
 	currencyData.forEach(currency => {
 		currency.total = 99999;
 	});
+
 	// Set 99999 of every fossil
-	
 	fossilData.forEach(fossil => {
 		fossil.total = 99999;
 		// Update the UI if the element exists

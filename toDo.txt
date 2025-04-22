@@ -57,3 +57,5 @@ optimize timer intervals, probably change all to event listeners
 buying divination stash tab allows currency to be farmed without exile - should it be changed?
 
 rework map upgrades like alch/scour/divstashtab works, by not just giving currency, but be attached to every exile farming and give currency there
+
+add analytics

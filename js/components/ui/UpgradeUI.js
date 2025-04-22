@@ -27,4 +27,32 @@ function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit,
     return html;
 }
 
-export { generateUpgradeCellsHTML }; // Export the renamed function
+// Show all upgrade tables
+function showAllUpgrades() {
+    $("#UpgradeTable").show();
+    $("#UpgradeGearTable").show();
+    $("#UpgradeLinksTable").show();
+}
+
+// Show only the general upgrades table
+function showGeneralUpgrades() {
+    $("#UpgradeTable").show();
+    $("#UpgradeGearTable").hide();
+    $("#UpgradeLinksTable").hide();
+}
+
+// Show only the gear upgrades table
+function showGearUpgrades() {
+    $("#UpgradeTable").hide();
+    $("#UpgradeGearTable").show();
+    $("#UpgradeLinksTable").hide();
+}
+
+// Show only the links upgrades table
+function showLinksUpgrades() {
+    $("#UpgradeTable").hide();
+    $("#UpgradeGearTable").hide();
+    $("#UpgradeLinksTable").show();
+}
+
+export { generateUpgradeCellsHTML, showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades };

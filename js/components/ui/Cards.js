@@ -78,4 +78,28 @@ class UICard {
     }
 }
 
-export { UICard };
+function createWelcomeCard(onCreateGuild) {
+    const welcomeCard = UICard.create({
+        id: 'welcome-card',
+        title: 'Welcome, Exile',
+        content: `
+            <p>It's the start of a new league in Path of Exile, you decide to create a guild with the
+                sole intention of sharing resources and growing as a team.</p>
+            <p>Recruit Exiles, Delvers, Currency Flippers, and Crafters. Dominate the economy and
+                upgrade your guild members.</p>
+            <div id="create-guild-button"></div>
+        `,
+        size: 'full',
+        extraClasses: ['cardBG', 'imgBG']
+    });
+
+    // Initialize the button inside the card
+    const createGuildButton = document.createElement('button');
+    createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
+    createGuildButton.textContent = 'Create Guild';
+    createGuildButton.onclick = onCreateGuild;
+    welcomeCard.querySelector('#create-guild-button').appendChild(createGuildButton);
+    return welcomeCard;
+}
+
+export { UICard, createWelcomeCard };
