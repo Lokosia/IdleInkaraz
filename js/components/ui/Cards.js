@@ -1,3 +1,7 @@
+import UIManager from './UIManager.js';
+import { showGuild } from '../exile/ExileUI.js';
+import { exileData, recruitExile } from '../../../Main.js';
+
 class UICard {
     static create({ 
         id = '', 
@@ -78,7 +82,7 @@ class UICard {
     }
 }
 
-function createWelcomeCard(onCreateGuild) {
+function createWelcomeCard(container) {
     const welcomeCard = UICard.create({
         id: 'welcome-card',
         title: 'Welcome, Exile',
@@ -97,8 +101,17 @@ function createWelcomeCard(onCreateGuild) {
     const createGuildButton = document.createElement('button');
     createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
     createGuildButton.textContent = 'Create Guild';
-    createGuildButton.onclick = onCreateGuild;
+    createGuildButton.onclick = function() {
+        // Directly use the logic from welcome()
+        $("#welcomePre").hide();
+        UIManager.show('guild');
+        showGuild(exileData, recruitExile);
+    };
     welcomeCard.querySelector('#create-guild-button').appendChild(createGuildButton);
+
+    if (container && container.appendChild) {
+        container.appendChild(welcomeCard);
+    }
     return welcomeCard;
 }
 

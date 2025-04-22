@@ -1,3 +1,8 @@
+<!--
+  index.html - Main entry point for Idle Exile
+  Clean, semantic, and accessible HTML5 structure
+  Last updated: April 22, 2025
+-->
 <!doctype html>
 <html lang="en">
 
@@ -17,72 +22,34 @@
     <link rel="stylesheet" href="styles.css">
 </head><!-- /Head -->
 
-<!-- Body -->
-
 <body>
-    <!-- Side Panel & Header -->
+    <!-- Layout Wrapper -->
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-        <header class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200" id="header-placeholder">
-            <!-- Header content will be injected by JS -->
-        </header>
-
-        <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50" id="side-panel-placeholder">
-            <!-- Side panel content will be injected by JS -->
-        </div><!-- /Side Panel & Header -->
-
-        <!-- Main -->
-        <main class="mdl-layout__content mdl-color--blue-grey-200">
-
-            <!-- Dynamic loading of each page -->
-
-            <!-- Main -->
-            <!-- Welcome -->
-            <div id="welcomePre">
+        <!-- Header (Injected by JS) -->
+        <header id="header-placeholder" class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200" role="banner"></header>
+        <!-- Side Navigation (Injected by JS) -->
+        <nav id="side-panel-placeholder" class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50" role="navigation"></nav>
+        <!-- Main Content Area -->
+        <main id="main-content" class="mdl-layout__content mdl-color--blue-grey-200" role="main">
+            <section id="welcomePre">
                 <div class="mdl-grid center-items">
                     <div id="welcome-card"></div>
                 </div>
-            </div>
-            <!-- /Welcome -->
-
-            <div id="main" class="hidden">
-                <!-- Grid -->
-                <div id="mainGrid" class="mdl-grid center-items">
-                    <!-- Cards will be generated dynamically by JS -->
-                </div>
-                <!-- /Grid -->
-
-            </div>
-            <!-- /Main -->
-
-            <!-- Guild -->
-            <div id="guild" class="hidden">
-                <div class="mdl-grid center-items">
-                    <!-- Cards will be generated dynamically -->
-                </div>
-            </div>
-            <!-- /Guild -->
-
-            <!-- Delving -->
-            <div id="delving" class="hidden">
-                <div class="mdl-grid center-items" id="delving-container">
-                    <!-- UI sections will be generated dynamically -->
-                </div>
-            </div>
-            <!-- /Delving -->
-
-            <!-- Crafting -->
-            <div id="crafting" class="hidden">
-                <div class="mdl-grid center-items" id="crafting-main-container">
-                    <!-- Header cards will be dynamically generated here -->
-                </div>
-                <div id="crafting-cards-container" class="mdl-grid center-items">
-                    <!-- Crafting cards will be dynamically generated here -->
-                </div>
-            </div>
-            <!-- /Crafting -->
-
-            <!-- Info -->
-            <div id="info" class="hidden">
+            </section>
+            <section id="main" class="hidden">
+                <div id="mainGrid" class="mdl-grid center-items"></div>
+            </section>
+            <section id="guild" class="hidden">
+                <div class="mdl-grid center-items"></div>
+            </section>
+            <section id="delving" class="hidden">
+                <div id="delving-container" class="mdl-grid center-items"></div>
+            </section>
+            <section id="crafting" class="hidden">
+                <div id="crafting-main-container" class="mdl-grid center-items"></div>
+                <div id="crafting-cards-container" class="mdl-grid center-items"></div>
+            </section>
+            <section id="info" class="hidden">
                 <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet cardBG">
                     <div class="mdl-card__supporting-text mdl-card--expand">
                         <p>Idle Exile is an incremental game based within the Path of Exile universe.</p>
@@ -101,43 +68,28 @@
                                 Design Lite</a> as a HTML/CSS framework.</p>
                         <br>
                         <p>Play Time: <span id="timePlayed">00:00:00</span></p>
-
-
                     </div>
                 </div>
-            </div>
-            <!-- /Info -->
-            <div id="snackBar" class="mdl-js-snackbar mdl-snackbar">
-                <div class="mdl-snackbar__icon">
-                    <i class="material-icons">error</i>
-                </div>
+            </section>
+            <!-- Snackbar for notifications -->
+            <div id="snackBar" class="mdl-js-snackbar mdl-snackbar" role="status" aria-live="polite">
+                <div class="mdl-snackbar__icon"><i class="material-icons">error</i></div>
                 <div class="mdl-snackbar__text"></div>
                 <button class="mdl-snackbar__action" type="button"></button>
             </div>
-
         </main>
     </div>
-    <!-- Scripts -->
-    <!-- Core -->
+    <!-- Scripts: Core Libraries -->
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-    <!-- Layout Initializer -->
+    <!-- Scripts: App Initialization & Modules -->
     <script type="module" src="js/layoutInitializer.js"></script>
-
-    <!-- Libraries -->
     <script type="text/javascript" src="js/libs/Numerals.js"></script>
-
-    <!-- Game Logic -->
     <script type="module" src="js/components/Augments.js"></script>
     <script type="module" src="Main.js"></script>
     <script type="module" src="js/components/currency/CurrencyUI.js"></script>
-
     <script type="module" src="js/components/crafting/CraftingUI.js"></script>
-    <!-- Framework abstraction -->
     <script src="js/components/ui/UIClasses.js"></script>
     <script src="js/components/ui/Switches.js"></script>
-    <!-- /Scripts -->
-</body><!-- /Body -->
-
-</html><!-- Hello :) -->
+</body>
+</html>

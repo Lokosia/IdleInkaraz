@@ -11,17 +11,6 @@ import UIManager from './js/components/ui/UIManager.js';
 import { showGuild } from './js/components/exile/ExileUI.js';
 import { showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades } from './js/components/ui/UpgradeUI.js';
 
-/**
- * Initiates the game after the player creates a guild
- * Reveals all main UI sections and navigates to the guild screen
- */
-function welcome() {
-	$("#welcomePre").hide();
-	// Show the guild section using UIManager
-	UIManager.show('guild');
-	showGuild(exileData, recruitExile);
-}
-
 //---Snackbar
 /**
  * Displays a temporary notification message to the user
@@ -48,8 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	setupCurrencyUI(); // Initialize currency UI
 
 	// Initialize the welcome card and add it to the UI
-	const welcomeCard = createWelcomeCard(welcome);
-	document.querySelector('#welcomePre .mdl-grid').appendChild(welcomeCard);
+	createWelcomeCard(document.querySelector('#welcomePre .mdl-grid'));
 
 	initDelvingUI(); // Initialize Delving UI
 
