@@ -1,9 +1,8 @@
-import { exileMap, totalLevel, SnackBar } from '../../Main.js'
-import { currencyMap, currencyData } from './currency/CurrencyData.js';
-import { generateUpgradeCellsHTML } from './ui/UpgradeUI.js';
-import { handleGenericUpgrade } from './exile/ExileUtils.js'; // Import the new handler
-import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
-import MapCurrencyUpgradeSystem from './MapCurrencyUpgradeSystem.js';
+import { exileMap, totalLevel, SnackBar } from '../../../Main.js'
+import { currencyMap, currencyData } from '../currency/CurrencyData.js';
+import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
+import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new handler
+import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {

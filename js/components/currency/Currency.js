@@ -1,5 +1,5 @@
 // Currency.js - Currency class module
-import Upgrades from '../Augments.js';
+import Upgrades from '../upgrades/Augments.js';
 import { exileMap } from '../../../Main.js';
 import { currencyMap } from './CurrencyData.js';
 

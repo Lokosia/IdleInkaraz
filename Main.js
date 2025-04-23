@@ -3,7 +3,7 @@ import { currencyData, currencyMap } from './js/components/currency/CurrencyData
 import { updateCurrencyClass, setupCurrencyUI, showDefaultCurrencyView, showFlippingView } from './js/components/currency/CurrencyUI.js';
 import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
-import Upgrades from './js/components/Augments.js';
+import Upgrades from './js/components/upgrades/Augments.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { createWelcomeCard } from './js/components/ui/Cards.js';
 import { showCrafting } from './js/components/crafting/CraftingUI.js';

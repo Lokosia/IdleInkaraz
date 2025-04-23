@@ -3,12 +3,12 @@
 // Handles the state, logic, and UI for upgrading map currency drops.
 // Used by Augments.js to manage map currency upgrades in one place.
 
-import { currencyMap, currencyData } from './currency/CurrencyData.js';
-import { SnackBar } from '../../Main.js';
-import { generateUpgradeCellsHTML } from './ui/UpgradeUI.js';
-import { handleGenericUpgrade } from './exile/ExileUtils.js';
+import { currencyMap, currencyData } from '../../currency/CurrencyData.js';
+import { SnackBar } from '../../../../Main.js';
+import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
+import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
-import { exileMap } from '../../Main.js';
+import { exileMap } from '../../../../Main.js';
 
 const MapCurrencyUpgradeSystem = {
     // mappingCurrencyLevel: Tracks the current upgrade level for map currency drops.

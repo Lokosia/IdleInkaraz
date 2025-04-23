@@ -4,7 +4,7 @@
 
 // MapCurrencyUpgradeLevels.js
 // Contains the configuration for map currency upgrade levels
-import { currencyMap } from './currency/CurrencyData.js';
+import { currencyMap } from '../../currency/CurrencyData.js';
 
 const mapCurrencyUpgradeLevels = [
 	{
