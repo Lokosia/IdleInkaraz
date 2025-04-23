@@ -4,7 +4,7 @@
 // Used by Augments.js to manage map currency upgrades in one place.
 
 import { currencyMap, currencyData } from '../../currency/CurrencyData.js';
-import { SnackBar } from '../../../../Main.js';
+import { SnackBar, hoverUpgrades } from '../../../../Main.js'; // Import hoverUpgrades
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
@@ -146,13 +146,7 @@ const MapCurrencyUpgradeSystem = {
             btn.onclick = boundHandler;
         }
 
-        // Hover effect
-        const hoverUpgrades = (name, a) => {
-            $('#' + name).hover(
-                function () { $("." + a).addClass('hover'); },
-                function () { $("." + a).removeClass('hover'); }
-            );
-        };
+        // Hover effect - Use imported hoverUpgrades
         hoverUpgrades(rowId, "Exalted");
     },
 

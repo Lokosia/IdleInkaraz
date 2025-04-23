@@ -1,8 +1,9 @@
-import { exileMap, totalLevel, SnackBar } from '../../../Main.js'
+import { exileMap, totalLevel, SnackBar, hoverUpgrades } from '../../../Main.js'
 import { currencyMap, currencyData } from '../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new handler
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
+import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -33,50 +34,6 @@ const Upgrades = {
 
 	// Methods
 	noOp() { },
-
-	// UI helpers
-	hoverUpgrades(name, a, b) {
-		$('#' + name).hover(
-			function () {
-				$("." + a).addClass('hover');
-				if (b) $("." + b).addClass('hover');
-			}, function () {
-				$("." + a).removeClass('hover');
-				if (b) $("." + b).removeClass('hover');
-			}
-		);
-	},
-
-	// Map currency logic
-	mapCurrency() {
-		for (let i = 0; i < currencyData.length; i++) {
-			let c = currencyData[i].rollCurrencyRNG();
-			if (c <= currencyData[i].rate * (500 + this.upgradeDropRate)) {
-				currencyData[i].total += 1 + (currencyData[i].rate * (500 + this.upgradeDropRate));
-				if (currencyData[i].name == 'Mirror') {
-					SnackBar("Mirror of Kalandra dropped!");
-				}
-			}
-		}
-	},
-
-	// Method to handle conqueror upgrades
-	buyConqueror(conqueror) {
-		handleGenericUpgrade({
-			requirements: [{ currency: conqueror, amount: 1 }],
-			onSuccess: () => {
-				this.upgradeDropRate += 1;
-			},
-			updateUI: () => {
-				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
-				if (conqueror.total < 1) { // Check remaining amount *after* deduction
-					$(`#${conqueror.name}Upgrade`).hide();
-					$(`.${conqueror.name}`).removeClass("hover");
-				}
-			},
-			successMessage: "Conqueror influence consumed!"
-		});
-	},
 
 	// Methods for specific upgrades that need special handling
 	buyCurrencyTab() {
@@ -149,7 +106,7 @@ const upgradeConfigs = [
 		costClass: 'iiqUpgradeCostDisplay',
 		costText: () => `+${numeral(Upgrades.iiqCost).format('0,0')} Chaos`,
 		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
-		hover: () => Upgrades.hoverUpgrades('iiqUpgrade', 'Chaos'),
+		hover: () => hoverUpgrades('iiqUpgrade', 'Chaos'),
 		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
 			onSuccess: () => {
@@ -180,7 +137,8 @@ const upgradeConfigs = [
 				if (benefitCell) {
 					benefitCell.innerHTML = `+${Upgrades.iiqDropRate.toFixed(1)}`; // Update the benefit cell
 				}
-			}
+			},
+			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
 		})
 	},
 	{
@@ -197,7 +155,7 @@ const upgradeConfigs = [
 		costClass: 'incubatorUpgradeCostDisplay',
 		costText: () => `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`,
 		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
-		hover: () => Upgrades.hoverUpgrades('incubatorUpgrade', 'Chaos'),
+		hover: () => hoverUpgrades('incubatorUpgrade', 'Chaos'),
 		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
 			onSuccess: () => {
@@ -221,7 +179,8 @@ const upgradeConfigs = [
 				if (benefitCell) {
 					benefitCell.innerHTML = `+${Upgrades.incDropRate.toFixed(1)}`;
 				}
-			}
+			},
+			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
 		})
 	},
 	{
@@ -238,7 +197,7 @@ const upgradeConfigs = [
 		costClass: 'flipSpeedUpgradeCostDisplay',
 		costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`,
 		requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
-		hover: () => Upgrades.hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
+		hover: () => hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
 		buy: () => handleGenericUpgrade({
 			requirements: [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
 			onSuccess: () => {
@@ -266,7 +225,8 @@ const upgradeConfigs = [
 					 // Correctly display the benefit per level, not the total speed level
 					benefitCell.innerHTML = '+0.5';
 				}
-			}
+			},
+			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
 		})
 	},
 	{
@@ -283,7 +243,7 @@ const upgradeConfigs = [
 		costClass: '',
 		costText: () => '5 Stacked Deck',
 		requirements: () => [{ currency: currencyMap['StackedDeck'], amount: 5 }],
-		hover: () => Upgrades.hoverUpgrades('currencyTab', 'StackedDeck'),
+		hover: () => hoverUpgrades('currencyTab', 'StackedDeck'),
 		buy: () => Upgrades.buyCurrencyTab()
 	},
 	{
@@ -303,7 +263,7 @@ const upgradeConfigs = [
 			{ currency: currencyMap['StackedDeck'], amount: 50 },
 			{ currency: currencyMap['Annulment'], amount: 10 }
 		],
-		hover: () => Upgrades.hoverUpgrades('delveTab', 'StackedDeck', 'Annulment'),
+		hover: () => hoverUpgrades('delveTab', 'StackedDeck', 'Annulment'),
 		buy: () => Upgrades.buyDelveTab()
 	},
 	{
@@ -320,7 +280,7 @@ const upgradeConfigs = [
 		costClass: '',
 		costText: () => '1 Eternal Orb',
 		requirements: () => [{ currency: currencyMap['Eternal'], amount: 1 }],
-		hover: () => Upgrades.hoverUpgrades('quadTab', 'Eternal'),
+		hover: () => hoverUpgrades('quadTab', 'Eternal'),
 		buy: () => Upgrades.buyQuadTab()
 	},
 	{
@@ -340,7 +300,7 @@ const upgradeConfigs = [
 			{ currency: currencyMap['Annulment'], amount: 50 },
 			{ currency: currencyMap['Exalted'], amount: 1 }
 		],
-		hover: () => Upgrades.hoverUpgrades('divTab', 'Exalted', 'Annulment'),
+		hover: () => hoverUpgrades('divTab', 'Exalted', 'Annulment'),
 		buy: () => Upgrades.buyDivTab()
 	},
 	{
@@ -368,7 +328,7 @@ const upgradeConfigs = [
 				? [{ currency: currencyMap['Exalted'], amount: costs[Upgrades.nikoScarab] }]
 				: [];
 		},
-		hover: () => Upgrades.hoverUpgrades('delveScarab', 'Exalted'),
+		hover: () => hoverUpgrades('delveScarab', 'Exalted'),
 		buy: () => {
 			const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
 			const costs = [1, 5, 10];
@@ -472,47 +432,7 @@ setInterval(function updateTick() {
 		MapCurrencyUpgradeSystem.setUpgradeDropRate
 	);
 
-	// Handle conqueror upgrades
-	const conquerors = [
-		currencyMap['Crusader'],
-		currencyMap['Hunter'],
-		currencyMap['Redeemer'],
-		currencyMap['Warlord']
-	];
-
-	for (const currency of conquerors) {
-		const name = currency.name;
-		const rowId = `${name}Upgrade`;
-		if (!$(`#${rowId}`).length) {
-			const row = $(`<tr id="${rowId}"></tr>`);
-			const buttonId = `btn-${name.toLowerCase()}-upgrade`;
-			const buttonText = `${name}'s Exalted Orb`;
-			const description = `Use ${name}'s Exalted Orb`;
-			const benefit = '+1';
-			const cost = `1 ${name}'s Exalted Orb`;
-			const cellsHTML = `
-				<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="${buttonId}">${buttonText}</button></td>
-				<td class="mdl-data-table__cell--non-numeric">${description}</td>
-				<td class="mdl-data-table__cell--non-numeric">${benefit}</td>
-				<td class="mdl-data-table__cell--non-numeric">${cost}</td>
-			`;
-			row.html(cellsHTML);
-			// Insert at the top of the table, before any other rows
-			const table = $('#UpgradeTable');
-			if (table.children().length > 0) {
-				table.prepend(row);
-			} else {
-				table.append(row);
-			}
-			document.getElementById(buttonId)?.addEventListener('click', () => Upgrades.buyConqueror(currency));
-		}
-		if (currency && currency.total >= 1) {
-			$(`#${rowId}`).show();
-			Upgrades.hoverUpgrades(rowId, name);
-		} else {
-			$(`#${rowId}`).hide();
-		}
-	}
+	renderConquerorUpgrades(Upgrades, hoverUpgrades);
 
 	// Update Flipping Speed display in the Flipping tab
 	const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');

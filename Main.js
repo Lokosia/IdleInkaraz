@@ -29,6 +29,35 @@ export function SnackBar(input) {
 	}
 }
 
+/**
+ * Adds hover effects to highlight related currency elements.
+ * @param {string} elementId - The ID of the element to attach the hover listener to.
+ * @param {string} currencyClass1 - The CSS class of the first currency element to highlight.
+ * @param {string} [currencyClass2] - The CSS class of the second currency element to highlight (optional).
+ */
+export function hoverUpgrades(elementId, currencyClass1, currencyClass2) {
+	const element = $(`#${elementId}`);
+	if (!element.length) {
+		console.warn(`Element with ID #${elementId} not found for hover effect.`);
+		return;
+	}
+	// Remove existing hover listeners to prevent duplicates
+	element.off('mouseenter mouseleave');
+	element.hover(
+		function () {
+			$(`.${currencyClass1}`).addClass('hover');
+			if (currencyClass2) {
+				$(`.${currencyClass2}`).addClass('hover');
+			}
+		}, function () {
+			$(`.${currencyClass1}`).removeClass('hover');
+			if (currencyClass2) {
+				$(`.${currencyClass2}`).removeClass('hover');
+			}
+		}
+	);
+}
+
 function addClickListener(id, handler) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', handler);

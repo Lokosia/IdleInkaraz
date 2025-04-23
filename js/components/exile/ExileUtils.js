@@ -56,6 +56,7 @@ function _deductCosts(requirements) {
  * @param {function} [options.updateUI=() => {}] - Callback function executed after onSuccess to update the UI.
  * @param {function} [options.onComplete=() => {}] - Callback function executed at the very end, regardless of success/failure.
  * @param {string} [options.successMessage="Upgrade purchased!"] - Message to show on success.
+ * @param {boolean} [options.keepHoverOnSuccess=false] - If true, hover classes won't be removed on success.
  * @returns {boolean} - True if the upgrade was successful, false otherwise.
  */
 function handleGenericUpgrade({
@@ -65,7 +66,8 @@ function handleGenericUpgrade({
     onFailure = () => SnackBar("Requirements not met."),
     updateUI = () => { },
     onComplete = () => { },
-    successMessage = "Upgrade purchased!"
+    successMessage = "Upgrade purchased!",
+    keepHoverOnSuccess = false // Add the new option
 }) {
     let success = false;
     if (check() && _checkRequirements(requirements)) {
@@ -73,6 +75,16 @@ function handleGenericUpgrade({
         try {
             onSuccess(); // Execute success logic
             updateUI(); // Update UI after success
+
+            // Remove hover effect only if keepHoverOnSuccess is false
+            if (!keepHoverOnSuccess && requirements && requirements.length > 0) {
+                requirements.forEach(req => {
+                    if (req.currency && req.currency.name) {
+                        $(`.${req.currency.name}`).removeClass('hover');
+                    }
+                });
+            }
+
             if (successMessage) {
                 SnackBar(successMessage);
             }

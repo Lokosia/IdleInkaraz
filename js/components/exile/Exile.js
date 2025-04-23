@@ -1,7 +1,7 @@
 import { handleGenericUpgrade, getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 // Import the refactored function
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
-import { SnackBar } from '../../../Main.js';
+import { SnackBar, hoverUpgrades } from '../../../Main.js'; // Import hoverUpgrades
 
 /**
  * Represents an Exile character in the game
@@ -181,7 +181,8 @@ class Exile {
         }
 
         const hoverCurrencies = nextUpgrade.requirements.map(req => req.currency.name);
-        this.setupHover(upgradeType, ...hoverCurrencies);
+        // Use imported hoverUpgrades
+        hoverUpgrades(`${this.name}${upgradeType}Upgrade`, ...hoverCurrencies);
     }
 
     onRecruited() {
@@ -249,8 +250,9 @@ class Exile {
         document.getElementsByClassName(this.name + 'Level')[0].innerHTML = this.level;
         const gearCurrencies = firstGearUpgrade.requirements.map(req => req.currency.name);
         const linksCurrencies = firstLinksUpgrade.requirements.map(req => req.currency.name);
-        this.setupHover("Gear", ...gearCurrencies);
-        this.setupHover("Links", ...linksCurrencies);
+        // Use imported hoverUpgrades
+        hoverUpgrades(`${this.name}GearUpgrade`, ...gearCurrencies);
+        hoverUpgrades(`${this.name}LinksUpgrade`, ...linksCurrencies);
     }
 
     rerollExile() {
@@ -270,25 +272,6 @@ class Exile {
         if (expElem) expElem.innerHTML = "0/525";
         const levelElem = document.getElementsByClassName(this.name + 'Level')[0];
         if (levelElem) levelElem.innerHTML = "1";
-    }
-
-    setupHover(upgradeType, firstCurrency, secondCurrency = null) {
-        $(".hover").removeClass("hover");
-        $(`#${this.name}${upgradeType}Upgrade`).off('mouseenter mouseleave');
-        $(`#${this.name}${upgradeType}Upgrade`).hover(
-            function () {
-                $(`.${firstCurrency}`).addClass('hover');
-                if (secondCurrency) {
-                    $(`.${secondCurrency}`).addClass('hover');
-                }
-            },
-            function () {
-                $(`.${firstCurrency}`).removeClass('hover');
-                if (secondCurrency) {
-                    $(`.${secondCurrency}`).removeClass('hover');
-                }
-            }
-        );
     }
 }
 
