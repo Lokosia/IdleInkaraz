@@ -10,6 +10,7 @@ import { showCrafting } from './js/components/crafting/CraftingUI.js';
 import UIManager from './js/components/ui/UIManager.js';
 import { showGuild } from './js/components/exile/ExileUI.js';
 import { showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades } from './js/components/ui/UpgradeUI.js';
+import { initializeLayout } from './js/components/layout/layoutInitializer.js';
 
 //---Snackbar
 /**
@@ -34,6 +35,8 @@ function addClickListener(id, handler) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    initializeLayout();
+
 	setupCurrencyUI(); // Initialize currency UI
 
 	// Initialize the welcome card and add it to the UI

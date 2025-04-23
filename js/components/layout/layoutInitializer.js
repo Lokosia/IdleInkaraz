@@ -1,11 +1,11 @@
 'use strict';
 
-import { createHeaderHTML } from './components/layout/Header.js';
-import { createSidePanelHTML } from './components/layout/SidePanel.js';
-import { createGrid } from './components/layout/Grid.js'; // Import the new Grid function
-import { mainGridConfig } from './components/layout/GridConfig.js'; // Import the grid config
+import { createHeaderHTML } from './Header.js';
+import { createSidePanelHTML } from './SidePanel.js';
+import { createGrid } from './Grid.js'; // Import the new Grid function
+import { mainGridConfig } from './GridConfig.js'; // Import the grid config
 
-document.addEventListener('DOMContentLoaded', () => {
+export function initializeLayout() {
     const headerPlaceholder = document.getElementById('header-placeholder');
     const sidePanelPlaceholder = document.getElementById('side-panel-placeholder');
     const mainGridContainer = document.getElementById('mainGrid'); // Get the main grid container
@@ -40,4 +40,4 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error('Material Design Lite (componentHandler) not found. Ensure MDL script is loaded before this initializer.');
     }
-});
+}
