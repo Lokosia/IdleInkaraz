@@ -121,33 +121,48 @@ const MapCurrencyUpgradeSystem = {
         }
         const level = mapCurrencyUpgradeLevels[idx];
         const rowId = 'MapCurrencyMapUpgrade';
+        const buttonId = 'MapCurrencyMapBtn';
+        // Only create the row if it doesn't exist
         if (!$(`#${rowId}`).length) {
-            $("#UpgradeTable").append(`<tr id="${rowId}"></tr>`);
+            const rowHtml = `<tr id="${rowId}"></tr>`;
+            $("#UpgradeTable").append(rowHtml);
+            // Use generateUpgradeCellsHTML for initial rendering
+            const requirements = `${level.cost} Exalted`;
+            const cellsHTML = generateUpgradeCellsHTML(
+                'MapCurrency',
+                'Map',
+                level.description,
+                '+1.5',
+                requirements,
+                level.buttonText,
+                buttonId
+            );
+            $(`#${rowId}`).html(cellsHTML);
+            // Attach the click handler ONCE
+            const boundHandler = this.buyMapCurrency.bind(this, getUpgradeDropRate, setUpgradeDropRate);
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                btn.onclick = boundHandler;
+            }
+            hoverUpgrades(rowId, "Exalted");
+        } else {
+            // Only update the relevant cells (description, benefit, cost, button text)
+            const row = document.getElementById(rowId);
+            if (row) {
+                // Update description
+                const descCell = row.querySelector('.upgrade-description');
+                if (descCell) descCell.innerHTML = level.description;
+                // Update benefit
+                const benefitCell = row.querySelector('.upgrade-benefit');
+                if (benefitCell) benefitCell.innerHTML = '+1.5';
+                // Update cost
+                const costCell = row.querySelector('.upgrade-cost');
+                if (costCell) costCell.innerHTML = `${level.cost} Exalted`;
+                // Update button text
+                const btn = row.querySelector('button');
+                if (btn) btn.textContent = level.buttonText;
+            }
         }
-        const requirements = `${level.cost} Exalted`;
-
-        // Use generateUpgradeCellsHTML for rendering, passing buttonText
-        const cellsHTML = generateUpgradeCellsHTML(
-            'MapCurrency',
-            'Map',
-            level.description,
-            '+1.5',
-            requirements,
-            level.buttonText,
-            'MapCurrencyMapBtn' // Provide the button ID
-        );
-        // Set the innerHTML of the row
-        $(`#${rowId}`).html(cellsHTML);
-
-        // Attach the listener separately
-        const boundHandler = this.buyMapCurrency.bind(this, getUpgradeDropRate, setUpgradeDropRate);
-        const btn = document.getElementById('MapCurrencyMapBtn');
-        if (btn) {
-            btn.onclick = boundHandler;
-        }
-
-        // Hover effect - Use imported hoverUpgrades
-        hoverUpgrades(rowId, "Exalted");
     },
 
     // getUpgradeDropRate, setUpgradeDropRate, getDivStashTab: Accessors set by Augments.js to interact with shared state.
