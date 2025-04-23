@@ -2,6 +2,7 @@
 // Handles conqueror upgrades system logic and UI
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
+import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
 
 // This function handles the purchase of a conqueror upgrade
 export function buyConqueror(upgradesObj, conqueror) {
@@ -17,7 +18,8 @@ export function buyConqueror(upgradesObj, conqueror) {
 				$(`.${conqueror.name}`).removeClass('hover');
 			}
 		},
-		successMessage: 'Conqueror influence consumed!'
+		successMessage: 'Conqueror influence consumed!',
+		keepHoverOnSuccess: true
 	});
 }
 
@@ -40,19 +42,21 @@ export function renderConquerorUpgrades(upgradesObj, hoverUpgrades) {
 			const description = `Use ${name}'s Exalted Orb`;
 			const benefit = '+1';
 			const cost = `1 ${name}'s Exalted Orb`;
-			const cellsHTML = `
-				<td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="${buttonId}">${buttonText}</button></td>
-				<td class="mdl-data-table__cell--non-numeric">${description}</td>
-				<td class="mdl-data-table__cell--non-numeric">${benefit}</td>
-				<td class="mdl-data-table__cell--non-numeric">${cost}</td>
-			`;
+
+            const cellsHTML = generateUpgradeCellsHTML(
+                name,           // upgradeKey
+                'Conqueror',    // upgradeType
+                description,
+                benefit,
+                cost,           // requirements text
+                buttonText,
+                buttonId
+            );
+
 			row.html(cellsHTML);
 			const table = $('#UpgradeTable');
-			if (table.children().length > 0) {
-				table.prepend(row);
-			} else {
-				table.append(row);
-			}
+			table.prepend(row);
+            
 			document.getElementById(buttonId)?.addEventListener('click', () => buyConqueror(upgradesObj, currency));
 		}
 		if (currency && currency.total >= 1) {
