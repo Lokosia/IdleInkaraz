@@ -3,7 +3,10 @@ import { currencyData, currencyMap } from './js/components/currency/CurrencyData
 import { updateCurrencyClass, setupCurrencyUI, showDefaultCurrencyView, showFlippingView } from './js/components/currency/CurrencyUI.js';
 import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
-import Upgrades from './js/components/upgrades/Augments.js';
+import Upgrades, { upgradeConfigs, renderUpgradeRow } from './js/components/upgrades/Augments.js';
+import MapCurrencyUpgradeSystem from './js/components/upgrades/MapCurrency/MapCurrencyUpgradeSystem.js';
+import { renderConquerorUpgrades } from './js/components/upgrades/Conquerors/ConquerorUpgrades.js';
+import { syncStashTabStateToUpgrades } from './js/components/upgrades/StashTab/StashTabUpgrades.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { createWelcomeCard } from './js/components/ui/Cards.js';
 import { showCrafting } from './js/components/crafting/CraftingUI.js';
@@ -157,8 +160,6 @@ setInterval(function gameTick() {
 			processCurrencyOperation('rollCurrency', exileData[i]);
 		}
 	}
-	processCurrencyOperation('sellCurrency');
-	processCurrencyOperation('buyCurrency');
 	updateCurrencyClass();
 }, 100);
 
@@ -210,6 +211,33 @@ setInterval(function delveLoadingBarAnimate() {
         console.error('delveLoader element not found.');
     }
 }, 100);
+
+// --- Upgrade/UI/Flipping Loop ---
+setInterval(function updateTick() {
+	for (const cfg of upgradeConfigs) {
+		renderUpgradeRow(cfg, typeof totalLevel !== 'undefined' ? totalLevel : 0);
+	}
+	MapCurrencyUpgradeSystem.showOrUpdateMapCurrencyUpgrade(
+		MapCurrencyUpgradeSystem.getUpgradeDropRate,
+		MapCurrencyUpgradeSystem.setUpgradeDropRate
+	);
+	renderConquerorUpgrades(Upgrades, hoverUpgrades);
+	// Update Flipping Speed display in the Flipping tab
+	const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
+	if (flipSpeedDisplayElem) {
+		flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
+	}
+	// Run map currency logic
+	MapCurrencyUpgradeSystem.rollMapCurrency(
+		MapCurrencyUpgradeSystem.getUpgradeDropRate,
+		MapCurrencyUpgradeSystem.getDivStashTab
+	);
+	// Flipping logic: process buy/sell every 500ms (flipping speed applies per tick)
+	processCurrencyOperation('sellCurrency');
+	processCurrencyOperation('buyCurrency');
+	// Synchronize tab state for compatibility
+	syncStashTabStateToUpgrades(Upgrades);
+}, 500);
 
 //---Unlocking Exiles (moved from exiles.js)
 function recruitExile(exileName) {

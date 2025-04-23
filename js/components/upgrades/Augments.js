@@ -4,16 +4,13 @@ import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new handler
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
+import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
 	// State
 	upgradeDropRate: 0,
 	sulphiteDropRate: 350,
-	currencyStashTab: 0,
-	delveStashTab: 0,
-	quadStashTab: 0,
-	divStashTab: 0,
 	nikoScarab: 0,
 	iiqDropRate: 1,
 	iiqCost: 10,
@@ -23,10 +20,6 @@ const Upgrades = {
 	flippingSpeedCost: 1,
 
 	// UI state flags
-	currencyTabShown: false,
-	delveTabShown: false,
-	quadTabShown: false,
-	divTabShown: false,
 	delveScarabShown: false,
 	iiqUpgradeShown: false,
 	incubatorUpgradeShown: false,
@@ -34,44 +27,6 @@ const Upgrades = {
 
 	// Methods
 	noOp() { },
-
-	// Methods for specific upgrades that need special handling
-	buyCurrencyTab() {
-		this.handleStashTabUpgrade('currency', currencyMap['StackedDeck'], 5);
-	},
-	buyDelveTab() {
-		this.handleStashTabUpgrade('delve', currencyMap['StackedDeck'], 50, currencyMap['Annulment'], 10, () => this.delveScarab());
-	},
-	buyQuadTab() {
-		this.handleStashTabUpgrade('quad', currencyMap['Eternal'], 1);
-	},
-	buyDivTab() {
-		this.handleStashTabUpgrade('div', currencyMap['Annulment'], 50, currencyMap['Exalted'], 1);
-	},
-
-	// Generic stash tab upgrade handler
-	handleStashTabUpgrade(tabType, currency1, amount1, currency2, amount2, extraAction) {
-		const requirements = [{ currency: currency1, amount: amount1 }];
-		if (currency2) {
-			requirements.push({ currency: currency2, amount: amount2 });
-		}
-
-		handleGenericUpgrade({
-			requirements,
-			onSuccess: () => {
-				this[`${tabType}StashTab`] = 1;
-				this.upgradeDropRate += 1;
-				if (extraAction) extraAction(); // Call extra action on success
-			},
-			updateUI: () => {
-				$(`.${currency1.name}`).removeClass("hover");
-				if (currency2) $(`.${currency2.name}`).removeClass("hover");
-				$(`#${tabType}Tab`).remove();
-				document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = this.upgradeDropRate.toFixed(1);
-			},
-			successMessage: "Stash tab purchased!"
-		});
-	},
 
 	// Scarab upgrade handlers
 	delveScarab() {
@@ -89,6 +44,10 @@ const Upgrades = {
 MapCurrencyUpgradeSystem.getUpgradeDropRate = () => Upgrades.upgradeDropRate;
 MapCurrencyUpgradeSystem.setUpgradeDropRate = val => { Upgrades.upgradeDropRate = val; };
 MapCurrencyUpgradeSystem.getDivStashTab = () => Upgrades.divStashTab;
+
+// Patch: ensure tab upgrades increase efficiency
+function getUpgradeDropRate() { return Upgrades.upgradeDropRate; }
+function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
 // --- Upgrade Configurations --- 
 const upgradeConfigs = [
@@ -229,80 +188,11 @@ const upgradeConfigs = [
 			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
 		})
 	},
-	{
-		key: 'currencyTab',
-		shownFlag: 'currencyTabShown',
-		unlock: (totalLevel) => totalLevel >= 250,
-		rowId: 'currencyTab',
-		buttonId: 'btn-currency-tab',
-		buttonClass: 'currencyTabButton',
-		buttonText: 'Currency Stash Tab',
-		description: 'Purchase the Currency Stash Tab',
-		benefitClass: '',
-		benefit: () => '+1.0',
-		costClass: '',
-		costText: () => '5 Stacked Deck',
-		requirements: () => [{ currency: currencyMap['StackedDeck'], amount: 5 }],
-		hover: () => hoverUpgrades('currencyTab', 'StackedDeck'),
-		buy: () => Upgrades.buyCurrencyTab()
-	},
-	{
-		key: 'delveTab',
-		shownFlag: 'delveTabShown',
-		unlock: (totalLevel) => totalLevel >= 500,
-		rowId: 'delveTab',
-		buttonId: 'btn-delve-tab',
-		buttonClass: 'delveTabButton',
-		buttonText: 'Delve Stash Tab',
-		description: 'Purchase the Delve Stash Tab',
-		benefitClass: '',
-		benefit: () => '+1.0',
-		costClass: '',
-		costText: () => '50 Stacked Deck<br>10 Orb of Annulment',
-		requirements: () => [
-			{ currency: currencyMap['StackedDeck'], amount: 50 },
-			{ currency: currencyMap['Annulment'], amount: 10 }
-		],
-		hover: () => hoverUpgrades('delveTab', 'StackedDeck', 'Annulment'),
-		buy: () => Upgrades.buyDelveTab()
-	},
-	{
-		key: 'quadTab',
-		shownFlag: 'quadTabShown',
-		unlock: (totalLevel) => totalLevel >= 1000,
-		rowId: 'quadTab',
-		buttonId: 'btn-quad-tab',
-		buttonClass: 'quadTabButton',
-		buttonText: 'Quad Stash Tab',
-		description: 'Purchase the Quad Stash Tab',
-		benefitClass: '',
-		benefit: () => '+1.0',
-		costClass: '',
-		costText: () => '1 Eternal Orb',
-		requirements: () => [{ currency: currencyMap['Eternal'], amount: 1 }],
-		hover: () => hoverUpgrades('quadTab', 'Eternal'),
-		buy: () => Upgrades.buyQuadTab()
-	},
-	{
-		key: 'divTab',
-		shownFlag: 'divTabShown',
-		unlock: (totalLevel) => totalLevel >= 750,
-		rowId: 'divTab',
-		buttonId: 'btn-div-tab',
-		buttonClass: 'divTabButton',
-		buttonText: 'Divination Stash Tab',
-		description: 'Consume (1) Stacked Deck<br>(per tick)',
-		benefitClass: '',
-		benefit: () => '+1.0',
-		costClass: '',
-		costText: () => '50 Orb of Annulment<br>1 Exalted',
-		requirements: () => [
-			{ currency: currencyMap['Annulment'], amount: 50 },
-			{ currency: currencyMap['Exalted'], amount: 1 }
-		],
-		hover: () => hoverUpgrades('divTab', 'Exalted', 'Annulment'),
-		buy: () => Upgrades.buyDivTab()
-	},
+	// Stash tab upgrades (imported)
+	...stashTabUpgradeConfigs.map(cfg => ({
+		...cfg,
+		buy: () => cfg.buy(incUpgradeDropRate)
+	})),
 	{
 		key: 'delveScarab',
 		shownFlag: 'delveScarabShown',
@@ -377,8 +267,16 @@ function renderUpgradeRow(cfg, totalLevel) {
 	// Pass totalLevel to unlock if it expects it
 	if (cfg.unlock.length > 0 ? !cfg.unlock(totalLevel) : !cfg.unlock()) return;
 
-	// Create the row element
-	const row = $(`<tr id="${cfg.rowId}"></tr>`);
+	// Only create and append the row if it does not already exist
+	let row = document.getElementById(cfg.rowId);
+	if (!row) {
+		row = document.createElement('tr');
+		row.id = cfg.rowId;
+		// Append the row to the table
+		document.getElementById('UpgradeTable').appendChild(row);
+	} else {
+		row = $(row)[0]; // Ensure it's a DOM element
+	}
 
 	// Evaluate dynamic values
 	const buttonText = typeof cfg.buttonText === 'function' ? cfg.buttonText() : cfg.buttonText;
@@ -398,18 +296,15 @@ function renderUpgradeRow(cfg, totalLevel) {
 	);
 
 	// Set the inner HTML of the row
-	row.html(cellsHTML);
+	$(row).html(cellsHTML);
 
 	// Add CSS classes to specific cells if needed (using the generated HTML structure)
 	if (cfg.benefitClass) {
-		row.children().eq(2).addClass(cfg.benefitClass);
+		$(row).children().eq(2).addClass(cfg.benefitClass);
 	}
 	if (cfg.costClass) {
-		row.children().eq(3).addClass(cfg.costClass);
+		$(row).children().eq(3).addClass(cfg.costClass);
 	}
-
-	// Append the row to the table
-	$("#UpgradeTable").append(row);
 
 	// Apply hover effects
 	cfg.hover();
@@ -421,30 +316,6 @@ function renderUpgradeRow(cfg, totalLevel) {
 	Upgrades[cfg.shownFlag] = true;
 }
 
-// --- Upgrade Loop --- 
-setInterval(function updateTick() {
-	// Render generic upgrades
-	for (const cfg of upgradeConfigs) {
-		renderUpgradeRow(cfg, typeof totalLevel !== 'undefined' ? totalLevel : 0);
-	}
-	MapCurrencyUpgradeSystem.showOrUpdateMapCurrencyUpgrade(
-		MapCurrencyUpgradeSystem.getUpgradeDropRate,
-		MapCurrencyUpgradeSystem.setUpgradeDropRate
-	);
-
-	renderConquerorUpgrades(Upgrades, hoverUpgrades);
-
-	// Update Flipping Speed display in the Flipping tab
-	const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
-	if (flipSpeedDisplayElem) {
-		flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
-	}
-
-	// Run map currency logic
-	MapCurrencyUpgradeSystem.rollMapCurrency(
-		MapCurrencyUpgradeSystem.getUpgradeDropRate,
-		MapCurrencyUpgradeSystem.getDivStashTab
-	);
-}, 500);
+export { upgradeConfigs, renderUpgradeRow };
 
 export default Upgrades;
