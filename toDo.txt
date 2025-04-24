@@ -61,3 +61,7 @@ rework map upgrades like alch/scour/divstashtab works, by not just giving curren
 add analytics
 
 differ how upgrade flipping speed works - now it increases batch size? we can add upgrade to increase exactly speed
+
+rebalance
+
+leagues as separate mechanics

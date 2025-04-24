@@ -1,6 +1,12 @@
 // Currency configuration data
 
-// Base currency configuration with all trading parameters
+/**
+ * Array of configuration objects for all base game currencies.
+ * Each object defines the currency's name, drop rate, trading parameters, and display name.
+ * Used throughout the game for currency logic, trading, and UI.
+ *
+ * @type {Array<{name: string, rate: number, sellRate: number, buyRate: number, tradingCurrency: string, displayName: string, sellGain?: number, sellLost?: number, buyGain?: number, buyLost?: number}>}
+ */
 const CURRENCY_CONFIG = [
     { name: 'Transmutation', rate: 0.0020831, sellRate: 16, buyRate: 15, tradingCurrency: 'Chaos', displayName: "Orb of Transmutation" },
     { name: 'Armourer', rate: 0.0020827, sellRate: 15, buyRate: 14, tradingCurrency: 'Chaos', displayName: "Armourer's Scrap" },

@@ -10,6 +10,21 @@ import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
 import State from '../../../State.js';
 
+/**
+ * MapCurrencyUpgradeSystem centralizes all map currency upgrade logic and state for the game.
+ * Handles upgrade purchases, currency consumption, and UI updates for map currency drops.
+ * Used by Augments.js to manage map currency upgrades in one place.
+ *
+ * @namespace MapCurrencyUpgradeSystem
+ * @property {number} mappingCurrencyLevel - Current upgrade level for map currency drops.
+ * @property {Function} mapCurrency - Rolls for currency drops from maps, factoring in upgrades.
+ * @property {Function} rollMapCurrency - Consumes required currencies and triggers mapCurrency if requirements are met.
+ * @property {Function} buyMapCurrency - Handles the purchase/upgrade of map currency drop levels, updating state and UI.
+ * @property {Function} showOrUpdateMapCurrencyUpgrade - Renders or updates the UI for the next available map currency upgrade.
+ * @property {Function|null} getUpgradeDropRate - Accessor for global upgrade drop rate (set externally).
+ * @property {Function|null} setUpgradeDropRate - Mutator for global upgrade drop rate (set externally).
+ * @property {Function|null} getDivStashTab - Accessor for Div Stash Tab state (set externally).
+ */
 const MapCurrencyUpgradeSystem = {
     // mappingCurrencyLevel: Tracks the current upgrade level for map currency drops.
     mappingCurrencyLevel: 0,

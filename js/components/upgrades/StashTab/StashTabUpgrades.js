@@ -5,7 +5,19 @@ import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
 
-// State for stash tab upgrades
+/**
+ * State object for stash tab upgrades, including tab ownership and UI flags.
+ *
+ * @typedef {Object} StashTabState
+ * @property {number} currencyStashTab - 1 if owned, 0 otherwise.
+ * @property {number} delveStashTab - 1 if owned, 0 otherwise.
+ * @property {number} quadStashTab - 1 if owned, 0 otherwise.
+ * @property {number} divStashTab - 1 if owned, 0 otherwise.
+ * @property {boolean} currencyTabShown - UI flag for currency tab.
+ * @property {boolean} delveTabShown - UI flag for delve tab.
+ * @property {boolean} quadTabShown - UI flag for quad tab.
+ * @property {boolean} divTabShown - UI flag for div tab.
+ */
 const StashTabState = {
     currencyStashTab: 0,
     delveStashTab: 0,
@@ -18,8 +30,19 @@ const StashTabState = {
     divTabShown: false,
 };
 
-// Generic handler for stash tab upgrades
-// Accepts an optional onUpgrade callback to increment efficiency
+/**
+ * Generic handler for stash tab upgrades.
+ * Accepts an optional onUpgrade callback to increment efficiency.
+ *
+ * @param {string} tabType - The type of tab ('currency', 'delve', 'quad', 'div').
+ * @param {Object} currency1 - The first currency object required.
+ * @param {number} amount1 - Amount of the first currency required.
+ * @param {Object} [currency2] - The second currency object required (optional).
+ * @param {number} [amount2] - Amount of the second currency required (optional).
+ * @param {Function} [extraAction] - Optional extra action to perform on success.
+ * @param {Function} [onUpgrade] - Optional callback to increment efficiency.
+ * @returns {void}
+ */
 function handleStashTabUpgrade(tabType, currency1, amount1, currency2, amount2, extraAction, onUpgrade) {
     const requirements = [{ currency: currency1, amount: amount1 }];
     if (currency2) {
@@ -56,7 +79,12 @@ function buyDivTab(onUpgrade) {
     handleStashTabUpgrade('div', currencyMap['Annulment'], 50, currencyMap['Exalted'], 1, undefined, onUpgrade);
 }
 
-// Upgrade configs for each tab
+/**
+ * Array of configuration objects for each stash tab upgrade.
+ * Each object defines unlock logic, UI row IDs, button text, requirements, and buy logic.
+ *
+ * @type {Array<Object>}
+ */
 const stashTabUpgradeConfigs = [
     {
         key: 'currencyTab',
@@ -134,7 +162,12 @@ const stashTabUpgradeConfigs = [
     }
 ];
 
-// Synchronize StashTabState with Upgrades for compatibility
+/**
+ * Synchronizes StashTabState with the main Upgrades object for compatibility.
+ *
+ * @param {Object} Upgrades - The main Upgrades state object.
+ * @returns {void}
+ */
 function syncStashTabStateToUpgrades(Upgrades) {
     Upgrades.currencyStashTab = StashTabState.currencyStashTab;
     Upgrades.delveStashTab = StashTabState.delveStashTab;
