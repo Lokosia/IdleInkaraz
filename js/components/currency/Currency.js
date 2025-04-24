@@ -1,6 +1,6 @@
 // Currency.js - Currency class module
 import Upgrades from '../upgrades/Augments.js';
-import { exileMap } from '../../../Main.js';
+import State from '../../State.js';
 import { currencyMap } from './CurrencyData.js';
 
 /**
@@ -93,7 +93,7 @@ class Currency {
     // TRADING EXECUTION METHODS
     // -------------------------
     sellCurrency() {
-        if (exileMap['Singularity'] && exileMap['Singularity'].level >= 1 && this.sellPercent == 1) {
+        if (State.exileMap['Singularity'] && State.exileMap['Singularity'].level >= 1 && this.sellPercent == 1) {
             for (let i = 0; i < Upgrades.flippingSpeed; i++) {
                 const targetCurrency = currencyMap[this.tradingCurrency];
                 if (this.total >= this.sellLost) {
@@ -105,7 +105,7 @@ class Currency {
     }
 
     buyCurrency() {
-        if (exileMap['Singularity'] && exileMap['Singularity'].level >= 1 && this.buyPercent == 1) {
+        if (State.exileMap['Singularity'] && State.exileMap['Singularity'].level >= 1 && this.buyPercent == 1) {
             for (let i = 0; i < Upgrades.flippingSpeed; i++) {
                 const targetCurrency = currencyMap[this.tradingCurrency];
                 if (targetCurrency.total >= this.buyLost) {

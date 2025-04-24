@@ -1,7 +1,7 @@
 import { handleGenericUpgrade, getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 // Import the refactored function
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
-import { SnackBar, hoverUpgrades } from '../../../Main.js'; // Import hoverUpgrades
+import { SnackBar, hoverUpgrades } from '../../UIInitializer.js'; // Import hoverUpgrades
 
 /**
  * Represents an Exile character in the game

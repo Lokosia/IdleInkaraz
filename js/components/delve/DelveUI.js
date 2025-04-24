@@ -1,8 +1,9 @@
 // DelveUI.js - Contains UI creation and initialization for Delving
 import { fossilData } from './Fossil.js';
 import { UICard } from '../ui/Cards.js';
-import { recruitExile, exileMap } from '../../../Main.js';
+import { recruitExile } from '../../../Main.js';
 import UIManager from '../ui/UIManager.js';
+import State from '../../State.js';
 
 function createMelvinSection(recruitExileFn, melvinObj) {
     const content = `
@@ -11,11 +12,14 @@ function createMelvinSection(recruitExileFn, melvinObj) {
         Efficiency: <span class="MelvinEfficiency">x0</span><br>
         Links: <span class="MelvinLinks">3L</span>
     `;
-    const actionSections = [
-        { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRecruitBtn">Recruit Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinBuy' },
-        { content: '500 Total Levels Required<br>Delve Stash Tab Required', className: 'mdl-card__actions mdl-card--border MelvinHide' },
-        { content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRerollBtn">Reroll Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinRerollButton hidden' }
-    ];
+    const actionSections = [];
+    // Only show recruit button if Melvin is not owned
+    if (!melvinObj?.owned) {
+        actionSections.push({ content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRecruitBtn">Recruit Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinBuy' });
+        actionSections.push({ content: '500 Total Levels Required<br>Delve Stash Tab Required', className: 'mdl-card__actions mdl-card--border MelvinHide' });
+    }
+    // Always show reroll button (but keep hidden if not available)
+    actionSections.push({ content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRerollBtn">Reroll Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinRerollButton hidden' });
     const card = UICard.create({
         id: 'melvin-card',
         title: "Delvin' Melvin",
@@ -89,7 +93,7 @@ function initDelvingUI() {
     container.innerHTML = '';
 
     // Add Delving sections
-    container.appendChild(createMelvinSection(recruitExile, exileMap['Melvin']));
+    container.appendChild(createMelvinSection(recruitExile, State.exileMap['Melvin']));
     container.appendChild(createDeepDelvingSection());
     container.appendChild(createFossilsSection());
 

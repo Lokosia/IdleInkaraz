@@ -57,8 +57,21 @@ export function createGrid(container, cardConfigs) {
     // Ensure MDL components within the newly added cards are upgraded
     if (typeof componentHandler !== 'undefined') {
         // Upgrade elements within the container specifically
-        componentHandler.upgradeElements(container.querySelectorAll('.mdl-js-button, .mdl-js-data-table')); // Add other MDL classes as needed
+        componentHandler.upgradeElements(container.querySelectorAll('.mdl-js-button, .mdl-js-data-table'));
     } else {
         console.error('Material Design Lite (componentHandler) not found during grid creation.');
+    }
+
+    // --- Ensure dynamic buttons get their click handlers ---
+    // Attach recruit-singularity click handler if button exists
+    const recruitBtn = container.querySelector('#recruit-singularity');
+    if (recruitBtn) {
+        recruitBtn.addEventListener('click', () => {
+            if (typeof window.recruitExile === 'function') {
+                window.recruitExile('Singularity');
+            } else if (typeof recruitExile === 'function') {
+                recruitExile('Singularity');
+            }
+        });
     }
 }

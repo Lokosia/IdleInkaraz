@@ -1,4 +1,5 @@
-import { exileMap, totalLevel, SnackBar, hoverUpgrades } from '../../../Main.js'
+import State from '../../State.js';
+import { SnackBar, hoverUpgrades } from '../../UIInitializer.js';
 import { currencyMap, currencyData } from '../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new handler
@@ -68,14 +69,14 @@ const upgradeConfigs = [
 		...cfg,
 		buy: () => cfg.buy(incUpgradeDropRate)
 	})),
+
 	DelveScarabUpgradeConfig
 ];
 
 // --- Generic Upgrade Renderer --- 
 function renderUpgradeRow(cfg, totalLevel) {
 	if (Upgrades[cfg.shownFlag]) return;
-	// Pass totalLevel to unlock if it expects it
-	if (cfg.unlock.length > 0 ? !cfg.unlock(totalLevel) : !cfg.unlock()) return;
+	if (!cfg.unlock(totalLevel)) return;
 
 	// Only create and append the row if it does not already exist
 	let row = document.getElementById(cfg.rowId);

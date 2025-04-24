@@ -4,11 +4,11 @@
 // Used by Augments.js to manage map currency upgrades in one place.
 
 import { currencyMap, currencyData } from '../../currency/CurrencyData.js';
-import { SnackBar, hoverUpgrades } from '../../../../Main.js'; // Import hoverUpgrades
+import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
-import { exileMap } from '../../../../Main.js';
+import State from '../../../State.js';
 
 const MapCurrencyUpgradeSystem = {
     // mappingCurrencyLevel: Tracks the current upgrade level for map currency drops.
@@ -112,7 +112,7 @@ const MapCurrencyUpgradeSystem = {
     // showOrUpdateMapCurrencyUpgrade(): Renders or updates the UI for the next available map currency upgrade.
     showOrUpdateMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate) {
         // Only show if Ascendant is at least level 68
-        if (!exileMap['Ascendant'] || exileMap['Ascendant'].level < 68) {
+        if (!State.exileMap['Ascendant'] || State.exileMap['Ascendant'].level < 68) {
             return;
         }
         const idx = this.mappingCurrencyLevel;

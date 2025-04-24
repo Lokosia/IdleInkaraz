@@ -1,6 +1,6 @@
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
-import { hoverUpgrades } from '../../../../Main.js';
+import { hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
 
 // This function will receive the Upgrades object reference
@@ -40,7 +40,7 @@ export default function createFlipSpeedUpgrade(Upgrades) {
         }
         const benefitCell = row.querySelector('.flipSpeedMulti');
         if (benefitCell) {
-          benefitCell.innerHTML = `+${formatEfficiency(Upgrades.flippingSpeed)}`;
+          benefitCell.innerHTML = `+${formatEfficiency(0.5)}`;
         }
       }
     })

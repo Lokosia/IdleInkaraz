@@ -2,7 +2,7 @@
 // Handles logic and configs for stash tab upgrades
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
-import { hoverUpgrades, SnackBar } from '../../../../Main.js';
+import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
 
 // State for stash tab upgrades

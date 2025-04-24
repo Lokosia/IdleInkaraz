@@ -1,6 +1,6 @@
 import { UICard } from '../ui/Cards.js';
 import { currencyMap } from '../currency/CurrencyData.js';
-import { SnackBar } from '../../../Main.js';
+import { SnackBar } from '../../UIInitializer.js';
 import { fossilData } from '../delve/Fossil.js';
 
 // Assuming componentHandler, $, and numeral are globally available

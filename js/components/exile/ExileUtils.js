@@ -1,5 +1,5 @@
 import { currencyMap } from '../currency/CurrencyData.js';
-import { SnackBar } from '../../../Main.js'; // Import SnackBar for notifications
+import { SnackBar } from '../../UIInitializer.js';
 
 // Exile utility functions - Refactored for generic upgrade handling
 

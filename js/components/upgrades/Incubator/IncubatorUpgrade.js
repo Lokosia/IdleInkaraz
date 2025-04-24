@@ -1,7 +1,7 @@
-import { exileMap } from '../../../../Main.js';
+import State from '../../../State.js';
+import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
-import { hoverUpgrades } from '../../../../Main.js';
 import { formatEfficiency } from '../Augments.js';
 
 // These should be provided by the main Upgrades state
@@ -13,7 +13,7 @@ export function setUpgradesRef(ref) {
 const IncubatorUpgradeConfig = {
     key: 'incubator',
     shownFlag: 'incubatorUpgradeShown',
-    unlock: () => exileMap['Ascendant'].level >= 75,
+    unlock: () => State.exileMap['Ascendant'].level >= 75,
     rowId: 'incubatorUpgrade',
     buttonId: 'btn-incubator-upgrade',
     buttonClass: 'incubatorUpgradeButton',

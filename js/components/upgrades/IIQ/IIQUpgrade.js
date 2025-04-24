@@ -1,5 +1,6 @@
 // IIQUpgrade.js - Handles the IIQ (Increased Item Quantity) upgrade config and logic
-import { exileMap, hoverUpgrades } from '../../../../Main.js';
+import State from '../../../State.js';
+import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { formatEfficiency } from '../Augments.js';
@@ -13,7 +14,7 @@ const IIQState = {
 const IIQUpgradeConfig = {
     key: 'iiq',
     shownFlag: 'iiqUpgradeShown',
-    unlock: () => exileMap['Ascendant'].level >= 50,
+    unlock: () => State.exileMap['Ascendant'].level >= 50,
     rowId: 'iiqUpgrade',
     buttonId: 'btn-iiq-upgrade',
     buttonClass: 'iiqUpgradeButton',

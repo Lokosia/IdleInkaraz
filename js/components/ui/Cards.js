@@ -1,7 +1,8 @@
 import { UI_CLASSES } from './UIClasses.js';
 import UIManager from './UIManager.js';
 import { showGuild } from '../exile/ExileUI.js';
-import { exileData, recruitExile } from '../../../Main.js';
+import { recruitExile } from '../../../Main.js';
+import State from '../../State.js';
 
 class UICard {
     static create({ 
@@ -106,7 +107,7 @@ function createWelcomeCard(container) {
         // Directly use the logic from welcome()
         $("#welcomePre").hide();
         UIManager.show('guild');
-        showGuild(exileData, recruitExile);
+        showGuild(State.exileData, recruitExile);
     };
     welcomeCard.querySelector('#create-guild-button').appendChild(createGuildButton);
 

@@ -1,3 +1,4 @@
+import State from './js/State.js';
 import { ExileFactory } from './js/components/exile/ExileFactory.js';
 import { currencyData, currencyMap } from './js/components/currency/CurrencyData.js';
 import { updateCurrencyClass, setupCurrencyUI, showDefaultCurrencyView, showFlippingView } from './js/components/currency/CurrencyUI.js';
@@ -14,57 +15,14 @@ import UIManager from './js/components/ui/UIManager.js';
 import { showGuild } from './js/components/exile/ExileUI.js';
 import { showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades } from './js/components/ui/UpgradeUI.js';
 import { initializeLayout } from './js/components/layout/layoutInitializer.js';
+import { initTestMode } from './js/DebugMode.js';
+import { startGameLoops } from './js/GameLoop.js';
+import { SnackBar, hoverUpgrades } from './js/UIInitializer.js';
+import { addClickListener, processCurrencyOperation } from './js/Utils.js';
 
-//---Snackbar
-/**
- * Displays a temporary notification message to the user
- * Implements a cooldown to prevent message spam
- * 
- * @param {string} input - The message to display in the snackbar
- */
-export function SnackBar(input) {
-	if (snackBarTimer <= 0) {
-		'use strict';
-		var snackbarContainer = document.querySelector('#snackBar');
-		var data = { message: input, timeout: 1500 };
-		snackbarContainer.MaterialSnackbar.showSnackbar(data);
-		snackBarTimer = 1500;
-	}
-}
-
-/**
- * Adds hover effects to highlight related currency elements.
- * @param {string} elementId - The ID of the element to attach the hover listener to.
- * @param {string} currencyClass1 - The CSS class of the first currency element to highlight.
- * @param {string} [currencyClass2] - The CSS class of the second currency element to highlight (optional).
- */
-export function hoverUpgrades(elementId, currencyClass1, currencyClass2) {
-	const element = $(`#${elementId}`);
-	if (!element.length) {
-		console.warn(`Element with ID #${elementId} not found for hover effect.`);
-		return;
-	}
-	// Remove existing hover listeners to prevent duplicates
-	element.off('mouseenter mouseleave');
-	element.hover(
-		function () {
-			$(`.${currencyClass1}`).addClass('hover');
-			if (currencyClass2) {
-				$(`.${currencyClass2}`).addClass('hover');
-			}
-		}, function () {
-			$(`.${currencyClass1}`).removeClass('hover');
-			if (currencyClass2) {
-				$(`.${currencyClass2}`).removeClass('hover');
-			}
-		}
-	);
-}
-
-function addClickListener(id, handler) {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('click', handler);
-}
+// Initialize exileData and exileMap after all imports
+State.exileData = ExileFactory.createAllExiles();
+State.exileMap = Object.fromEntries(State.exileData.map(e => [e.name, e]));
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeLayout();
@@ -83,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addClickListener('nav-guild', () => {
         UIManager.show('guild');
-        showGuild(exileData, recruitExile);
+        showGuild(State.exileData, recruitExile);
     });
     addClickListener('nav-flipping', () => {
         UIManager.show('main');
@@ -95,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addClickListener('nav-crafting', () => {
         UIManager.show('crafting');
-        showCrafting(exileData, Upgrades);
+        showCrafting(State.exileData, Upgrades);
     });
     addClickListener('nav-info', () => {
         UIManager.show('info');
@@ -117,139 +75,21 @@ document.addEventListener('DOMContentLoaded', function () {
     addClickListener('btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord']));
 });
 
-//---Main (global state)
-let totalLevel = 0;
-let dropRate = 0;
-let playTime = 0;
-let snackBarTimer = 0;
-
-//---Define Exiles (module scope, not global)
-const exileData = ExileFactory.createAllExiles();
-const exileMap = Object.fromEntries(exileData.map(e => [e.name, e]));
-
 //---Main game loop
-setInterval(function gameTick() {
-	let tempLevel = 1000;
-	let tempDropRate = 0; // Start efficiency at 0
-	if (Upgrades.upgradeDropRate > 0) tempDropRate += Upgrades.upgradeDropRate;
-	if (Upgrades.incDropRate > 0) tempDropRate += Upgrades.incDropRate;
-	for (let i = 0; i < exileData.length; i++) {
-		const exile = exileData[i];
-		if (exile.level >= 1) {
-			if (exile.name === 'Singularity' || exile.name === 'Artificer') {
-				// Don't add to tempDropRate for special exiles
-			} else {
-				exile.updateExileClass();
-				tempDropRate += exile.dropRate;
-				tempLevel += exile.level;
-				tempLevel += exile.rerollLevel;
-			}
-		}
-	}
-	totalLevel = tempLevel;
-	dropRate = tempDropRate;
-	document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(totalLevel).format('0,0');
-	document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(dropRate).format('0,0.0');
-	snackBarTimer -= 100;
-	playTime += 0.1;
-	document.getElementById("timePlayed").innerHTML = numeral(playTime).format('00:00:00');
+startGameLoops();
 
-	// --- Currency operations (merged from currencyManager.js) ---
-	for (let i = 0; i < exileData.length; i++) {
-		if (exileData[i].dropRate > 0) {
-			processCurrencyOperation('rollCurrency', exileData[i]);
-		}
-	}
-	updateCurrencyClass();
-}, 100);
-
-//---Delve system integration---
-setInterval(function delveTick() {
-	if (exileMap['Melvin'] && exileMap['Melvin'].level >= 1 && currencyMap['Sulphite']) {
-		delve(currencyMap['Sulphite'], exileMap['Melvin'], Upgrades.upgradeDropRate || 0);
-	}
-}, 2500);
-
-setInterval(function delveLoadingBarAnimate() {
-    const { delveLoadingProgress, isDelving } = getDelveState(); // Check if delving is active
-    const delveLoader = document.querySelector('#delveLoader');
-
-    if (!isDelving) {
-        // Reset progress bar if delving is not active
-        if (delveLoader && delveLoader.MaterialProgress) {
-            delveLoader.MaterialProgress.setProgress(0);
-        }
-        return;
-    }
-
-    if (delveLoader) {
-        delveLoader.classList.remove('hidden'); // Ensure the progress bar is visible
-        delveLoader.style.display = 'block'; // Explicitly set display to block
-
-        if (typeof componentHandler !== 'undefined') {
-            try {
-                componentHandler.upgradeElement(delveLoader);
-            } catch (e) {
-                console.error('Error upgrading MDL component:', e);
-            }
-        }
-
-        if (delveLoader.MaterialProgress) {
-            const increment = 100 / (2500 / 100); // Calculate increment for 2.5 seconds
-            const newProgress = Math.min(delveLoadingProgress + increment, 100);
-            setDelveLoadingProgress(newProgress);
-            delveLoader.MaterialProgress.setProgress(newProgress);
-
-            if (newProgress >= 100) {
-                setDelveLoadingProgress(0);
-                delveLoader.MaterialProgress.setProgress(0);
-            }
-        } else {
-            console.warn('MaterialProgress is not initialized on delveLoader.');
-        }
-    } else {
-        console.error('delveLoader element not found.');
-    }
-}, 100);
-
-// --- Upgrade/UI/Flipping Loop ---
-setInterval(function updateTick() {
-	for (const cfg of upgradeConfigs) {
-		renderUpgradeRow(cfg, typeof totalLevel !== 'undefined' ? totalLevel : 0);
-	}
-	MapCurrencyUpgradeSystem.showOrUpdateMapCurrencyUpgrade(
-		MapCurrencyUpgradeSystem.getUpgradeDropRate,
-		MapCurrencyUpgradeSystem.setUpgradeDropRate
-	);
-	renderConquerorUpgrades(Upgrades, hoverUpgrades);
-	// Update Flipping Speed display in the Flipping tab
-	const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
-	if (flipSpeedDisplayElem) {
-		flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
-	}
-	// Run map currency logic
-	MapCurrencyUpgradeSystem.rollMapCurrency(
-		MapCurrencyUpgradeSystem.getUpgradeDropRate,
-		MapCurrencyUpgradeSystem.getDivStashTab
-	);
-	// Flipping logic: process buy/sell every 500ms (flipping speed applies per tick)
-	processCurrencyOperation('sellCurrency');
-	processCurrencyOperation('buyCurrency');
-	// Synchronize tab state for compatibility
-	syncStashTabStateToUpgrades(Upgrades);
-}, 500);
 
 //---Unlocking Exiles (moved from exiles.js)
 function recruitExile(exileName) {
-	const exile = exileMap[exileName];
+	const exile = State.exileMap[exileName];
 	if (!exile) {
 		console.error(`Exile ${exileName} not found`);
 		return;
 	}
 	// Check level requirement
-	if (totalLevel < exile.levelRequirement) {
+	if (State.totalLevel < exile.levelRequirement) {
 		// Corrected template literal syntax
-		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${totalLevel}`);
+		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${State.totalLevel}`);
 		return;
 	}
 	// Check special requirement (e.g., stash tabs for Melvin)
@@ -303,37 +143,4 @@ function recruitExile(exileName) {
 	}
 }
 
-function processCurrencyOperation(operation, param) {
-	for (let i = 0; i < currencyData.length; i++) {
-		if (param !== undefined) {
-			currencyData[i][operation](param);
-		} else {
-			currencyData[i][operation]();
-		}
-	}
-}
-
-function initTestMode() {
-	// Set 99999 of every currency
-	currencyData.forEach(currency => {
-		currency.total = 99999;
-	});
-
-	// Set 99999 of every fossil
-	fossilData.forEach(fossil => {
-		fossil.total = 99999;
-		// Update the UI if the element exists
-		const el = document.getElementsByClassName(fossil.name + 'Total')[0];
-		if (el) {
-			el.innerHTML = numeral(fossil.total).format('0,0', Math.floor);
-		}
-	});
-	console.log('Test mode initialized with 99999 of each currency and fossil');
-}
-
-// Automatically run test mode if URL has ?test=true parameter
-if (window.location.search.includes('test=true')) {
-	document.addEventListener('DOMContentLoaded', initTestMode);
-}
-
-export { exileMap, exileData, totalLevel, recruitExile };
+export { recruitExile, processCurrencyOperation };
