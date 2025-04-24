@@ -104,7 +104,8 @@ const MapCurrencyUpgradeSystem = {
                     $('#MapCurrencyMapUpgrade').remove();
                 }
             },
-            successMessage: "Map strategy upgraded!"
+            successMessage: "Map strategy upgraded!",
+            keepHoverOnSuccess: true
         });
     },
 
