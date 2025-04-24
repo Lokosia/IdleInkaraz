@@ -1,10 +1,15 @@
 'use strict';
-
 import { createHeaderHTML } from './Header.js';
 import { createSidePanelHTML } from './SidePanel.js';
 import { createGrid } from './Grid.js'; // Import the new Grid function
 import { mainGridConfig } from './GridConfig.js'; // Import the grid config
 
+/**
+ * Initializes the main application layout: header, side panel, and main grid.
+ * Injects HTML, upgrades MDL components, and hides the loader when ready.
+ *
+ * @returns {void}
+ */
 export function initializeLayout() {
     const headerPlaceholder = document.getElementById('header-placeholder');
     const sidePanelPlaceholder = document.getElementById('side-panel-placeholder');

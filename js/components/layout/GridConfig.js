@@ -1,3 +1,15 @@
+/**
+ * mainGridConfig defines the configuration for the main UI grid layout.
+ * Each object in the array represents a card with its own layout, content, and actions.
+ *
+ * @type {Array<Object>}
+ * @property {string} id - Unique DOM id for the card.
+ * @property {string} gridCols - CSS classes for grid column sizing.
+ * @property {string} cssClasses - Additional CSS classes for styling.
+ * @property {string} title - Card title (can include HTML).
+ * @property {string} contentTemplate - HTML content for the card body.
+ * @property {Array<Object>} actions - List of action/button/text configs for the card.
+ */
 export const mainGridConfig = [
     {
         id: 'divSingularity',

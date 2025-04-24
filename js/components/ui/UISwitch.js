@@ -1,6 +1,21 @@
 import { UI_CLASSES } from './UIClasses.js';
 
+/**
+ * UISwitch provides a static method to create a Material Design Lite switch (toggle) UI component.
+ *
+ * @class
+ */
 export class UISwitch {
+    /**
+     * Creates a switch (toggle) DOM element with the given configuration.
+     * @param {Object} options - Switch configuration options.
+     * @param {string} options.id - The DOM id for the input element.
+     * @param {string} options.text - The label text to display next to the switch.
+     * @param {Function} options.onChange - Callback for the input's oninput event.
+     * @param {Array<string>} [options.extraClasses] - Extra CSS classes for the label.
+     * @param {boolean} [options.checked=false] - Whether the switch is initially checked.
+     * @returns {HTMLElement} The switch label DOM element.
+     */
     static create({ 
         id, 
         text, 

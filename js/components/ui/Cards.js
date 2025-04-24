@@ -4,7 +4,25 @@ import { showGuild } from '../exile/ExileUI.js';
 import { recruitExile } from '../../../Main.js';
 import State from '../../State.js';
 
+/**
+ * UICard provides static methods to create flexible card UI components.
+ * Supports title, content, actions, and multiple action sections.
+ *
+ * @class
+ */
 class UICard {
+    /**
+     * Creates a card DOM element with the given configuration.
+     * @param {Object} options - Card configuration options.
+     * @param {string} [options.id] - Card DOM id.
+     * @param {string} [options.title] - Card title.
+     * @param {string|Node} [options.content] - Card content (HTML string or DOM node).
+     * @param {string|Node} [options.actions] - Legacy single actions (HTML string or DOM node).
+     * @param {Array<{content: string|Node, className: string}>} [options.actionSections] - Multiple action sections.
+     * @param {string} [options.size] - Card size ('full', 'half', 'third').
+     * @param {Array<string>} [options.extraClasses] - Extra CSS classes.
+     * @returns {HTMLElement} The card DOM element.
+     */
     static create({ 
         id = '', 
         title = '', 
@@ -41,6 +59,11 @@ class UICard {
         return card;
     }
 
+    /**
+     * Creates the title section for a card.
+     * @param {string} text - Title text.
+     * @returns {HTMLElement} The title section DOM element.
+     */
     static createTitle(text) {
         const titleDiv = document.createElement('div');
         titleDiv.className = UI_CLASSES.card.title;
@@ -53,6 +76,11 @@ class UICard {
         return titleDiv;
     }
 
+    /**
+     * Creates the content section for a card.
+     * @param {string|Node} content - Content HTML or DOM node.
+     * @returns {HTMLElement} The content section DOM element.
+     */
     static createContent(content) {
         const contentDiv = document.createElement('div');
         contentDiv.className = UI_CLASSES.card.supporting;
@@ -66,10 +94,21 @@ class UICard {
         return contentDiv;
     }
 
+    /**
+     * Creates the actions section for a card (legacy single actions).
+     * @param {string|Node} actions - Actions HTML or DOM node.
+     * @returns {HTMLElement} The actions section DOM element.
+     */
     static createActions(actions) {
         return this.createActionSection(actions, UI_CLASSES.card.actions);
     }
     
+    /**
+     * Creates an action section for a card.
+     * @param {string|Node} content - Action section content.
+     * @param {string} [className] - CSS class for the section.
+     * @returns {HTMLElement} The action section DOM element.
+     */
     static createActionSection(content, className = UI_CLASSES.card.actions) {
         const actionDiv = document.createElement('div');
         actionDiv.className = className;
@@ -84,6 +123,13 @@ class UICard {
     }
 }
 
+/**
+ * Creates and appends the welcome card to the given container.
+ * Includes a button to start the guild and show the guild UI.
+ *
+ * @param {HTMLElement} container - The DOM element to append the welcome card to.
+ * @returns {HTMLElement} The welcome card DOM element.
+ */
 function createWelcomeCard(container) {
     const welcomeCard = UICard.create({
         id: 'welcome-card',

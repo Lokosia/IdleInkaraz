@@ -1,3 +1,11 @@
+/**
+ * Renders a grid of card components into the given container based on the provided configuration.
+ * Handles Material Design Lite (MDL) upgrades and dynamic button event wiring.
+ *
+ * @param {HTMLElement} container - The DOM element to render the grid into.
+ * @param {Array<Object>} cardConfigs - Array of card configuration objects (id, title, contentTemplate, actions, etc).
+ * @returns {void}
+ */
 export function createGrid(container, cardConfigs) {
     const fragment = document.createDocumentFragment();
 
