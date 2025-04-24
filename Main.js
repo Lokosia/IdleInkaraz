@@ -78,6 +78,13 @@ document.addEventListener('DOMContentLoaded', function () {
 //---Main game loop
 startGameLoops();
 
+/**
+ * Attempts to recruit an exile by name, checking level and special requirements.
+ * Updates state and UI, and shows feedback via SnackBar.
+ *
+ * @param {string} exileName - The name of the exile to recruit.
+ * @returns {void}
+ */
 function recruitExile(exileName) {
 	const exile = State.exileMap[exileName];
 	if (!exile) {
