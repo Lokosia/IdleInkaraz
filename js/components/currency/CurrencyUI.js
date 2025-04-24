@@ -1,6 +1,7 @@
-// CurrencyUI.js - Handles all currency-related UI rendering and events
+import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
 
+// CurrencyUI.js - Handles all currency-related UI rendering and events
 function toggleCurrencyOperation(currency, operation) {
     const method = operation === 'sell' ? 'sellSetCurrency' : 'buySetCurrency';
     const sliderId = `${currency.name}${operation.charAt(0).toUpperCase() + operation.slice(1)}Slider`;

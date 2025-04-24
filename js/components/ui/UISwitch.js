@@ -1,4 +1,6 @@
-class UISwitch {
+import { UI_CLASSES } from './UIClasses.js';
+
+export class UISwitch {
     static create({ 
         id, 
         text, 

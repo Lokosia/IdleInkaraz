@@ -1,3 +1,4 @@
+import { UI_CLASSES } from './UIClasses.js';
 import UIManager from './UIManager.js';
 import { showGuild } from '../exile/ExileUI.js';
 import { exileData, recruitExile } from '../../../Main.js';

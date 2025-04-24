@@ -1,4 +1,4 @@
-const UI_CLASSES = {
+export const UI_CLASSES = {
     button: {
         base: 'mdl-button mdl-js-button',
         raised: 'mdl-button--raised',
