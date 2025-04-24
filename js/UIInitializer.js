@@ -1,5 +1,12 @@
 import State from './State.js';
 
+/**
+ * Displays a Material Design snackbar notification with the given message.
+ * Prevents overlapping snackbars using a timer in State.
+ *
+ * @param {string} input - The message to display in the snackbar.
+ * @returns {void}
+ */
 export function SnackBar(input) {
 	if (State.snackBarTimer <= 0) {
 		'use strict';
@@ -10,6 +17,15 @@ export function SnackBar(input) {
 	}
 }
 
+/**
+ * Adds hover effects to an upgrade row, highlighting the relevant currency classes.
+ * Removes previous listeners to prevent duplicates.
+ *
+ * @param {string} elementId - The DOM element ID for the upgrade row.
+ * @param {string} currencyClass1 - The first currency class to highlight.
+ * @param {string} [currencyClass2] - The second currency class to highlight (optional).
+ * @returns {void}
+ */
 export function hoverUpgrades(elementId, currencyClass1, currencyClass2) {
 	const element = $(`#${elementId}`);
 	if (!element.length) {

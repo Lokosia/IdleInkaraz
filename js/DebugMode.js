@@ -1,6 +1,13 @@
 import { currencyData } from './components/currency/CurrencyData.js';
 import { fossilData } from './components/delve/Fossil.js';
 
+/**
+ * Initializes test mode by setting all currencies and fossils to 99,999.
+ * Updates the UI for fossil totals if elements exist.
+ * Intended for debugging and development; auto-runs if URL contains ?test=true.
+ *
+ * @returns {void}
+ */
 function initTestMode() {
 	// Set 99999 of every currency
 	currencyData.forEach(currency => {

@@ -10,6 +10,15 @@ import { processCurrencyOperation } from '../Main.js';
 import { hoverUpgrades } from '../js/UIInitializer.js';
 import State from './State.js';
 
+/**
+ * Starts all main game loops, including:
+ * - Main game tick (exile progression, currency drops, UI updates)
+ * - Delve system tick
+ * - Delve loading bar animation
+ * - Upgrade/UI/flipping logic
+ *
+ * @returns {void}
+ */
 function startGameLoops() {
     // Main game loop
     setInterval(function gameTick() {
