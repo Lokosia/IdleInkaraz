@@ -5,6 +5,7 @@ import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
 import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';
+import { IIQUpgradeConfig, IIQState } from './IIQ/IIQUpgrade.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -12,8 +13,7 @@ const Upgrades = {
 	upgradeDropRate: 0,
 	sulphiteDropRate: 350,
 	nikoScarab: 0,
-	iiqDropRate: 1,
-	iiqCost: 10,
+	// Removed iiqDropRate and iiqCost, now in IIQState
 	incDropRate: 0,
 	incubatorCost: 10,
 	flippingSpeed: 1,
@@ -21,7 +21,7 @@ const Upgrades = {
 
 	// UI state flags
 	delveScarabShown: false,
-	iiqUpgradeShown: false,
+	iiQUpgradeShown: false, // Keep for UI, but state is in IIQState
 	incubatorUpgradeShown: false,
 	flipSpeedUpgradeShown: false,
 
@@ -51,55 +51,7 @@ function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
 // --- Upgrade Configurations --- 
 const upgradeConfigs = [
-	{
-		key: 'iiq',
-		shownFlag: 'iiqUpgradeShown',
-		unlock: () => exileMap['Ascendant'].level >= 50,
-		rowId: 'iiqUpgrade',
-		buttonId: 'btn-iiq-upgrade',
-		buttonClass: 'iiqUpgradeButton',
-		buttonText: 'IIQ Gear',
-		description: 'Buy Increased Item Quantity gear for exiles',
-		benefitClass: 'iiqDropRate',
-		benefit: () => `+${Upgrades.iiqDropRate.toFixed(1)}`,
-		costClass: 'iiqUpgradeCostDisplay',
-		costText: () => `+${numeral(Upgrades.iiqCost).format('0,0')} Chaos`,
-		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
-		hover: () => hoverUpgrades('iiqUpgrade', 'Chaos'),
-		buy: () => handleGenericUpgrade({
-			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.iiqCost }],
-			onSuccess: () => {
-				Upgrades.iiqCost = Math.floor(Upgrades.iiqCost * 1.4);
-				if (Upgrades.iiqDropRate === 1) {
-					Upgrades.upgradeDropRate += Upgrades.iiqDropRate;
-				} else {
-					Upgrades.upgradeDropRate += 0.1;
-				}
-				Upgrades.iiqDropRate += 0.1;
-			},
-			updateUI: () => {
-				const row = document.getElementById('iiqUpgrade');
-				if (!row) return; // Safety check
-
-				const costCell = row.querySelector('.iiqUpgradeCostDisplay');
-				if (costCell) {
-					costCell.innerHTML = numeral(Upgrades.iiqCost).format('0,0') + ' Chaos';
-				}
-
-				// Update global display separately
-				const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-				if (globalUpgradeRateElem) {
-					 globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
-				}
-
-				const benefitCell = row.querySelector('.iiqDropRate');
-				if (benefitCell) {
-					benefitCell.innerHTML = `+${Upgrades.iiqDropRate.toFixed(1)}`; // Update the benefit cell
-				}
-			},
-			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
-		})
-	},
+	IIQUpgradeConfig,
 	{
 		key: 'incubator',
 		shownFlag: 'incubatorUpgradeShown',
