@@ -2,6 +2,11 @@
 import { Exile } from './Exile.js';
 import { currencyMap } from '../currency/CurrencyData.js';
 
+/**
+ * Gear upgrade configuration array for exiles.
+ * Each object defines the requirements, benefit, and description for a gear upgrade level.
+ * @type {Array<Object>}
+ */
 const gearUpgrades = [
     {
         level: 0,  // First upgrade, applied at gear level 0
@@ -208,6 +213,11 @@ const gearUpgrades = [
     }
 ];
 
+/**
+ * Links upgrade configuration array for exiles.
+ * Each object defines the requirements, benefit, display value, and description for a links upgrade level.
+ * @type {Array<Object>}
+ */
 const linksUpgrades = [
     {
         level: 0,
@@ -296,9 +306,31 @@ const linksUpgrades = [
     }
 ];
 
+/**
+ * ExileFactory provides methods to create standard and special exiles with their upgrade configurations.
+ * Also exposes the default gear and links upgrade arrays.
+ *
+ * @namespace ExileFactory
+ * @property {Array<Object>} gearUpgrades - Default gear upgrade configs.
+ * @property {Array<Object>} linksUpgrades - Default links upgrade configs.
+ * @function createExile - Create a new Exile instance with optional custom upgrades and requirements.
+ * @function createSpecialExile - Create a special Exile with a custom requirement type/value.
+ * @function createStandardExiles - Get an array of all standard exiles.
+ * @function createSpecialExiles - Get an array of all special exiles.
+ * @function createAllExiles - Get an array of all exiles (standard + special).
+ */
 const ExileFactory = {
     gearUpgrades,
     linksUpgrades,
+    /**
+     * Create a new Exile instance.
+     * @param {string} name - Exile's name.
+     * @param {number} [levelRequirement=0] - Total level required to recruit.
+     * @param {Array|null} [specialRequirement=null] - Special recruitment requirement.
+     * @param {Array|null} [customGearUpgrades=null] - Custom gear upgrade configs.
+     * @param {Array|null} [customLinksUpgrades=null] - Custom links upgrade configs.
+     * @returns {Exile} New Exile instance.
+     */
     createExile(name, levelRequirement = 0, specialRequirement = null, customGearUpgrades = null, customLinksUpgrades = null) {
         return new Exile(
             name,
@@ -315,9 +347,21 @@ const ExileFactory = {
             customLinksUpgrades || linksUpgrades
         );
     },
+    /**
+     * Create a special Exile with a custom requirement type/value.
+     * @param {string} name - Exile's name.
+     * @param {number} levelRequirement - Level requirement for recruitment.
+     * @param {string} specialReqType - Type of special requirement (e.g., stash tab).
+     * @param {number} specialReqValue - Value for the special requirement.
+     * @returns {Exile} New special Exile instance.
+     */
     createSpecialExile(name, levelRequirement, specialReqType, specialReqValue) {
         return this.createExile(name, levelRequirement, [specialReqType, specialReqValue]);
     },
+    /**
+     * Get an array of all standard exiles.
+     * @returns {Array<Exile>} Array of standard Exile instances.
+     */
     createStandardExiles() {
         return [
             this.createExile('Ascendant'),
@@ -341,6 +385,10 @@ const ExileFactory = {
             this.createExile('Guardian', 2715),
         ];
     },
+    /**
+     * Get an array of all special exiles.
+     * @returns {Array<Exile>} Array of special Exile instances.
+     */
     createSpecialExiles() {
         return [
             this.createSpecialExile('Melvin', 500, 'delveStashTab', 1),
@@ -348,6 +396,10 @@ const ExileFactory = {
             this.createSpecialExile('Artificer', 1000, 'quadStashTab', 1),
         ];
     },
+    /**
+     * Get an array of all exiles (standard + special).
+     * @returns {Array<Exile>} Array of all Exile instances.
+     */
     createAllExiles() {
         return [
             ...this.createStandardExiles(),

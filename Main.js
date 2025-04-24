@@ -78,8 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
 //---Main game loop
 startGameLoops();
 
-
-//---Unlocking Exiles (moved from exiles.js)
 function recruitExile(exileName) {
 	const exile = State.exileMap[exileName];
 	if (!exile) {

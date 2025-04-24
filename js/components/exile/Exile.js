@@ -4,10 +4,39 @@ import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { SnackBar, hoverUpgrades } from '../../UIInitializer.js'; // Import hoverUpgrades
 
 /**
- * Represents an Exile character in the game
- * Handles progression, upgrades, and UI interactions for a specific character
+ * Represents an Exile character in the game.
+ * Handles progression, upgrades, and UI interactions for a specific character.
+ *
+ * @class
+ * @property {string} name - The name of the exile.
+ * @property {number} level - Current level of the exile.
+ * @property {number} exp - Current experience points.
+ * @property {number} expToLevel - Experience required for next level.
+ * @property {number} dropRate - Efficiency multiplier for the exile.
+ * @property {number} gear - Current gear upgrade level.
+ * @property {number} links - Current links upgrade level.
+ * @property {number} rerollLevel - Number of times the exile has been rerolled (prestiged).
+ * @property {number} levelRequirement - Total level required to recruit this exile.
+ * @property {Array|null} specialRequirement - Special requirement for recruitment (e.g., stash tab).
+ * @property {Array} gearUpgrades - List of gear upgrade configurations.
+ * @property {Array} linksUpgrades - List of links upgrade configurations.
  */
 class Exile {
+    /**
+     * Create a new Exile instance.
+     * @param {string} name - Exile's name.
+     * @param {number|string} level - Initial level.
+     * @param {number|string} exp - Initial experience.
+     * @param {number|string} expToLevel - Initial experience required for next level.
+     * @param {number|string} dropRate - Initial efficiency multiplier.
+     * @param {number|string} gear - Initial gear upgrade level.
+     * @param {number|string} links - Initial links upgrade level.
+     * @param {number|string} rerollLevel - Initial reroll count.
+     * @param {number} [levelRequirement=0] - Total level required to recruit.
+     * @param {Array|null} [specialRequirement=null] - Special recruitment requirement.
+     * @param {Array} [gearUpgrades=[]] - Gear upgrade configs.
+     * @param {Array} [linksUpgrades=[]] - Links upgrade configs.
+     */
     constructor(name, level, exp, expToLevel, dropRate, gear, links, rerollLevel, levelRequirement = 0, specialRequirement = null, gearUpgrades = [], linksUpgrades = []) {
         this.name = name;
         this.level = Number(level);
@@ -24,8 +53,9 @@ class Exile {
     }
 
     /**
-     * Increases exile's experience and levels them up when threshold is reached
-     * Updates drop rate based on level gains
+     * Increase exile's experience and level up if threshold is reached.
+     * Updates drop rate based on level and reroll count.
+     * @returns {void}
      */
     lvlExile() {
         if (this.level > 0 && this.level <= 99) {
@@ -43,8 +73,9 @@ class Exile {
     }
 
     /**
-     * Updates the exile's UI elements based on current state
-     * Handles level 100 cap and reroll button display
+     * Update the exile's UI elements based on current state.
+     * Handles level 100 cap and reroll button display.
+     * @returns {void}
      */
     updateExileClass() {
         if (this.level > 0 && this.level <= 99) {
@@ -72,14 +103,28 @@ class Exile {
         }
     }
 
+    /**
+     * Attempt to upgrade gear for this exile.
+     * @returns {void}
+     */
     lvlGear() {
         this.upgradeExile('Gear', this.getNextGearUpgrade.bind(this), this.applyGearUpgrade.bind(this));
     }
 
+    /**
+     * Attempt to upgrade links for this exile.
+     * @returns {void}
+     */
     lvlLinks() {
         this.upgradeExile('Links', this.getNextLinksUpgrade.bind(this), this.applyLinksUpgrade.bind(this));
     }
 
+    /**
+     * Get the next available gear upgrade configuration.
+     * @param {number} level - Current gear level.
+     * @param {Array} upgrades - Gear upgrade configs.
+     * @returns {Object|null} Next upgrade config or null if none.
+     */
     getNextGearUpgrade(level, upgrades) {
         if (level >= 0 && level <= 23) {
             const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
@@ -91,16 +136,32 @@ class Exile {
         return null;
     }
 
+    /**
+     * Get the next available links upgrade configuration.
+     * @param {number} level - Current links level.
+     * @param {Array} upgrades - Links upgrade configs.
+     * @returns {Object|null} Next upgrade config or null if none.
+     */
     getNextLinksUpgrade(level, upgrades) {
         const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
         if (currentIndex === -1) return null;
         return upgrades[currentIndex];
     }
 
+    /**
+     * Apply a gear upgrade's benefit to this exile.
+     * @param {Object} upgrade - Gear upgrade config.
+     * @returns {void}
+     */
     applyGearUpgrade(upgrade) {
         this.dropRate += upgrade.benefit;
     }
 
+    /**
+     * Apply a links upgrade's benefit to this exile and update UI.
+     * @param {Object} upgrade - Links upgrade config.
+     * @returns {void}
+     */
     applyLinksUpgrade(upgrade) {
         this.dropRate += upgrade.benefit;
         const linksElem = document.getElementsByClassName(this.name + 'Links')[0];
@@ -108,7 +169,14 @@ class Exile {
         // Final upgrade UI removal logic moved to upgradeExile's updateUI callback
     }
 
-    // REFACTORED upgradeExile method
+    /**
+     * Generic handler for upgrading gear or links.
+     * Handles requirements, UI updates, and success/failure feedback.
+     * @param {string} upgradeType - 'Gear' or 'Links'.
+     * @param {Function} getNextUpgrade - Function to get next upgrade config.
+     * @param {Function} applyUpgrade - Function to apply upgrade benefit.
+     * @returns {void}
+     */
     upgradeExile(upgradeType, getNextUpgrade, applyUpgrade) {
         const propertyName = upgradeType.toLowerCase(); // 'gear' or 'links'
         const currentLevel = this[propertyName];
@@ -147,6 +215,12 @@ class Exile {
         });
     }
 
+    /**
+     * Update the upgrade UI row for the next available upgrade.
+     * @param {string} upgradeType - 'Gear' or 'Links'.
+     * @param {Object} nextUpgrade - Next upgrade config.
+     * @returns {void}
+     */
     updateUpgradeUI(upgradeType, nextUpgrade) {
         const requirementsText = nextUpgrade.requirements
             .map(req => `${req.amount} ${req.currency.name}`)
@@ -185,6 +259,10 @@ class Exile {
         hoverUpgrades(`${this.name}${upgradeType}Upgrade`, ...hoverCurrencies);
     }
 
+    /**
+     * Called when the exile is recruited. Sets up initial upgrades and UI.
+     * @returns {void}
+     */
     onRecruited() {
         this.level += 1;
         this.dropRate += 0.1;
@@ -255,6 +333,11 @@ class Exile {
         hoverUpgrades(`${this.name}LinksUpgrade`, ...linksCurrencies);
     }
 
+    /**
+     * Reroll (prestige) this exile, resetting level and increasing reroll count.
+     * Updates UI accordingly.
+     * @returns {void}
+     */
     rerollExile() {
         this.level = 1;
         this.rerollLevel += 100;
