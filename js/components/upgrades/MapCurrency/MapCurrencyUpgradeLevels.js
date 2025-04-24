@@ -4,7 +4,6 @@
 
 // MapCurrencyUpgradeLevels.js
 // Contains the configuration for map currency upgrade levels
-import { currencyMap } from '../../currency/CurrencyData.js';
 
 const mapCurrencyUpgradeLevels = [
 	{
@@ -12,8 +11,8 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Alch/Scour Maps",
 		description: "Consume (2) Alchemy, (1) Scour to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['Alchemy'], amount: 2 },
-			{ currency: currencyMap['Scouring'], amount: 1 }
+			{ currency: 'Alchemy', amount: 2 },
+			{ currency: 'Scouring', amount: 1 }
 		]
 	},
 	{
@@ -21,7 +20,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Chisel Maps",
 		description: "Consume (4) Cartographer's Chisel to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['Chisel'], amount: 4 }
+			{ currency: 'Chisel', amount: 4 }
 		]
 	},
 	{
@@ -29,7 +28,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Simple Sextant Maps",
 		description: "Consume (1) Simple Sextant to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['SimpleSextant'], amount: 1 }
+			{ currency: 'SimpleSextant', amount: 1 }
 		]
 	},
 	{
@@ -37,7 +36,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Prime Sextant Maps",
 		description: "Consume (1) Prime Sextant to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['PrimeSextant'], amount: 1 }
+			{ currency: 'PrimeSextant', amount: 1 }
 		]
 	},
 	{
@@ -45,7 +44,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Awakened Sextant Maps",
 		description: "Consume (1) Awakened Sextant to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['AwakenedSextant'], amount: 1 }
+			{ currency: 'AwakenedSextant', amount: 1 }
 		]
 	},
 	{
@@ -53,7 +52,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Vaal Maps",
 		description: "Consume (1) Vaal Orb to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['Vaal'], amount: 1 }
+			{ currency: 'Vaal', amount: 1 }
 		]
 	},
 	{
@@ -61,7 +60,7 @@ const mapCurrencyUpgradeLevels = [
 		buttonText: "Use Prophecies",
 		description: "Consume (4) Silver Coins to increase drop rate from maps<br>(per tick)",
 		consume: [
-			{ currency: currencyMap['SilverCoin'], amount: 4 }
+			{ currency: 'SilverCoin', amount: 4 }
 		]
 	}
 ];

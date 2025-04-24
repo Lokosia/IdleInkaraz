@@ -82,9 +82,10 @@ const MapCurrencyUpgradeSystem = {
         const level = mapCurrencyUpgradeLevels[idx];
         if (!level) return;
 
+        // Map string currency names to currency objects for requirements
         const requirements = [
             { currency: currencyMap['Exalted'], amount: level.cost },
-            ...level.consume // Add consumable requirements
+            ...level.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
         ];
 
         handleGenericUpgrade({
@@ -100,7 +101,7 @@ const MapCurrencyUpgradeSystem = {
                 } else {
                     $(".Exalted").removeClass("hover");
                     // Remove hover from consumables as well
-                    level.consume.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
+                    level.consume.forEach(req => $(`.${req.currency}`).removeClass("hover"));
                     $('#MapCurrencyMapUpgrade').remove();
                 }
             },
