@@ -149,8 +149,8 @@ const MapCurrencyUpgradeSystem = {
             // Only update the relevant cells (description, benefit, cost, button text)
             const row = document.getElementById(rowId);
             if (row) {
-                // Update description
-                const descCell = row.querySelector('.upgrade-description');
+                // Update description (second cell)
+                const descCell = row.children[1];
                 if (descCell) descCell.innerHTML = level.description;
                 // Update benefit
                 const benefitCell = row.querySelector('.upgrade-benefit');
