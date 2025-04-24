@@ -6,6 +6,7 @@ import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js'
 import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
 import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';
 import { IIQUpgradeConfig, IIQState } from './IIQ/IIQUpgrade.js';
+import IncubatorUpgradeConfig, { setUpgradesRef } from './Incubator/IncubatorUpgrade.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -13,7 +14,7 @@ const Upgrades = {
 	upgradeDropRate: 0,
 	sulphiteDropRate: 350,
 	nikoScarab: 0,
-	// Removed iiqDropRate and iiqCost, now in IIQState
+
 	incDropRate: 0,
 	incubatorCost: 10,
 	flippingSpeed: 1,
@@ -21,7 +22,7 @@ const Upgrades = {
 
 	// UI state flags
 	delveScarabShown: false,
-	iiQUpgradeShown: false, // Keep for UI, but state is in IIQState
+	iiQUpgradeShown: false,
 	incubatorUpgradeShown: false,
 	flipSpeedUpgradeShown: false,
 
@@ -35,9 +36,6 @@ const Upgrades = {
 			this.delveScarab = this.noOp;
 		}
 	},
-
-	// Remove mappingCurrencyLevel and all map currency upgrade methods from here
-
 };
 
 // Set up accessors for MapCurrencyUpgradeSystem to interact with Upgrades state
@@ -49,51 +47,13 @@ MapCurrencyUpgradeSystem.getDivStashTab = () => Upgrades.divStashTab;
 function getUpgradeDropRate() { return Upgrades.upgradeDropRate; }
 function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
+// Set Upgrades reference for IncubatorUpgrade
+setUpgradesRef(Upgrades);
+
 // --- Upgrade Configurations --- 
 const upgradeConfigs = [
 	IIQUpgradeConfig,
-	{
-		key: 'incubator',
-		shownFlag: 'incubatorUpgradeShown',
-		unlock: () => exileMap['Ascendant'].level >= 75,
-		rowId: 'incubatorUpgrade',
-		buttonId: 'btn-incubator-upgrade',
-		buttonClass: 'incubatorUpgradeButton',
-		buttonText: 'Equip Incubators',
-		description: 'Equip Incubators to exile gear',
-		benefitClass: 'incDropRate',
-		benefit: () => `+${Upgrades.incDropRate.toFixed(1)}`,
-		costClass: 'incubatorUpgradeCostDisplay',
-		costText: () => `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`,
-		requirements: () => [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
-		hover: () => hoverUpgrades('incubatorUpgrade', 'Chaos'),
-		buy: () => handleGenericUpgrade({
-			requirements: [{ currency: currencyMap['Chaos'], amount: Upgrades.incubatorCost }],
-			onSuccess: () => {
-				Upgrades.incubatorCost = Math.floor(Upgrades.incubatorCost * 1.2);
-				if (Upgrades.incDropRate === 0) {
-					Upgrades.incDropRate = 1;
-				} else {
-					Upgrades.incDropRate += 0.1;
-				}
-			},
-			updateUI: () => {
-				const row = document.getElementById('incubatorUpgrade');
-				if (!row) return;
-
-				const costCell = row.querySelector('.incubatorUpgradeCostDisplay');
-				if (costCell) {
-					costCell.innerHTML = `+${numeral(Upgrades.incubatorCost).format('0,0')} Chaos`;
-				}
-
-				const benefitCell = row.querySelector('.incDropRate');
-				if (benefitCell) {
-					benefitCell.innerHTML = `+${Upgrades.incDropRate.toFixed(1)}`;
-				}
-			},
-			keepHoverOnSuccess: true // Keep hover for repeatable upgrade
-		})
-	},
+	IncubatorUpgradeConfig,
 	{
 		key: 'flipSpeed',
 		shownFlag: 'flipSpeedUpgradeShown',
