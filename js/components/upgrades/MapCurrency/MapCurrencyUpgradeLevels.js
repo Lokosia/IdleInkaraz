@@ -5,6 +5,13 @@
 // MapCurrencyUpgradeLevels.js
 // Contains the configuration for map currency upgrade levels
 
+/**
+ * Array of configuration objects for map currency upgrade levels.
+ * Each object defines the cost, button text, description, and currencies consumed per upgrade level.
+ * Used by the MapCurrencyUpgradeSystem to drive upgrade logic and UI.
+ *
+ * @type {Array<{cost: number, buttonText: string, description: string, consume: Array<{currency: string, amount: number}>}>}
+ */
 const mapCurrencyUpgradeLevels = [
 	{
 		cost: 1,

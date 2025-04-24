@@ -3,7 +3,13 @@ import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
 
-// This function will receive the Upgrades object reference
+/**
+ * Creates the configuration object for the Flipping Speed upgrade.
+ * This upgrade increases the rate at which The Singularity flips currency.
+ *
+ * @param {Object} Upgrades - The upgrades state object to bind to this upgrade.
+ * @returns {Object} The flipping speed upgrade configuration object.
+ */
 export default function createFlipSpeedUpgrade(Upgrades) {
   return {
     key: 'flipSpeed',

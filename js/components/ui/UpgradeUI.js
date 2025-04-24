@@ -1,12 +1,13 @@
 /**
- * Generates HTML for upgrade button and description cells (TDs)
- * @param {string} upgradeKey - The upgrade key or name
- * @param {string} upgradeType - The type of upgrade (e.g., 'Gear', 'Links', or custom)
- * @param {string} description - Description of the upgrade
- * @param {string} benefit - The benefit gained from the upgrade
- * @param {string} requirements - The requirements text
- * @param {string} [buttonText] - Optional custom button text
- * @param {string} [buttonId] - Optional specific ID for the button element
+ * Generates HTML for upgrade button and description cells (TDs).
+ *
+ * @param {string} upgradeKey - The upgrade key or name.
+ * @param {string} upgradeType - The type of upgrade (e.g., 'Gear', 'Links', or custom).
+ * @param {string} description - Description of the upgrade.
+ * @param {string} benefit - The benefit gained from the upgrade.
+ * @param {string} requirements - The requirements text.
+ * @param {string} [buttonText] - Optional custom button text.
+ * @param {string} [buttonId] - Optional specific ID for the button element.
  * @returns {string} HTML string containing the four <td> elements for the upgrade row.
  */
 function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit, requirements, buttonText, buttonId) {
@@ -27,28 +28,43 @@ function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit,
     return html;
 }
 
-// Show all upgrade tables
+/**
+ * Shows all upgrade tables (general, gear, and links).
+ * @returns {void}
+ */
 function showAllUpgrades() {
     $("#UpgradeTable").show();
     $("#UpgradeGearTable").show();
     $("#UpgradeLinksTable").show();
 }
 
-// Show only the general upgrades table
+/**
+ * Shows only the general upgrades table.
+ * Hides gear and links tables.
+ * @returns {void}
+ */
 function showGeneralUpgrades() {
     $("#UpgradeTable").show();
     $("#UpgradeGearTable").hide();
     $("#UpgradeLinksTable").hide();
 }
 
-// Show only the gear upgrades table
+/**
+ * Shows only the gear upgrades table.
+ * Hides general and links tables.
+ * @returns {void}
+ */
 function showGearUpgrades() {
     $("#UpgradeTable").hide();
     $("#UpgradeGearTable").show();
     $("#UpgradeLinksTable").hide();
 }
 
-// Show only the links upgrades table
+/**
+ * Shows only the links upgrades table.
+ * Hides general and gear tables.
+ * @returns {void}
+ */
 function showLinksUpgrades() {
     $("#UpgradeTable").hide();
     $("#UpgradeGearTable").hide();

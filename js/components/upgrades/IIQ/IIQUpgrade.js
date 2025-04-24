@@ -5,12 +5,39 @@ import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { formatEfficiency } from '../Augments.js';
 
-// State for IIQ upgrade (can be moved to a shared state if needed)
+/**
+ * State object for the IIQ (Increased Item Quantity) upgrade.
+ *
+ * @typedef {Object} IIQState
+ * @property {number} iiqDropRate - Current IIQ drop rate bonus.
+ * @property {number} iiqCost - Current cost for the next IIQ upgrade.
+ */
 const IIQState = {
     iiqDropRate: 1,
     iiqCost: 10
 };
 
+/**
+ * Configuration object for the IIQ (Increased Item Quantity) upgrade.
+ * Defines unlock logic, UI row IDs, button text, requirements, and buy logic.
+ *
+ * @type {Object}
+ * @property {string} key - Unique key for the upgrade.
+ * @property {string} shownFlag - UI flag for whether the upgrade is shown.
+ * @property {Function} unlock - Function to determine if the upgrade is unlocked.
+ * @property {string} rowId - DOM row ID for the upgrade.
+ * @property {string} buttonId - DOM button ID for the upgrade.
+ * @property {string} buttonClass - CSS class for the upgrade button.
+ * @property {string} buttonText - Button label text.
+ * @property {string} description - Description of the upgrade.
+ * @property {string} benefitClass - CSS class for the benefit cell.
+ * @property {Function} benefit - Function returning the benefit string.
+ * @property {string} costClass - CSS class for the cost cell.
+ * @property {Function} costText - Function returning the cost string.
+ * @property {Function} requirements - Function returning the requirements array.
+ * @property {Function} hover - Function to apply hover effects.
+ * @property {Function} buy - Function to handle the upgrade purchase.
+ */
 const IIQUpgradeConfig = {
     key: 'iiq',
     shownFlag: 'iiqUpgradeShown',

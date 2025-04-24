@@ -11,7 +11,25 @@ import IncubatorUpgradeConfig, { setUpgradesRef } from './Incubator/IncubatorUpg
 import createFlipSpeedUpgrade from './FlipSpeed/FlipSpeedUpgrade.js';
 import DelveScarabUpgradeConfig, { setUpgradesRef as setDelveScarabUpgradesRef } from './Scarabs/DelveScarabUpgrade.js';
 
-// Upgrades module encapsulating all state and logic
+/**
+ * Upgrades module encapsulates all upgrade state, logic, and UI flags for the game.
+ * Provides methods and state for handling upgrade effects, rendering, and integration with other systems.
+ *
+ * @namespace Upgrades
+ * @property {number} upgradeDropRate - Global upgrade efficiency multiplier.
+ * @property {number} sulphiteDropRate - Sulphite drop rate for delving.
+ * @property {number} nikoScarab - Niko scarab upgrade state.
+ * @property {number} incDropRate - Incubator drop rate.
+ * @property {number} incubatorCost - Cost for incubator upgrades.
+ * @property {number} flippingSpeed - Currency flipping speed multiplier.
+ * @property {number} flippingSpeedCost - Cost for flipping speed upgrades.
+ * @property {boolean} delveScarabShown - UI flag for delve scarab upgrade.
+ * @property {boolean} iiQUpgradeShown - UI flag for IIQ upgrade.
+ * @property {boolean} incubatorUpgradeShown - UI flag for incubator upgrade.
+ * @property {boolean} flipSpeedUpgradeShown - UI flag for flip speed upgrade.
+ * @property {Function} noOp - No-operation function.
+ * @property {Function} delveScarab - Handler for showing delve scarab upgrade.
+ */
 const Upgrades = {
 	// State
 	upgradeDropRate: 0,
@@ -47,10 +65,23 @@ MapCurrencyUpgradeSystem.setUpgradeDropRate = val => { Upgrades.upgradeDropRate 
 MapCurrencyUpgradeSystem.getDivStashTab = () => Upgrades.divStashTab;
 
 // Patch: ensure tab upgrades increase efficiency
+/**
+ * Returns the current global upgrade drop rate.
+ * @returns {number}
+ */
 function getUpgradeDropRate() { return Upgrades.upgradeDropRate; }
+
+/**
+ * Increments the global upgrade drop rate by 1.
+ * @returns {void}
+ */
 function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
-// Helper to format efficiency as int if whole, float otherwise
+/**
+ * Formats an efficiency value as an integer if whole, or as a float otherwise.
+ * @param {number} val - The efficiency value.
+ * @returns {string|number} Formatted efficiency value.
+ */
 function formatEfficiency(val) {
     return Number.isInteger(val) ? val : val.toFixed(1);
 }
@@ -60,6 +91,10 @@ setUpgradesRef(Upgrades);
 setDelveScarabUpgradesRef(Upgrades);
 
 // --- Upgrade Configurations --- 
+/**
+ * Array of all upgrade configuration objects for the game.
+ * @type {Array<Object>}
+ */
 const upgradeConfigs = [
 	IIQUpgradeConfig,
 	IncubatorUpgradeConfig,
@@ -73,7 +108,14 @@ const upgradeConfigs = [
 	DelveScarabUpgradeConfig
 ];
 
-// --- Generic Upgrade Renderer --- 
+/**
+ * Renders a row in the upgrade table for a given upgrade configuration.
+ * Handles dynamic values, attaches event listeners, and marks upgrades as shown.
+ *
+ * @param {Object} cfg - The upgrade configuration object.
+ * @param {number} [totalLevel] - Optional total level for unlock checks.
+ * @returns {void}
+ */
 function renderUpgradeRow(cfg, totalLevel) {
 	if (Upgrades[cfg.shownFlag]) return;
 	if (!cfg.unlock(totalLevel)) return;

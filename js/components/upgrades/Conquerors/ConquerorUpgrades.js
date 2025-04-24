@@ -4,7 +4,14 @@ import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
 
-// This function handles the purchase of a conqueror upgrade
+/**
+ * Handles the purchase of a conqueror upgrade.
+ * Consumes a conqueror currency, increases upgrade drop rate, updates UI, and shows a success message.
+ *
+ * @param {Object} upgradesObj - The upgrades state object to modify (should have upgradeDropRate).
+ * @param {Object} conqueror - The conqueror currency object (should have name and total).
+ * @returns {void}
+ */
 export function buyConqueror(upgradesObj, conqueror) {
 	handleGenericUpgrade({
 		requirements: [{ currency: conqueror, amount: 1 }],
@@ -22,7 +29,14 @@ export function buyConqueror(upgradesObj, conqueror) {
 	});
 }
 
-// Renders conqueror upgrade rows and attaches event listeners
+/**
+ * Renders conqueror upgrade rows in the upgrade table and attaches event listeners.
+ * Shows/hides rows based on currency availability and applies hover effects.
+ *
+ * @param {Object} upgradesObj - The upgrades state object to modify.
+ * @param {Function} hoverUpgrades - Function to apply hover effects to upgrade rows.
+ * @returns {void}
+ */
 export function renderConquerorUpgrades(upgradesObj, hoverUpgrades) {
 	const conquerors = [
 		currencyMap['Crusader'],
