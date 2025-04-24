@@ -5,6 +5,14 @@ import { recruitExile } from '../../../Main.js';
 import UIManager from '../ui/UIManager.js';
 import State from '../../State.js';
 
+/**
+ * Creates the Melvin exile card section for the delving UI.
+ * Includes recruit and reroll buttons, and stats display.
+ *
+ * @param {Function} recruitExileFn - Function to call to recruit Melvin.
+ * @param {Object} melvinObj - The Melvin exile object (for reroll and ownership check).
+ * @returns {HTMLElement} The Melvin card element.
+ */
 function createMelvinSection(recruitExileFn, melvinObj) {
     const content = `
         Level: <span class="MelvinLevel">0</span> <span class="MelvinReroll hidden"></span><br>
@@ -40,6 +48,12 @@ function createMelvinSection(recruitExileFn, melvinObj) {
     return card;
 }
 
+/**
+ * Creates the Deep Delving section card for the delving UI.
+ * Displays sulphite, depth, and cost, and includes the progress bar.
+ *
+ * @returns {HTMLElement} The Deep Delving card element.
+ */
 function createDeepDelvingSection() {
     const content = `
         <p>Spend Sulphite to traverse the mines.</p>
@@ -60,6 +74,12 @@ function createDeepDelvingSection() {
     return card;
 }
 
+/**
+ * Creates the Fossils section card for the delving UI.
+ * Lists all resonators and fossils with their current totals.
+ *
+ * @returns {HTMLElement} The Fossils card element.
+ */
 function createFossilsSection() {
     let fossilsHTML = `<b>Resonators:</b><br>`;
     const resonators = fossilData.filter(fossil => 
@@ -85,6 +105,11 @@ function createFossilsSection() {
     return card;
 }
 
+/**
+ * Initializes the delving UI by rendering all delving-related cards and updating fossil counts.
+ *
+ * @returns {void}
+ */
 function initDelvingUI() {
     const container = document.getElementById('delving-container');
     if (!container) return;
@@ -106,6 +131,12 @@ function initDelvingUI() {
     });
 }
 
+/**
+ * Updates the delve progress bar in the UI to the given progress value.
+ *
+ * @param {number} progress - The progress value to set (0-100).
+ * @returns {void}
+ */
 function updateDelveProgressBar(progress) {
     const delveLoader = document.getElementById('delveLoader');
     if (delveLoader) {
@@ -131,6 +162,8 @@ function updateDelveProgressBar(progress) {
 /**
  * Handles the logic for showing the delving section.
  * Initializes and displays delve-related UI components.
+ *
+ * @returns {void}
  */
 function showDelving() {
     UIManager.show('delving');

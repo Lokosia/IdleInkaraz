@@ -5,12 +5,26 @@ let sulphiteDepth = 1;
 let sulphiteCost = 110;
 let delveLoadingProgress = 0;
 
+/**
+ * Rolls for fossil drops for all fossils using the provided drop rates.
+ * @param {number} dropRate - The drop rate of the delving exile (Melvin).
+ * @param {number} upgradeDropRate - The global upgrade drop rate.
+ * @returns {void}
+ */
 function rollFossilTick(dropRate, upgradeDropRate) {
     for (let i = 0; i < fossilData.length; i++) {
         fossilData[i].rollFossil(dropRate, upgradeDropRate);
     }
 }
 
+/**
+ * Handles a delve action: spends sulphite, increases depth, updates costs, and rolls fossils.
+ * Also updates UI and triggers the loading bar.
+ * @param {Object} Sulphite - The sulphite currency object.
+ * @param {Object} Melvin - The Melvin exile object.
+ * @param {number} upgradeDropRate - The global upgrade drop rate.
+ * @returns {void}
+ */
 function delve(Sulphite, Melvin, upgradeDropRate) {
     if (Sulphite.total >= sulphiteCost) {
                 Sulphite.total -= sulphiteCost;
@@ -31,7 +45,10 @@ function delve(Sulphite, Melvin, upgradeDropRate) {
     }
 }
 
-// In the loading bar animation, hide the bar when done
+/**
+ * Animates the delve loading bar and hides it when complete.
+ * @returns {void}
+ */
 function delveLoadingBarAnimate() {
     const { delveLoadingProgress } = getDelveState();
     if (delveLoadingProgress >= 1) {
@@ -50,6 +67,10 @@ function delveLoadingBarAnimate() {
     }
 }
 
+/**
+ * Gets the current delve state (depth, cost, progress, and delving status).
+ * @returns {Object} The current delve state.
+ */
 function getDelveState() {
     return {
         sulphiteDepth,
@@ -59,10 +80,20 @@ function getDelveState() {
     };
 }
 
+/**
+ * Sets the delve loading progress value.
+ * @param {number} val - The new progress value.
+ * @returns {void}
+ */
 function setDelveLoadingProgress(val) {
     delveLoadingProgress = val;
 }
 
+/**
+ * Increments the delve loading progress value.
+ * @param {number} val - The amount to increment progress by.
+ * @returns {void}
+ */
 function incrementDelveLoadingProgress(val) {
     delveLoadingProgress += val;
 }

@@ -1,12 +1,31 @@
 // Fossil.js - Contains the Fossil class and fossilData array
 
+/**
+ * Represents a fossil item that can be found while delving.
+ * Handles fossil drop logic and UI updates for fossil totals.
+ *
+ * @class
+ * @property {string} name - The fossil's name.
+ * @property {number} rate - Drop rate for the fossil.
+ * @property {number} total - Current amount of the fossil.
+ */
 class Fossil {
+    /**
+     * Create a new Fossil instance.
+     * @param {string} name - The fossil's name.
+     * @param {number} rate - Drop rate for the fossil.
+     * @param {number|string} total - Initial amount of the fossil.
+     */
     constructor(name, rate, total) {
         this.name = name;
         this.rate = rate;
         this.total = Number(total);
     }
 
+    /**
+     * Generate a random number for fossil drop chance.
+     * @returns {number} Random float between 0.0000001 and 1 (as a string with 7 decimals).
+     */
     rollFossilRNG() {
         let min = 0.0000001;
         let max = 1;
@@ -14,6 +33,13 @@ class Fossil {
         return f;
     }
 
+    /**
+     * Attempt to drop this fossil using the provided drop rates.
+     * Increases total and updates UI if drop is successful.
+     * @param {number} dropRate - The drop rate of the delving exile (Melvin).
+     * @param {number} upgradeDropRate - The global upgrade drop rate.
+     * @returns {void}
+     */
     rollFossil(dropRate, upgradeDropRate) {
         let f = this.rollFossilRNG();
         if (f <= this.rate * (dropRate + upgradeDropRate)) {
@@ -26,6 +52,10 @@ class Fossil {
     }
 }
 
+/**
+ * Array of all fossil items used in the delving system.
+ * @type {Array<Fossil>}
+ */
 const fossilData = [
     new Fossil('Primitive', 0.0125, 0),
     new Fossil('Potent', 0.0025, 0),
