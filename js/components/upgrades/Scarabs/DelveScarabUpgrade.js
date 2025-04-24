@@ -2,6 +2,7 @@
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades, SnackBar } from '../../../../Main.js';
+import { formatEfficiency } from '../Augments.js';
 
 let UpgradesRef = null;
 export function setUpgradesRef(ref) {
@@ -21,7 +22,7 @@ const DelveScarabUpgradeConfig = {
         return `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
     },
     benefitClass: '',
-    benefit: () => '+1.0',
+    benefit: () => `+${formatEfficiency(1)}`,
     costClass: 'delveScarabCost',
     costText: () => {
         const costs = ['1 Exalted', '5 Exalted', '10 Exalted'];
@@ -67,7 +68,7 @@ const DelveScarabUpgradeConfig = {
                     if (descCell) descCell.innerHTML = `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
                 }
                 const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-                if (globalUpgradeRateElem) globalUpgradeRateElem.innerHTML = UpgradesRef.upgradeDropRate.toFixed(1);
+                if (globalUpgradeRateElem) globalUpgradeRateElem.innerHTML = formatEfficiency(UpgradesRef.upgradeDropRate);
             },
             onFailure: () => {
                 if (UpgradesRef.nikoScarab >= scarabTypes.length) {

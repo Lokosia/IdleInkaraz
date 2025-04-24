@@ -49,6 +49,11 @@ MapCurrencyUpgradeSystem.getDivStashTab = () => Upgrades.divStashTab;
 function getUpgradeDropRate() { return Upgrades.upgradeDropRate; }
 function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
+// Helper to format efficiency as int if whole, float otherwise
+function formatEfficiency(val) {
+    return Number.isInteger(val) ? val : val.toFixed(1);
+}
+
 // Set Upgrades reference for IncubatorUpgrade
 setUpgradesRef(Upgrades);
 setDelveScarabUpgradesRef(Upgrades);
@@ -121,6 +126,6 @@ function renderUpgradeRow(cfg, totalLevel) {
 	Upgrades[cfg.shownFlag] = true;
 }
 
-export { upgradeConfigs, renderUpgradeRow };
+export { upgradeConfigs, renderUpgradeRow, formatEfficiency };
 
 export default Upgrades;

@@ -1,8 +1,8 @@
-// IncubatorUpgrade.js - extracted incubator system from Augments.js
 import { exileMap } from '../../../../Main.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades } from '../../../../Main.js';
+import { formatEfficiency } from '../Augments.js';
 
 // These should be provided by the main Upgrades state
 let UpgradesRef = null;
@@ -20,7 +20,7 @@ const IncubatorUpgradeConfig = {
     buttonText: 'Equip Incubators',
     description: 'Equip Incubators to exile gear',
     benefitClass: 'incDropRate',
-    benefit: () => `+${(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate.toFixed(1))}`,
+    benefit: () => `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`,
     costClass: 'incubatorUpgradeCostDisplay',
     costText: () => `+${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`,
     requirements: () => [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
@@ -44,7 +44,7 @@ const IncubatorUpgradeConfig = {
             }
             const benefitCell = row.querySelector('.incDropRate');
             if (benefitCell) {
-                benefitCell.innerHTML = `+${UpgradesRef.incDropRate.toFixed(1)}`;
+                benefitCell.innerHTML = `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`;
             }
         }
     })

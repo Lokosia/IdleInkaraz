@@ -1,7 +1,7 @@
-// FlipSpeedUpgrade.js
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades } from '../../../../Main.js';
+import { formatEfficiency } from '../Augments.js';
 
 // This function will receive the Upgrades object reference
 export default function createFlipSpeedUpgrade(Upgrades) {
@@ -15,7 +15,7 @@ export default function createFlipSpeedUpgrade(Upgrades) {
     buttonText: 'Flipping Speed',
     description: 'Increase the rate The Singularity flips currency',
     benefitClass: 'flipSpeedMulti',
-    benefit: () => '+0.5',
+    benefit: () => `+${formatEfficiency(Upgrades.flippingSpeed)}`,
     costClass: 'flipSpeedUpgradeCostDisplay',
     costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`,
     requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
@@ -40,7 +40,7 @@ export default function createFlipSpeedUpgrade(Upgrades) {
         }
         const benefitCell = row.querySelector('.flipSpeedMulti');
         if (benefitCell) {
-          benefitCell.innerHTML = '+0.5';
+          benefitCell.innerHTML = `+${formatEfficiency(Upgrades.flippingSpeed)}`;
         }
       }
     })

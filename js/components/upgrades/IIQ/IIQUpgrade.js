@@ -2,6 +2,7 @@
 import { exileMap, hoverUpgrades } from '../../../../Main.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
+import { formatEfficiency } from '../Augments.js';
 
 // State for IIQ upgrade (can be moved to a shared state if needed)
 const IIQState = {
@@ -19,7 +20,7 @@ const IIQUpgradeConfig = {
     buttonText: 'IIQ Gear',
     description: 'Buy Increased Item Quantity gear for exiles',
     benefitClass: 'iiqDropRate',
-    benefit: () => `+${IIQState.iiqDropRate.toFixed(1)}`,
+    benefit: () => `+${formatEfficiency(IIQState.iiqDropRate)}`,
     costClass: 'iiqUpgradeCostDisplay',
     costText: () => `+${numeral(IIQState.iiqCost).format('0,0')} Chaos`,
     requirements: () => [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
@@ -49,13 +50,13 @@ const IIQUpgradeConfig = {
             }
             const benefitCell = row.querySelector('.iiqDropRate');
             if (benefitCell) {
-                benefitCell.innerHTML = `+${IIQState.iiqDropRate.toFixed(1)}`;
+                benefitCell.innerHTML = `+${formatEfficiency(IIQState.iiqDropRate)}`;
             }
             // Update global display
             const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
             if (globalUpgradeRateElem) {
-                import('../Augments.js').then(({ default: Upgrades }) => {
-                    globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+                import('../Augments.js').then(({ default: Upgrades, formatEfficiency }) => {
+                    globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);
                 });
             }
         }

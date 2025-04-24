@@ -3,6 +3,7 @@
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades, SnackBar } from '../../../../Main.js';
+import { formatEfficiency } from '../Augments.js';
 
 // State for stash tab upgrades
 const StashTabState = {
@@ -67,7 +68,7 @@ const stashTabUpgradeConfigs = [
         buttonText: 'Currency Stash Tab',
         description: 'Purchase the Currency Stash Tab',
         benefitClass: '',
-        benefit: () => '+1.0',
+        benefit: () => `+${formatEfficiency(1)}`,
         costClass: '',
         costText: () => '5 Stacked Deck',
         requirements: () => [{ currency: currencyMap['StackedDeck'], amount: 5 }],
@@ -84,7 +85,7 @@ const stashTabUpgradeConfigs = [
         buttonText: 'Delve Stash Tab',
         description: 'Purchase the Delve Stash Tab',
         benefitClass: '',
-        benefit: () => '+1.0',
+        benefit: () => `+${formatEfficiency(1)}`,
         costClass: '',
         costText: () => '50 Stacked Deck<br>10 Orb of Annulment',
         requirements: () => [
@@ -104,7 +105,7 @@ const stashTabUpgradeConfigs = [
         buttonText: 'Quad Stash Tab',
         description: 'Purchase the Quad Stash Tab',
         benefitClass: '',
-        benefit: () => '+1.0',
+        benefit: () => `+${formatEfficiency(1)}`,
         costClass: '',
         costText: () => '1 Eternal Orb',
         requirements: () => [{ currency: currencyMap['Eternal'], amount: 1 }],
@@ -121,7 +122,7 @@ const stashTabUpgradeConfigs = [
         buttonText: 'Divination Stash Tab',
         description: 'Consume (1) Stacked Deck<br>(per tick)',
         benefitClass: '',
-        benefit: () => '+1.0',
+        benefit: () => `+${formatEfficiency(1)}`,
         costClass: '',
         costText: () => '50 Orb of Annulment<br>1 Exalted',
         requirements: () => [
