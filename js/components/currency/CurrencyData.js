@@ -2,9 +2,19 @@
 import Currency from './Currency.js';
 import { CURRENCY_CONFIG } from './CurrencyConfig.js';
 
+/**
+ * currencyData holds all Currency instances used in the game.
+ * @type {Array<Currency>}
+ */
 const currencyData = [];
+
+/**
+ * currencyMap provides quick lookup of Currency instances by name.
+ * @type {Object.<string, Currency>}
+ */
 const currencyMap = {};
 
+// Initialize all currencies from CURRENCY_CONFIG
 CURRENCY_CONFIG.forEach(config => {
     const currency = new Currency(
         config.name, 

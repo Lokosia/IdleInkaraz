@@ -3,8 +3,12 @@ import { UICard } from '../ui/Cards.js';
 import UIManager from '../ui/UIManager.js';
 
 /**
- * Generates cards for all standard exiles to populate the Guild section
- * @param {HTMLElement} container - The container element to append cards to
+ * Generates cards for all standard exiles to populate the Guild section.
+ * Each card displays the exile's stats and provides recruit/reroll actions.
+ *
+ * @param {HTMLElement} container - The container element to append cards to.
+ * @param {Array<Object>} exileData - Array of exile objects to display.
+ * @param {Function} recruitExile - Function to call when recruiting an exile.
  */
 function generateExileCards(container, exileData, recruitExile) {
     container.innerHTML = '';
@@ -76,6 +80,9 @@ function generateExileCards(container, exileData, recruitExile) {
 /**
  * Handles the logic for showing the guild section.
  * Dynamically generates exile cards and updates their UI.
+ *
+ * @param {Array<Object>} exileData - Array of exile objects to display.
+ * @param {Function} recruitExile - Function to call when recruiting an exile.
  */
 function showGuild(exileData, recruitExile) {
     // UIManager.show('guild'); // Removed: This is now called by the event listener/welcome function before calling showGuild

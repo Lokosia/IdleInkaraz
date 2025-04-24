@@ -6,7 +6,7 @@ import { SnackBar } from '../../UIInitializer.js';
 /**
  * Checks if all currency requirements are met.
  * @param {Array<Object>} requirements - An array of requirement objects { currency: Currency, amount: number }
- * @returns {boolean} - True if all requirements are met, false otherwise.
+ * @returns {boolean} True if all requirements are met, false otherwise.
  * @private
  */
 function _checkRequirements(requirements) {
@@ -56,7 +56,7 @@ function _deductCosts(requirements) {
  * @param {function} [options.updateUI=() => {}] - Callback function executed after onSuccess to update the UI.
  * @param {function} [options.onComplete=() => {}] - Callback function executed at the very end, regardless of success/failure.
  * @param {string} [options.successMessage="Upgrade purchased!"] - Message to show on success.
- * @returns {boolean} - True if the upgrade was successful, false otherwise.
+ * @returns {boolean} True if the upgrade was successful, false otherwise.
  */
 function handleGenericUpgrade({
     requirements = [],
@@ -96,9 +96,9 @@ function handleGenericUpgrade({
 
 
 /**
- * Generates a Mirror upgrade for high gear levels
- * @param {number} gearLevel - Current gear level
- * @returns {Object} - A Mirror upgrade configuration
+ * Generates a Mirror upgrade configuration for high gear levels.
+ * @param {number} gearLevel - Current gear level.
+ * @returns {Object} A Mirror upgrade configuration object.
  */
 function getMirrorUpgrade(gearLevel) {
     return {
