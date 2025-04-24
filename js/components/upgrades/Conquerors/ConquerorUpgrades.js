@@ -18,8 +18,7 @@ export function buyConqueror(upgradesObj, conqueror) {
 				$(`.${conqueror.name}`).removeClass('hover');
 			}
 		},
-		successMessage: 'Conqueror influence consumed!',
-		keepHoverOnSuccess: true
+		successMessage: 'Conqueror influence consumed!'
 	});
 }
 

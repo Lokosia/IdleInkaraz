@@ -46,8 +46,7 @@ const IncubatorUpgradeConfig = {
             if (benefitCell) {
                 benefitCell.innerHTML = `+${UpgradesRef.incDropRate.toFixed(1)}`;
             }
-        },
-        keepHoverOnSuccess: true
+        }
     })
 };
 

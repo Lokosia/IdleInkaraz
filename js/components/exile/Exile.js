@@ -129,6 +129,8 @@ class Exile {
                 this[propertyName] += currentUpgrade.specialIncrement || 1; // Increment gear/links level
             },
             updateUI: () => {
+                // Always remove hover from previous upgrade's currencies
+                currentUpgrade.requirements.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
                 const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
                 if (nextUpgrade) {
                     this.updateUpgradeUI(upgradeType, nextUpgrade);
@@ -137,8 +139,6 @@ class Exile {
                     const rowId = `${this.name}${upgradeType}Upgrade`;
                     $(`#${rowId}`).off('mouseenter mouseleave'); // Remove hover listeners
                     $(`#${rowId}`).remove(); // Remove the row
-                    // Remove hover effect from related currency elements of the *last* upgrade
-                    currentUpgrade.requirements.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
                     SnackBar(`${this.name} ${upgradeType} upgrades completed!`); // Specific completion message
                 }
             },

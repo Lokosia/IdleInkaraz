@@ -58,8 +58,7 @@ const IIQUpgradeConfig = {
                     globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
                 });
             }
-        },
-        keepHoverOnSuccess: true
+        }
     })
 };
 

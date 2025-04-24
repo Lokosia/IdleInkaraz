@@ -42,8 +42,7 @@ export default function createFlipSpeedUpgrade(Upgrades) {
         if (benefitCell) {
           benefitCell.innerHTML = '+0.5';
         }
-      },
-      keepHoverOnSuccess: true
+      }
     })
   };
 }

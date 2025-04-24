@@ -56,7 +56,6 @@ function _deductCosts(requirements) {
  * @param {function} [options.updateUI=() => {}] - Callback function executed after onSuccess to update the UI.
  * @param {function} [options.onComplete=() => {}] - Callback function executed at the very end, regardless of success/failure.
  * @param {string} [options.successMessage="Upgrade purchased!"] - Message to show on success.
- * @param {boolean} [options.keepHoverOnSuccess=false] - If true, hover classes won't be removed on success.
  * @returns {boolean} - True if the upgrade was successful, false otherwise.
  */
 function handleGenericUpgrade({
@@ -66,8 +65,7 @@ function handleGenericUpgrade({
     onFailure = () => SnackBar("Requirements not met."),
     updateUI = () => { },
     onComplete = () => { },
-    successMessage = "Upgrade purchased!",
-    keepHoverOnSuccess = false // Add the new option
+    successMessage = "Upgrade purchased!"
 }) {
     let success = false;
     if (check() && _checkRequirements(requirements)) {
@@ -75,16 +73,6 @@ function handleGenericUpgrade({
         try {
             onSuccess(); // Execute success logic
             updateUI(); // Update UI after success
-
-            // Remove hover effect only if keepHoverOnSuccess is false
-            if (!keepHoverOnSuccess && requirements && requirements.length > 0) {
-                requirements.forEach(req => {
-                    if (req.currency && req.currency.name) {
-                        $(`.${req.currency.name}`).removeClass('hover');
-                    }
-                });
-            }
-
             if (successMessage) {
                 SnackBar(successMessage);
             }
@@ -92,23 +80,17 @@ function handleGenericUpgrade({
         } catch (error) {
             console.error("Error during onSuccess/updateUI:", error);
             SnackBar("An error occurred during the upgrade.");
-            // Attempt to rollback costs? Difficult without knowing the exact state change.
-            // For now, log the error and notify the user.
             success = false; // Mark as failed due to error
-            // Do not call onFailure here as it's for requirement failure
         }
     } else {
         onFailure(); // Execute failure logic (requirements not met)
         success = false;
     }
-
     try {
         onComplete(); // Execute completion logic regardless of success/failure
     } catch (error) {
         console.error("Error during onComplete:", error);
-        // Log error, but don't change the success status or notify user further
     }
-
     return success;
 }
 
