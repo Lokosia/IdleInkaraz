@@ -9,6 +9,23 @@ import { fossilData } from '../delve/Fossil.js';
 // declare var numeral: any;
 
 
+/**
+ * Represents a crafting item in the game.
+ * Handles research, crafting progress, ingredient checks, and UI updates.
+ *
+ * @class
+ * @property {string} id - Unique identifier for the crafting item.
+ * @property {number} level - Research state (-1 = not researched, 0+ = active).
+ * @property {number} progress - Current crafting progress (0-100).
+ * @property {number} researchCost - Chaos cost to research/unlock this item.
+ * @property {Array<Object>} ingredients - List of required ingredients for crafting.
+ * @property {Object} reward - Reward for completing a craft ({currency, amount}).
+ * @property {number} progressInterval - Interval for progress ticks (ms).
+ * @property {number} totalCrafted - Total number of times this item has been crafted.
+ * @property {string} displayName - User-friendly display name.
+ * @property {number} lastProgressUpdate - Last progress value sent to UI.
+ * @property {boolean} isCrafting - Whether this item is currently being crafted.
+ */
 class CraftingItem {
     // Removed type annotations
     id;
@@ -23,6 +40,14 @@ class CraftingItem {
     lastProgressUpdate;
     isCrafting; // New flag
 
+    /**
+     * Create a new CraftingItem.
+     * @param {string} id - Unique identifier.
+     * @param {number} researchCost - Chaos cost to research.
+     * @param {Array<Object>} ingredients - Required ingredients for crafting.
+     * @param {Object} reward - Reward for crafting ({currency, amount}).
+     * @param {number} [progressInterval=300] - Progress tick interval (ms).
+     */
     constructor(id, researchCost, ingredients, reward, progressInterval = 300) {
         this.id = id;
         this.level = -1; // -1 means not researched yet
@@ -37,7 +62,10 @@ class CraftingItem {
         this.isCrafting = false; // Initialize flag
     }
 
-    // Get a user-friendly name for display
+    /**
+     * Get a user-friendly name for display.
+     * @returns {string} Display name.
+     */
     getDisplayName() {
         switch(this.id) {
             case 'flask': return 'Flask';
@@ -55,7 +83,11 @@ class CraftingItem {
         }
     }
 
-    // Buy/research the crafting item
+    /**
+     * Attempt to research/unlock this crafting item.
+     * Deducts chaos cost and updates UI.
+     * @returns {boolean} True if researched, false otherwise.
+     */
     buy() {
         // Check if already researched
         if (this.isActive()) {
@@ -80,7 +112,10 @@ class CraftingItem {
         }
     }
 
-    // Check if we have all ingredients for crafting
+    /**
+     * Check if all required ingredients are available.
+     * @returns {boolean} True if all ingredients are available, false otherwise.
+     */
     hasIngredients() {
         return this.ingredients.every(ing => {
             let item = currencyMap[ing.currency];
@@ -97,7 +132,10 @@ class CraftingItem {
         });
     }
 
-    // New method to attempt starting a craft
+    /**
+     * Attempt to start crafting (consume ingredients, set crafting flag).
+     * @returns {boolean} True if crafting started, false otherwise.
+     */
     startCraft() {
         // Can only start if active, not already crafting, and has ingredients
         if (this.isActive() && !this.isCrafting && this.hasIngredients()) {
@@ -119,7 +157,10 @@ class CraftingItem {
         return false; // Could not start craft
     }
 
-    // Consume ingredients and increment progress
+    /**
+     * Increment crafting progress if active and crafting.
+     * @returns {boolean} True if progress incremented, false otherwise.
+     */
     craft() {
         // Only increment progress if currently crafting
         if (this.isActive() && this.isCrafting) {
@@ -134,7 +175,10 @@ class CraftingItem {
         return false; // Not crafting or not active
     }
 
-    // Update the progress bar in the UI
+    /**
+     * Update the progress bar in the UI for this item.
+     * @returns {void}
+     */
     updateProgressBar() {
         // Always try to update if the item is active
         if (this.isActive()) {
@@ -172,7 +216,10 @@ class CraftingItem {
     }
 
 
-    // Complete the crafting process and give rewards
+    /**
+     * Complete the crafting process, give rewards, and update UI.
+     * @returns {void}
+     */
     completeCrafting() {
         // Reset progress
         this.progress = 0;
@@ -205,12 +252,18 @@ class CraftingItem {
         }
     }
 
-    // Check if the crafting item is active (researched)
+    /**
+     * Check if the crafting item is active (researched).
+     * @returns {boolean} True if active, false otherwise.
+     */
     isActive() {
         return this.level >= 0;
     }
 
-    // Check if progress has changed since the last UI update
+    /**
+     * Check if progress has changed since the last UI update.
+     * @returns {boolean} True if progress changed, false otherwise.
+     */
     hasProgressChanged() {
         // Check if current progress is different from the last time the bar was updated
         // Also consider the case where progress becomes 0 after being non-zero (completion)
@@ -218,7 +271,10 @@ class CraftingItem {
     }
 
 
-    // Generate HTML for this crafting item's card
+    /**
+     * Generate HTML for this crafting item's card.
+     * @returns {string} HTML string for the card.
+     */
     generateHTML() {
         const researchButtonHTML = this.isActive() ? '' : `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Research ${this.displayName}</button><br><br>`;
         
@@ -250,11 +306,28 @@ class CraftingItem {
     }
 }
 
+/**
+ * Represents a special mirror crafting item (e.g., mirrored gear).
+ * Handles unique fee logic and stats display.
+ * Extends CraftingItem.
+ *
+ * @class
+ * @augments CraftingItem
+ * @property {number} fee - Current mirror fee (Exalted).
+ * @property {number} feeIncrease - Fee increment per craft.
+ */
 class MirrorItem extends CraftingItem {
     // Removed type annotations
     fee;
     feeIncrease;
 
+    /**
+     * Create a new MirrorItem.
+     * @param {string} id - Unique identifier.
+     * @param {Array<Object>} ingredients - Required ingredients for initial craft.
+     * @param {number} [initialFee=20] - Starting mirror fee (Exalted).
+     * @param {number} [feeIncrease=5] - Fee increment per craft.
+     */
     constructor(id, ingredients, initialFee = 20, feeIncrease = 5) {
         // Mirror items don't have a research cost (level starts at 0 if craftable)
         // Reward currency is Exalted, amount is the current fee
@@ -266,7 +339,10 @@ class MirrorItem extends CraftingItem {
         this.displayName = this.getDisplayName(); // Update display name after super call
     }
 
-    // Override display name for mirror items
+    /**
+     * Get a user-friendly display name for the mirror item.
+     * @returns {string} Display name.
+     */
     getDisplayName() {
         switch(this.id) {
             case 'mirrorSword': return '(Mirror) 650pDPS Sword';
@@ -280,7 +356,10 @@ class MirrorItem extends CraftingItem {
         }
     }
 
-    // Specific stats for known mirror items
+    /**
+     * Get stats string for this mirror item.
+     * @returns {string} HTML-formatted stats.
+     */
     getItemStats() {
         switch(this.id) {
             case 'mirrorSword':
@@ -320,7 +399,10 @@ class MirrorItem extends CraftingItem {
         }
     }
 
-    // Override completeCrafting for mirror items to handle fee increase
+    /**
+     * Complete the mirror crafting process, increase fee, and update UI.
+     * @returns {void}
+     */
     completeCrafting() {
         this.progress = 0; // Reset progress
         this.lastProgressUpdate = -1; // Force progress bar update to 0
@@ -352,7 +434,10 @@ class MirrorItem extends CraftingItem {
         }
     }
 
-    // Override buy for mirror items - this is the initial "Craft" action
+    /**
+     * Initial craft action for mirror items (unlocks mirroring).
+     * @returns {boolean} True if crafted, false otherwise.
+     */
     buy() {
          // Check if already crafted/active
         if (this.isActive()) {
@@ -395,7 +480,10 @@ class MirrorItem extends CraftingItem {
         }
     }
 
-    // Override craft for mirror items - this is the tick-based progress towards getting a mirror fee
+    /**
+     * Progress the mirror crafting process (tick-based).
+     * @returns {boolean} True if progress incremented, false otherwise.
+     */
     craft() {
         // Mirror items only progress if they are active (initial craft done)
         // They don't consume ingredients per tick, only progress time
@@ -411,7 +499,10 @@ class MirrorItem extends CraftingItem {
     }
 
 
-    // Override generateHTML for mirror items
+    /**
+     * Generate HTML for this mirror item's card.
+     * @returns {string} HTML string for the card.
+     */
     generateHTML() {
         const craftButtonHTML = this.isActive() ? '' : `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Craft ${this.displayName}</button><br><br>`;
         const craftingCostText = this.isActive() ? '' : `Crafting Cost:<br>${this.ingredients.map(ing => `${ing.amount} ${ing.currency}`).join('<br>')}<br>`;

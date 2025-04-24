@@ -2,6 +2,11 @@ import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
 
 // CurrencyUI.js - Handles all currency-related UI rendering and events
+/**
+ * Toggles the buy/sell state for a currency based on the slider UI.
+ * @param {Currency} currency - The currency object to toggle.
+ * @param {string} operation - 'sell' or 'buy'.
+ */
 function toggleCurrencyOperation(currency, operation) {
     const method = operation === 'sell' ? 'sellSetCurrency' : 'buySetCurrency';
     const sliderId = `${currency.name}${operation.charAt(0).toUpperCase() + operation.slice(1)}Slider`;
@@ -9,6 +14,12 @@ function toggleCurrencyOperation(currency, operation) {
     currency[method](isChecked ? 1 : 0);
 }
 
+/**
+ * Creates a UI switch (slider) for buying or selling a currency.
+ * @param {Currency} currency - The currency object.
+ * @param {string} type - 'sell' or 'buy'.
+ * @returns {HTMLElement} The switch container element.
+ */
 function createSwitch(currency, type) {
     const kebabCase = currency.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const containerId = `${kebabCase}-currency-${type}-switch-container`;
@@ -34,6 +45,11 @@ function createSwitch(currency, type) {
     return container;
 }
 
+/**
+ * Creates a display element for a currency's value.
+ * @param {Currency} currency - The currency object.
+ * @returns {HTMLElement} The display container element.
+ */
 function createDisplay(currency) {
     const container = document.createElement('div');
     container.classList.add('currency-display');
@@ -48,6 +64,11 @@ function createDisplay(currency) {
     return container;
 }
 
+/**
+ * Sets up the currency UI: switches and value displays for all currencies.
+ * Adds event delegation for hover effects on sliders.
+ * @returns {void}
+ */
 function setupCurrencyUI() {
     const sellCurrencyContainer = document.getElementById('sellCurrencyContainer');
     const buyCurrencyContainer = document.getElementById('buyCurrencyContainer');
@@ -83,6 +104,10 @@ function setupCurrencyUI() {
     });
 }
 
+/**
+ * Updates the displayed value for each currency in the UI.
+ * @returns {void}
+ */
 function updateCurrencyClass() {
     for (let i = 0; i < currencyData.length; i++) {
         const el = document.getElementsByClassName(currencyData[i].name)[0];
@@ -95,7 +120,11 @@ function updateCurrencyClass() {
     }
 }
 
-// Show the default currency view (main screen)
+/**
+ * Shows the default currency view (main screen).
+ * Hides buy/sell panels and shows the main theorycrafting view.
+ * @returns {void}
+ */
 function showDefaultCurrencyView() {
     $("#divBuyCurrency").hide();
     $("#divSellCurrency").hide();
@@ -107,7 +136,11 @@ function showDefaultCurrencyView() {
         .addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
 }
 
-// Show the flipping view (currency trading)
+/**
+ * Shows the flipping (currency trading) view.
+ * Displays buy/sell panels and the flipping UI.
+ * @returns {void}
+ */
 function showFlippingView() {
     $("#divBuyCurrency").show();
     $("#divSellCurrency").show();

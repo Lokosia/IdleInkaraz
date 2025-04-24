@@ -3,14 +3,17 @@ import { fossilData } from '../delve/Fossil.js';
 import { UICard } from '../ui/Cards.js';
 import Upgrades from '../upgrades/Augments.js';
 import { recruitExile } from '../../../Main.js';
-import { currencyMap } from '../currency/CurrencyData.js'; // Import currencyMap if needed for checks
+import { currencyMap } from '../currency/CurrencyData.js';
 
-// Assuming componentHandler, $, numeral, and exileData are globally available
-// declare var componentHandler: any;
-// declare var $: any;
-// declare var numeral: any;
-// declare var exileData: any[];
-
+/**
+ * CraftingSystem manages all crafting and mirror items, their progress, and UI updates.
+ * Implements singleton pattern to ensure a single instance.
+ * Handles crafting ticks, progress, and rendering of crafting UI.
+ *
+ * @class
+ * @property {Object.<string, CraftingItem>} craftingItems - All standard crafting items.
+ * @property {Object.<string, MirrorItem>} mirrorItems - All mirror crafting items.
+ */
 class CraftingSystem {
     // Singleton instance property
     // Removed private modifier and type annotation
@@ -20,6 +23,10 @@ class CraftingSystem {
     craftingItems;
     mirrorItems;
 
+    /**
+     * Create a new CraftingSystem (singleton).
+     * Initializes crafting and mirror items, sets up intervals, and renders UI.
+     */
     constructor() {
         // Singleton pattern
         if (CraftingSystem.instance) {
@@ -42,6 +49,10 @@ class CraftingSystem {
         // this.updateUIConditionally(); // Call this externally after instantiation
     }
 
+    /**
+     * Initialize all standard crafting items.
+     * @returns {void}
+     */
     initializeCraftingItems() {
         // Definitions remain the same, using the CraftingItem constructor
         this.craftingItems = {
@@ -84,6 +95,10 @@ class CraftingSystem {
         };
     }
 
+    /**
+     * Initialize all mirror crafting items.
+     * @returns {void}
+     */
     initializeMirrorItems() {
         // Definitions remain the same, using the MirrorItem constructor
         this.mirrorItems = {
@@ -109,6 +124,10 @@ class CraftingSystem {
         };
     }
 
+    /**
+     * Start all crafting, mirror, and UI update intervals.
+     * @returns {void}
+     */
     startIntervals() {
         // Intervals call the tick methods which delegate to items
         setInterval(() => this.craftingTick(), 300); // Standard crafts (30s total)
@@ -121,7 +140,10 @@ class CraftingSystem {
         setInterval(() => this.updateFossilCounts(), 300);
     }
 
-    // Tick for standard crafting items
+    /**
+     * Tick for standard crafting items: attempts to start and progress crafts.
+     * @returns {void}
+     */
     craftingTick() {
         Object.values(this.craftingItems).forEach(item => {
             // If not currently crafting, try to start a new craft (consumes ingredients)
@@ -133,13 +155,20 @@ class CraftingSystem {
         });
     }
 
-    // Tick for mirror items
+    /**
+     * Tick for mirror items: progresses mirror crafting.
+     * @returns {void}
+     */
     mirrorTick() {
         Object.values(this.mirrorItems).forEach(item => {
             item.craft();
         });
     }
 
+    /**
+     * Update all progress bars for crafting and mirror items if progress changed.
+     * @returns {void}
+     */
     updateAllProgressBars() {
         const updateItemProgressBar = (item) => {
             // Only update the DOM if the item is active and its progress has changed
@@ -152,7 +181,10 @@ class CraftingSystem {
         Object.values(this.mirrorItems).forEach(updateItemProgressBar);
     }
 
-    // Update fossil counts in the UI (remains a system responsibility)
+    /**
+     * Update fossil counts in the UI.
+     * @returns {void}
+     */
     updateFossilCounts() {
         // Ensure fossilData is loaded and elements exist
         if (!fossilData || fossilData.length === 0) return;
@@ -167,7 +199,11 @@ class CraftingSystem {
         });
     }
 
-    // Delegate buying to the specific crafting item
+    /**
+     * Attempt to buy/research a standard crafting item by id.
+     * @param {string} id - Crafting item id.
+     * @returns {boolean} True if successful, false otherwise.
+     */
     buyCrafting(id) { // Removed type annotation
         if (this.craftingItems[id]) {
             const success = this.craftingItems[id].buy();
@@ -179,7 +215,11 @@ class CraftingSystem {
         return false;
     }
 
-    // Delegate buying (initial craft) to the specific mirror item
+    /**
+     * Attempt to buy/craft a mirror item by id.
+     * @param {string} id - Mirror item id.
+     * @returns {boolean} True if successful, false otherwise.
+     */
     buyMirror(id) { // Removed type annotation
         if (this.mirrorItems[id]) {
             const success = this.mirrorItems[id].buy();
@@ -191,7 +231,11 @@ class CraftingSystem {
         return false;
     }
 
-    // Render the cards for all crafting and mirror items
+    /**
+     * Render the cards for all crafting and mirror items in the UI.
+     * Adds event listeners for research/craft buttons.
+     * @returns {void}
+     */
     renderCraftingCards() {
         const container = document.getElementById('crafting-cards-container');
         if (!container) {
@@ -253,7 +297,10 @@ class CraftingSystem {
         });
     }
 
-    // New method to handle UI updates based on Upgrades
+    /**
+     * Conditionally update UI sections based on upgrades (e.g., hide advanced crafting).
+     * @returns {void}
+     */
     updateUIConditionally() {
         // Hide sections based on upgrades
         // Check if Upgrades is defined and accessible now
@@ -271,7 +318,11 @@ class CraftingSystem {
         }
     }
 
-    // Render the header/description section (remains system logic)
+    /**
+     * Render the header/description section for crafting UI.
+     * Adds recruit button for Artificer if not owned.
+     * @returns {void}
+     */
     renderCraftingHeader() {
         const container = document.getElementById('crafting-main-container');
         if (!container) {

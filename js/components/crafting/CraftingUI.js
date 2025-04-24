@@ -4,7 +4,11 @@ import craftingSystem from './CraftingSystem.js';
 
 /**
  * Handles the logic for showing the crafting section.
- * Renders the crafting header and cards, and applies visibility rules.
+ * Renders the crafting header and cards, and applies visibility rules based on Artificer ownership and upgrades.
+ *
+ * @param {Array<Object>} exileData - Array of exile objects (to check Artificer ownership).
+ * @param {Object} Upgrades - Upgrades state object (to check stash tab requirements).
+ * @returns {void}
  */
 function showCrafting(exileData, Upgrades) {
     UIManager.show('crafting');
