@@ -8,6 +8,7 @@ import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDiv
 import { IIQUpgradeConfig, IIQState } from './IIQ/IIQUpgrade.js';
 import IncubatorUpgradeConfig, { setUpgradesRef } from './Incubator/IncubatorUpgrade.js';
 import createFlipSpeedUpgrade from './FlipSpeed/FlipSpeedUpgrade.js';
+import DelveScarabUpgradeConfig, { setUpgradesRef as setDelveScarabUpgradesRef } from './Scarabs/DelveScarabUpgrade.js';
 
 // Upgrades module encapsulating all state and logic
 const Upgrades = {
@@ -50,6 +51,7 @@ function incUpgradeDropRate() { Upgrades.upgradeDropRate += 1; }
 
 // Set Upgrades reference for IncubatorUpgrade
 setUpgradesRef(Upgrades);
+setDelveScarabUpgradesRef(Upgrades);
 
 // --- Upgrade Configurations --- 
 const upgradeConfigs = [
@@ -61,72 +63,7 @@ const upgradeConfigs = [
 		...cfg,
 		buy: () => cfg.buy(incUpgradeDropRate)
 	})),
-	{
-		key: 'delveScarab',
-		shownFlag: 'delveScarabShown',
-		unlock: () => Upgrades.delveStashTab === 1 && !Upgrades.delveScarabShown,
-		rowId: 'delveScarab',
-		buttonId: 'btn-niko-scarab',
-		buttonClass: 'nikoScarab',
-		buttonText: () => {
-			const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
-			return scarabTypes[Upgrades.nikoScarab] || 'Maxed';
-		},
-		description: 'Use Sulphite Scarab to increase Sulphite quantity',
-		benefitClass: '',
-		benefit: () => '+1.0',
-		costClass: 'delveScarabCost',
-		costText: () => {
-			const costs = ['1 Exalted', '5 Exalted', '10 Exalted'];
-			return costs[Upgrades.nikoScarab] || 'Maxed';
-		},
-		requirements: () => {
-			const costs = [1, 5, 10];
-			return Upgrades.nikoScarab < costs.length
-				? [{ currency: currencyMap['Exalted'], amount: costs[Upgrades.nikoScarab] }]
-				: [];
-		},
-		hover: () => hoverUpgrades('delveScarab', 'Exalted'),
-		buy: () => {
-			const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
-			const costs = [1, 5, 10];
-			const currentCost = costs[Upgrades.nikoScarab];
-
-			handleGenericUpgrade({
-				requirements: currentCost !== undefined ? [{ currency: currencyMap['Exalted'], amount: currentCost }] : [],
-				check: () => Upgrades.nikoScarab < scarabTypes.length, // Ensure not maxed
-				onSuccess: () => {
-					Upgrades.nikoScarab++;
-					Upgrades.sulphiteDropRate += 100;
-					Upgrades.upgradeDropRate += 1;
-				},
-				updateUI: () => {
-					const row = document.getElementById('delveScarab');
-					if (!row) return;
-
-					if (Upgrades.nikoScarab >= scarabTypes.length) {
-						$(".Exalted").removeClass("hover");
-						$(row).remove();
-						Upgrades.delveScarabShown = true; // Mark as shown only when maxed and removed
-					} else {
-						const costCell = row.querySelector('.delveScarabCost');
-						if (costCell) costCell.innerHTML = `${costs[Upgrades.nikoScarab]} Exalted`;
-						const button = row.querySelector('.nikoScarab');
-						if (button) button.innerHTML = scarabTypes[Upgrades.nikoScarab];
-					}
-					const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-					if (globalUpgradeRateElem) globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
-				},
-				onFailure: () => {
-					if (Upgrades.nikoScarab >= scarabTypes.length) {
-						SnackBar("Scarab upgrades already maxed!");
-					} else {
-						SnackBar("Requirements not met.");
-					}
-				}
-			});
-		}
-	}
+	DelveScarabUpgradeConfig
 ];
 
 // --- Generic Upgrade Renderer --- 
@@ -148,7 +85,7 @@ function renderUpgradeRow(cfg, totalLevel) {
 
 	// Evaluate dynamic values
 	const buttonText = typeof cfg.buttonText === 'function' ? cfg.buttonText() : cfg.buttonText;
-	const description = cfg.description;
+	const description = typeof cfg.description === 'function' ? cfg.description() : cfg.description;
 	const benefit = cfg.benefit();
 	const costText = typeof cfg.costText === 'function' ? cfg.costText() : cfg.costText;
 
