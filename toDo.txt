@@ -65,3 +65,5 @@ differ how upgrade flipping speed works - now it increases batch size? we can ad
 rebalance
 
 leagues as separate mechanics
+
+make more links upgrades - starting at 1 links

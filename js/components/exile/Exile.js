@@ -189,21 +189,50 @@ class Exile {
             return;
         }
 
+        const rowId = `${this.name}${upgradeType}Upgrade`;
+        const row = document.getElementById(rowId);
+        if (!row) {
+            console.error(`Upgrade row ${rowId} not found.`);
+            return;
+        }
+
+        // Calculate the level *after* the potential purchase
+        const potentialNextLevel = this[propertyName] + (currentUpgrade.specialIncrement || 1);
+
         handlePurchase({
             requirements: currentUpgrade.requirements,
             onSuccess: () => {
                 applyUpgrade(currentUpgrade);
                 this[propertyName] += currentUpgrade.specialIncrement || 1;
             },
+            uiUpdateConfig: {
+                rowElement: row,
+                // We won't use cost/benefit elements directly, updateUpgradeUI handles it
+                getNextLevelData: () => {
+                    // Check if there's an upgrade *after* the one being purchased
+                    const nextNextUpgrade = getNextUpgrade(potentialNextLevel, this[upgradesArrayName]);
+                    return nextNextUpgrade ? {} : null; // Return null if no *further* upgrade exists (signals max level)
+                },
+                removeRowOnMaxLevel: true,
+                // Pass currency names for hover removal on max level
+                hoverClassesToRemoveOnMaxLevel: currentUpgrade.requirements.map(req => req.currency.name)
+            },
             updateUI: () => {
-                currentUpgrade.requirements.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
+                // Hover removal is handled by uiUpdateConfig
+                // Row removal at max level is handled by uiUpdateConfig
+
+                // Get the upgrade data for the *new* current level
                 const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
+
                 if (nextUpgrade) {
+                    // If there's still another upgrade available, update the row content
                     this.updateUpgradeUI(upgradeType, nextUpgrade);
                 } else {
-                    const rowId = `${this.name}${upgradeType}Upgrade`;
-                    $(`#${rowId}`).off('mouseenter mouseleave');
-                    $(`#${rowId}`).remove();
+                    // This case should ideally be handled by removeRowOnMaxLevel,
+                    // but we can add a fallback message or ensure cleanup if needed.
+                    // The row should already be removed by handlePurchase.
+                    // We might still want the SnackBar message.
+                    $(`#${rowId}`).off('mouseenter mouseleave'); // Clean up potential jQuery listeners if any remain
                     SnackBar(`${this.name} ${upgradeType} upgrades completed!`);
                 }
             },

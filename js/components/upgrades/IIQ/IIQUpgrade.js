@@ -50,45 +50,59 @@ const IIQUpgradeConfig = {
     benefitClass: 'iiqDropRate',
     benefit: () => `+${formatEfficiency(IIQState.iiqDropRate)}`,
     costClass: 'iiqUpgradeCostDisplay',
-    costText: () => `+${numeral(IIQState.iiqCost).format('0,0')} Chaos`,
+    costText: () => `${numeral(IIQState.iiqCost).format('0,0')} Chaos`, // Use numeral directly
     requirements: () => [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
     hover: () => hoverUpgrades('iiqUpgrade', 'Chaos'),
-    buy: () => handlePurchase({
-        requirements: [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
-        onSuccess: () => {
-            if (IIQState.iiqDropRate === 1) {
+    buy: () => {
+        const row = document.getElementById('iiqUpgrade');
+        if (!row) return false;
+
+        const currentCost = IIQState.iiqCost;
+        const currentDropRate = IIQState.iiqDropRate;
+
+        return handlePurchase({
+            requirements: [{ currency: currencyMap['Chaos'], amount: currentCost }],
+            onSuccess: () => {
+                // Increment global upgrade drop rate (specific logic)
                 import('../Augments.js').then(({ default: Upgrades }) => {
-                    Upgrades.upgradeDropRate += 1;
+                    Upgrades.upgradeDropRate += (currentDropRate === 1) ? 1 : 0.1;
                 });
-            } else {
-                import('../Augments.js').then(({ default: Upgrades }) => {
-                    Upgrades.upgradeDropRate += 0.1;
-                });
-            }
-            IIQState.iiqCost = Math.floor(IIQState.iiqCost * 1.4);
-            IIQState.iiqDropRate += 0.1;
-        },
-        updateUI: () => {
-            const row = document.getElementById('iiqUpgrade');
-            if (!row) return;
-            const costCell = row.querySelector('.iiqUpgradeCostDisplay');
-            if (costCell) {
-                costCell.innerHTML = numeral(IIQState.iiqCost).format('0,0') + ' Chaos';
-            }
-            const benefitCell = row.querySelector('.iiqDropRate');
-            if (benefitCell) {
-                benefitCell.innerHTML = `+${formatEfficiency(IIQState.iiqDropRate)}`;
-            }
-            // Update global display
-            const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-            if (globalUpgradeRateElem) {
-                import('../Augments.js').then(({ default: Upgrades, formatEfficiency }) => {
-                    globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);
-                });
-            }
-        },
-        successMessage: 'IIQ upgraded!'
-    })
+
+                // Update IIQ state
+                IIQState.iiqCost = Math.floor(currentCost * 1.4);
+                IIQState.iiqDropRate += 0.1;
+            },
+            uiUpdateConfig: {
+                rowElement: row,
+                costElement: row.querySelector('.iiqUpgradeCostDisplay'),
+                benefitElement: row.querySelector('.iiqDropRate'),
+                getNextLevelData: () => {
+                    const nextCost = Math.floor(currentCost * 1.4);
+                    const nextBenefit = `+${formatEfficiency(currentDropRate + 0.1)}`;
+                    // Return the fully formatted cost string
+                    return { cost: `${numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
+                },
+                // This upgrade doesn't have a max level
+            },
+            updateUI: () => {
+                // Update global display (keep this custom logic here for now)
+                const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+                if (globalUpgradeRateElem) {
+                    import('../Augments.js').then(({ default: Upgrades }) => {
+                        // Use the updated Upgrades.upgradeDropRate after onSuccess runs
+                        globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);
+                    });
+                }
+                // Cost and benefit cell updates are now handled by uiUpdateConfig
+
+                // Re-apply hover effect
+                hoverUpgrades(IIQUpgradeConfig.rowId, 'Chaos');
+                // Manually add hover class back
+                document.querySelectorAll('.Chaos').forEach(el => el.classList.add('hover'));
+            },
+            successMessage: 'IIQ upgraded!'
+        });
+    }
 };
 
 export { IIQUpgradeConfig, IIQState };

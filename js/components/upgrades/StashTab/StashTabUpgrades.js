@@ -34,20 +34,29 @@ const StashTabState = {
  * Methods for each tab
  */
 function buyCurrencyTab(onUpgrade) {
+    const row = document.getElementById('currencyTab');
+    if (!row) return;
     handlePurchase({
         requirements: [{ currency: currencyMap['StackedDeck'], amount: 5 }],
         onSuccess: () => {
             StashTabState.currencyStashTab = 1;
             if (onUpgrade) onUpgrade();
         },
+        uiUpdateConfig: {
+            rowElement: row,
+            getNextLevelData: () => null, // One-time purchase
+            removeRowOnMaxLevel: true,
+            hoverClassesToRemoveOnMaxLevel: ['StackedDeck'] // Add currency name
+        },
         updateUI: () => {
-            $(".StackedDeck").removeClass('hover');
-            $("#currencyTab").remove();
+            // Row removal and hover removal handled by uiUpdateConfig
         },
         successMessage: 'Stash tab purchased!'
     });
 }
 function buyDelveTab(onUpgrade) {
+    const row = document.getElementById('delveTab');
+    if (!row) return;
     handlePurchase({
         requirements: [
             { currency: currencyMap['StackedDeck'], amount: 50 },
@@ -57,29 +66,42 @@ function buyDelveTab(onUpgrade) {
             StashTabState.delveStashTab = 1;
             if (onUpgrade) onUpgrade();
         },
+        uiUpdateConfig: {
+            rowElement: row,
+            getNextLevelData: () => null, // One-time purchase
+            removeRowOnMaxLevel: true,
+            hoverClassesToRemoveOnMaxLevel: ['StackedDeck', 'Annulment'] // Add currency names
+        },
         updateUI: () => {
-            $(".StackedDeck").removeClass('hover');
-            $(".Annulment").removeClass('hover');
-            $("#delveTab").remove();
+            // Row removal and hover removal handled by uiUpdateConfig
         },
         successMessage: 'Stash tab purchased!'
     });
 }
 function buyQuadTab(onUpgrade) {
+    const row = document.getElementById('quadTab');
+    if (!row) return;
     handlePurchase({
         requirements: [{ currency: currencyMap['Eternal'], amount: 1 }],
         onSuccess: () => {
             StashTabState.quadStashTab = 1;
             if (onUpgrade) onUpgrade();
         },
+        uiUpdateConfig: {
+            rowElement: row,
+            getNextLevelData: () => null, // One-time purchase
+            removeRowOnMaxLevel: true,
+            hoverClassesToRemoveOnMaxLevel: ['Eternal'] // Add currency name
+        },
         updateUI: () => {
-            $(".Eternal").removeClass('hover');
-            $("#quadTab").remove();
+            // Row removal and hover removal handled by uiUpdateConfig
         },
         successMessage: 'Stash tab purchased!'
     });
 }
 function buyDivTab(onUpgrade) {
+    const row = document.getElementById('divTab');
+    if (!row) return;
     handlePurchase({
         requirements: [
             { currency: currencyMap['Annulment'], amount: 50 },
@@ -89,10 +111,14 @@ function buyDivTab(onUpgrade) {
             StashTabState.divStashTab = 1;
             if (onUpgrade) onUpgrade();
         },
+        uiUpdateConfig: {
+            rowElement: row,
+            getNextLevelData: () => null, // One-time purchase
+            removeRowOnMaxLevel: true,
+            hoverClassesToRemoveOnMaxLevel: ['Annulment', 'Exalted'] // Add currency names
+        },
         updateUI: () => {
-            $(".Annulment").removeClass('hover');
-            $(".Exalted").removeClass('hover');
-            $("#divTab").remove();
+            // Row removal and hover removal handled by uiUpdateConfig
         },
         successMessage: 'Stash tab purchased!'
     });

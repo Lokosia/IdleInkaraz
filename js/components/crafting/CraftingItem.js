@@ -63,7 +63,7 @@ class CraftingItem {
      * @returns {string} Display name.
      */
     getDisplayName() {
-        switch(this.id) {
+        switch (this.id) {
             case 'flask': return 'Flask';
             case 'gem': return '21/20% Gem';
             case 'enchant': return 'Enchanted Helmet';
@@ -78,7 +78,6 @@ class CraftingItem {
                 return this.id.charAt(0).toUpperCase() + this.id.slice(1);
         }
     }
-
     /**
      * Attempt to research/unlock this crafting item.
      * Deducts chaos cost and updates UI.
@@ -89,18 +88,28 @@ class CraftingItem {
             SnackBar("Already researched.");
             return false;
         }
+        const costElement = document.querySelector(`.craft${this.id.charAt(0).toUpperCase() + this.id.slice(1)}Cost`);
+        const loaderElement = document.getElementById(`${this.id}Loader`);
+
         return handlePurchase({
-            requirements: [{ currency: 'Chaos', amount: this.researchCost }],
+            requirements: [{ currency: currencyMap['Chaos'], amount: this.researchCost }], // Use currencyMap
             onSuccess: () => { this.level = 0; },
+            uiUpdateConfig: {
+                // No standard cost/benefit/row elements apply directly
+                getNextLevelData: () => null, // Signal one-time action
+                removeRowOnMaxLevel: false, // Not applicable
+                removeHoverSelectors: ['.Chaos'] // Remove hover from Chaos if needed
+            },
             updateUI: () => {
-                const costElement = document.querySelector(`.craft${this.id.charAt(0).toUpperCase() + this.id.slice(1)}Cost`);
+                // Keep specific UI changes here
                 if (costElement) costElement.classList.add('hidden');
-                const loaderElement = document.getElementById(`${this.id}Loader`);
                 if (loaderElement) loaderElement.classList.remove('hidden');
             },
             successMessage: `${this.displayName} researched!`
         });
     }
+
+    // ... rest of CraftingItem class ...
 
     /**
      * Check if all required ingredients are available.
@@ -200,8 +209,8 @@ class CraftingItem {
                 }
             }
         } else {
-             // If item becomes inactive, ensure progress bar is hidden or reset if needed
-             // (Current logic seems okay, but could be added here if required)
+            // If item becomes inactive, ensure progress bar is hidden or reset if needed
+            // (Current logic seems okay, but could be added here if required)
         }
     }
 
@@ -267,9 +276,9 @@ class CraftingItem {
      */
     generateHTML() {
         const researchButtonHTML = this.isActive() ? '' : `<button class="mdl-button mdl-button--raised mdl-button--colored craft-research-btn" id="craft-research-btn-${this.id}">Research ${this.displayName}</button><br><br>`;
-        
+
         const researchCostText = this.isActive() ? '' : `Research Cost:<br>${numeral(this.researchCost).format('0,0')} Chaos<br>`;
-        
+
         const content = `
             <div id="${this.id}Loader" class="mdl-progress mdl-js-progress ${this.isActive() ? '' : 'hidden'}"></div><br>
             Crafting Cost:<br>
@@ -334,7 +343,7 @@ class MirrorItem extends CraftingItem {
      * @returns {string} Display name.
      */
     getDisplayName() {
-        switch(this.id) {
+        switch (this.id) {
             case 'mirrorSword': return '(Mirror) 650pDPS Sword';
             case 'mirrorShield': return '(Mirror) ES Shield';
             case 'mirrorChest': return '(Mirror) Explode Chest';
@@ -351,7 +360,7 @@ class MirrorItem extends CraftingItem {
      * @returns {string} HTML-formatted stats.
      */
     getItemStats() {
-        switch(this.id) {
+        switch (this.id) {
             case 'mirrorSword':
                 return `Cataclysm Edge<br>
                         Jewelled Foil<br>
@@ -423,51 +432,58 @@ class MirrorItem extends CraftingItem {
             feeElement.innerHTML = numeral(this.fee).format('0,0');
         }
     }
-
     /**
      * Initial craft action for mirror items (unlocks mirroring).
+     * Uses handlePurchase for consistency.
      * @returns {boolean} True if crafted, false otherwise.
      */
     buy() {
-         // Check if already crafted/active
+        // Check if already crafted/active
         if (this.isActive()) {
             SnackBar("Item already available for mirroring.");
             return false;
         }
-        // Check ingredients for the *initial* craft
-        if (this.hasIngredients()) {
-            // Consume ingredients for the initial craft
-            this.ingredients.forEach(ing => {
-                let item = currencyMap[ing.currency];
-                if (!item && fossilData) {
-                    item = fossilData.find(f => f.name === ing.currency);
-                }
-                if (item) {
-                    item.total -= ing.amount;
-                } else {
-                     console.error(`Failed to consume ingredient for initial mirror craft: ${ing.currency}`);
-                }
-            });
 
-            this.level = 0; // Mark as active/available for mirroring ticks
-            this.progress = 0; // Ensure progress is 0
-            this.lastProgressUpdate = -1; // Ensure the first interval update triggers
+        // Get UI elements needed for updateUI
+        const costElement = document.querySelector(`.${this.id}Cost`);
+        const loaderElement = document.getElementById(`${this.id}Loader`);
+        const statsElement = document.querySelector(`.${this.id}Stats`);
+        const itemName = this.displayName.replace('(Mirror) ', '');
 
-            // Update UI elements visibility
-            const costElement = document.querySelector(`.${this.id}Cost`);
-            if (costElement) costElement.classList.add('hidden');
-            const loaderElement = document.getElementById(`${this.id}Loader`);
-            if (loaderElement) loaderElement.classList.remove('hidden');
-            const statsElement = document.querySelector(`.${this.id}Stats`);
-            if (statsElement) statsElement.classList.remove('hidden');
-            
-            const itemName = this.displayName.replace('(Mirror) ', '');
-            SnackBar(`${itemName} crafted! Now available for mirroring.`);
-            return true;
-        } else {
-            SnackBar("Requirements not met for initial craft.");
-            return false;
-        }
+        // Define requirements using currencyMap and fossilData lookup if necessary
+        const requirements = this.ingredients.map(ing => {
+            let currencyObj = currencyMap[ing.currency];
+            if (!currencyObj && fossilData) {
+                currencyObj = fossilData.find(f => f.name === ing.currency);
+            }
+            return { currency: currencyObj, amount: ing.amount };
+        }).filter(req => req.currency); // Filter out any potentially missing currencies
+
+        // Define hover selectors based on ingredients
+        const hoverSelectors = requirements.map(req => `.${req.currency.name}`);
+
+        return handlePurchase({
+            requirements: requirements,
+            onSuccess: () => {
+                this.level = 0; // Mark as active/available for mirroring ticks
+                this.progress = 0; // Ensure progress is 0
+                this.lastProgressUpdate = -1; // Ensure the first interval update triggers
+            },
+            uiUpdateConfig: {
+                // No standard cost/benefit/row elements apply directly
+                getNextLevelData: () => null, // Signal one-time action
+                removeRowOnMaxLevel: false, // Not applicable
+                removeHoverSelectors: hoverSelectors
+            },
+            updateUI: () => {
+                // Keep specific UI changes here
+                if (costElement) costElement.classList.add('hidden');
+                if (loaderElement) loaderElement.classList.remove('hidden');
+                if (statsElement) statsElement.classList.remove('hidden');
+            },
+            successMessage: `${itemName} crafted! Now available for mirroring.`
+            // Default failure message from handlePurchase is sufficient
+        });
     }
 
     /**
@@ -479,7 +495,7 @@ class MirrorItem extends CraftingItem {
         // They don't consume ingredients per tick, only progress time
         if (this.isActive()) {
             this.progress += 1; // Increment progress (assuming 1 unit per mirror tick)
-             // Check for completion (reaching 100% progress for the mirror fee)
+            // Check for completion (reaching 100% progress for the mirror fee)
             if (this.progress >= 100) { // Assuming 100 is the target progress for mirror fee
                 this.completeCrafting(); // Collect fee, increase fee, reset progress
             }

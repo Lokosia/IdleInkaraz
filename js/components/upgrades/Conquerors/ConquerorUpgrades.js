@@ -13,16 +13,36 @@ import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
  * @returns {void}
  */
 export function buyConqueror(upgradesObj, conqueror) {
+	const rowId = `${conqueror.name}Upgrade`;
+	const row = document.getElementById(rowId);
+	if (!row) {
+		console.error(`Conqueror upgrade row ${rowId} not found.`);
+		return;
+	}
+
 	handlePurchase({
 		requirements: [{ currency: conqueror, amount: 1 }],
 		onSuccess: () => {
 			upgradesObj.upgradeDropRate += 1;
 		},
+		uiUpdateConfig: {
+			rowElement: row,
+			// No cost/benefit elements to update dynamically after purchase
+			getNextLevelData: () => null, // Signal that this is a one-time purchase (per orb)
+			removeRowOnMaxLevel: false, // Don't remove the row, just hide it (handled in updateUI)
+			removeHoverSelectors: [`.${conqueror.name}`] // Remove hover from the specific currency
+		},
 		updateUI: () => {
-			document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = upgradesObj.upgradeDropRate.toFixed(1);
+			// Update global drop rate display
+			const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+			if (globalRateElem) {
+				globalRateElem.innerHTML = upgradesObj.upgradeDropRate.toFixed(1);
+			}
+			// Hide the row if the currency is now depleted
 			if (conqueror.total < 1) {
-				$(`#${conqueror.name}Upgrade`).hide();
-				$(`.${conqueror.name}`).removeClass('hover');
+				row.style.display = 'none'; // Use style.display instead of jQuery .hide()
+                // Manually remove hover effect when hiding
+                document.querySelectorAll('.' + conqueror.name).forEach(el => el.classList.remove('hover'));
 			}
 		},
 		successMessage: 'Conqueror influence consumed!'

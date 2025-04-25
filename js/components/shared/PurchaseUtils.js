@@ -31,24 +31,92 @@ export function deductCosts(requirements) {
 /**
  * Generic purchase handler for upgrades/crafting.
  * @param {Object} options
- * @param {Array} options.requirements - Array of requirements
+ * @param {Array<{currency: string|object, amount: number}>} options.requirements - Array of requirements
  * @param {Function} options.onSuccess - Called if purchase succeeds
  * @param {Function} [options.onFailure] - Called if purchase fails
- * @param {Function} [options.updateUI] - Called after success
+ * @param {Function} [options.updateUI] - DEPRECATED: Use uiUpdateConfig instead. Called after success.
  * @param {string} [options.successMessage] - Message to show on success
+ * @param {Object} [options.uiUpdateConfig] - Configuration for common UI updates
+ * @param {HTMLElement} [options.uiUpdateConfig.costElement] - Element displaying the cost.
+ * @param {HTMLElement} [options.uiUpdateConfig.benefitElement] - Element displaying the benefit.
+ * @param {Function} [options.uiUpdateConfig.getNextLevelData] - Function returning next level data (e.g., { cost: number, benefit: string|number }). Should return null or undefined if max level reached.
+ * @param {HTMLElement} [options.uiUpdateConfig.rowElement] - The row element to potentially remove.
+ * @param {boolean} [options.uiUpdateConfig.removeRowOnMaxLevel=true] - Remove row if getNextLevelData signals max level.
+ * @param {string[]} [options.uiUpdateConfig.hoverClassesToRemoveOnMaxLevel] - CSS class names (without '.') of currency elements to remove 'hover' class from when row is removed.
  * @returns {boolean} True if successful, false otherwise
  */
 export function handlePurchase({
     requirements = [],
     onSuccess = () => {},
     onFailure = () => SnackBar('Requirements not met.'),
-    updateUI = () => {},
-    successMessage = 'Purchase successful!'
+    updateUI = () => {}, // Keep for backward compatibility for now, but prioritize uiUpdateConfig
+    successMessage = 'Purchase successful!',
+    uiUpdateConfig = {}
 }) {
     if (checkRequirements(requirements)) {
         deductCosts(requirements);
-        onSuccess();
+        onSuccess(); // Call main success logic first
+
+        // --- Start: Remove hover from spent currencies ---
+        const spentCurrencyClasses = requirements.map(req => {
+            let item = typeof req.currency === 'string' ? currencyMap[req.currency] : req.currency;
+            return item ? item.name : null;
+        }).filter(name => name !== null);
+
+        if (spentCurrencyClasses.length > 0) {
+            spentCurrencyClasses.forEach(className => {
+                document.querySelectorAll('.' + className).forEach(el => el.classList.remove('hover'));
+            });
+        }
+        // --- End: Remove hover from spent currencies ---
+
+        // Handle common UI updates based on config
+        const {
+            costElement,
+            benefitElement,
+            getNextLevelData,
+            rowElement,
+            removeRowOnMaxLevel = true,
+            // New property to get hover classes
+            hoverClassesToRemoveOnMaxLevel = []
+        } = uiUpdateConfig;
+
+        let nextLevelData = null;
+        if (getNextLevelData) {
+            nextLevelData = getNextLevelData();
+        }
+
+        const isMaxLevel = getNextLevelData && (nextLevelData === null || nextLevelData === undefined);
+
+        if (rowElement && removeRowOnMaxLevel && isMaxLevel) {
+            // Remove hover effect *before* removing the row
+            if (hoverClassesToRemoveOnMaxLevel.length > 0) {
+                hoverClassesToRemoveOnMaxLevel.forEach(className => {
+                    // Select all elements with the currency class and remove 'hover'
+                    document.querySelectorAll('.' + className).forEach(el => el.classList.remove('hover'));
+                });
+            }
+            rowElement.remove();
+        } else {
+            // Update cost and benefit if not max level and elements provided
+            if (costElement && nextLevelData?.cost !== undefined) {
+                // Directly use the cost string provided by getNextLevelData
+                costElement.textContent = nextLevelData.cost;
+            }
+            if (benefitElement && nextLevelData?.benefit !== undefined) {
+                // Handle potential HTML content for benefit
+                if (typeof nextLevelData.benefit === 'string' && nextLevelData.benefit.includes('<')) {
+                    benefitElement.innerHTML = nextLevelData.benefit;
+                } else {
+                    benefitElement.textContent = nextLevelData.benefit;
+                }
+            }
+        }
+
+        // Call the old updateUI for any custom logic not covered
+        // TODO: Gradually remove this as call sites are refactored
         updateUI();
+
         if (successMessage) SnackBar(successMessage);
         return true;
     } else {

@@ -48,12 +48,13 @@ const DelveScarabUpgradeConfig = {
         const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
         return `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
     },
-    benefitClass: '',
-    benefit: () => `+${formatEfficiency(1)}`,
+    benefitClass: '', // No specific class for benefit, handled by description/button text
+    benefit: () => `+${formatEfficiency(1)}`, // Benefit is fixed per level
     costClass: 'delveScarabCost',
     costText: () => {
-        const costs = ['1 Exalted', '5 Exalted', '10 Exalted'];
-        return costs[UpgradesRef.nikoScarab] || 'Maxed';
+        const costs = [1, 5, 10];
+        const cost = costs[UpgradesRef.nikoScarab];
+        return cost !== undefined ? `${numeral(cost).format('0,0')} Exalted` : 'Maxed'; // Use numeral directly
     },
     requirements: () => {
         const costs = [1, 5, 10];
@@ -63,41 +64,74 @@ const DelveScarabUpgradeConfig = {
     },
     hover: () => hoverUpgrades('delveScarab', 'Exalted'),
     buy: () => {
+        const row = document.getElementById('delveScarab');
+        if (!row) return false;
+
         const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
         const costs = [1, 5, 10];
-        const currentCost = costs[UpgradesRef.nikoScarab];
+        const currentLevel = UpgradesRef.nikoScarab;
+
+        if (currentLevel >= costs.length) {
+            SnackBar("Scarab upgrades already maxed!");
+            return false; // Already maxed, don't proceed
+        }
+
+        const currentCost = costs[currentLevel];
+
         return handlePurchase({
-            requirements: currentCost !== undefined ? [{ currency: currencyMap['Exalted'], amount: currentCost }] : [],
+            requirements: [{ currency: currencyMap['Exalted'], amount: currentCost }],
             onSuccess: () => {
                 UpgradesRef.nikoScarab++;
                 UpgradesRef.sulphiteDropRate += 100;
                 UpgradesRef.upgradeDropRate += 1;
+                // Set shown flag only when the last level is purchased
+                if (UpgradesRef.nikoScarab >= scarabTypes.length) {
+                    UpgradesRef.delveScarabShown = true;
+                }
+            },
+            uiUpdateConfig: {
+                rowElement: row,
+                costElement: row.querySelector('.delveScarabCost'),
+                // benefitElement is not used directly, handled in updateUI
+                getNextLevelData: () => {
+                    const nextLevel = currentLevel + 1;
+                    if (nextLevel >= costs.length) {
+                        return null; // Signal max level reached
+                    }
+                    const nextCost = costs[nextLevel];
+                    // Return the fully formatted cost string
+                    return { cost: `${numeral(nextCost).format('0,0')} Exalted` };
+                },
+                removeRowOnMaxLevel: true, // Remove row when getNextLevelData returns null
+                // Pass currency names for hover removal on max level
+                hoverClassesToRemoveOnMaxLevel: ['Exalted']
             },
             updateUI: () => {
-                const row = document.getElementById('delveScarab');
-                if (!row) return;
-                if (UpgradesRef.nikoScarab >= scarabTypes.length) {
-                    $(".Exalted").removeClass("hover");
-                    $(row).remove();
-                    UpgradesRef.delveScarabShown = true;
-                } else {
-                    const costCell = row.querySelector('.delveScarabCost');
-                    if (costCell) costCell.innerHTML = `${costs[UpgradesRef.nikoScarab]} Exalted`;
+                const nextLevel = UpgradesRef.nikoScarab; // Get the *new* level after onSuccess
+
+                // Update description and button text if not maxed out
+                if (nextLevel < scarabTypes.length) {
                     const button = row.querySelector('.nikoScarab');
-                    if (button) button.textContent = scarabTypes[UpgradesRef.nikoScarab];
-                    const descCell = row.children[1];
-                    if (descCell) descCell.innerHTML = `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
+                    if (button) button.textContent = scarabTypes[nextLevel];
+                    const descCell = row.children[1]; // Assuming description is the second cell
+                    if (descCell) descCell.innerHTML = `Use ${scarabTypes[nextLevel]} to increase Sulphite quantity`;
                 }
+
+                // Update global display (keep this custom logic here)
                 const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-                if (globalUpgradeRateElem) globalUpgradeRateElem.innerHTML = formatEfficiency(UpgradesRef.upgradeDropRate);
-            },
-            onFailure: () => {
-                if (UpgradesRef.nikoScarab >= scarabTypes.length) {
-                    SnackBar("Scarab upgrades already maxed!");
-                } else {
-                    SnackBar("Requirements not met.");
+                if (globalUpgradeRateElem) {
+                    globalUpgradeRateElem.innerHTML = formatEfficiency(UpgradesRef.upgradeDropRate);
+                }
+                // Cost update and row removal are handled by uiUpdateConfig
+
+                // Re-apply hover if not maxed out
+                if (nextLevel < scarabTypes.length) {
+                    hoverUpgrades(DelveScarabUpgradeConfig.rowId, 'Exalted');
+                    // Manually add hover class back
+                    document.querySelectorAll('.Exalted').forEach(el => el.classList.add('hover'));
                 }
             },
+            // onFailure is handled by the default message now
             successMessage: 'Scarab upgraded!'
         });
     }

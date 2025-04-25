@@ -93,28 +93,84 @@ const MapCurrencyUpgradeSystem = {
 
     // buyMapCurrency(): Handles the purchase/upgrade of map currency drop levels, updating state and UI.
     buyMapCurrency(getUpgradeDropRate, setUpgradeDropRate) {
-        const idx = this.mappingCurrencyLevel;
-        const level = mapCurrencyUpgradeLevels[idx];
-        if (!level) return;
+        const currentLevelIndex = this.mappingCurrencyLevel;
+        const currentLevelData = mapCurrencyUpgradeLevels[currentLevelIndex];
+
+        if (!currentLevelData) {
+            console.warn("Attempted to buy map currency upgrade beyond max level.");
+            return; // Already maxed or invalid level
+        }
+
+        const rowId = 'MapCurrencyMapUpgrade';
+        const row = document.getElementById(rowId);
+        if (!row) {
+            console.error(`Upgrade row with ID ${rowId} not found.`);
+            return;
+        }
+
         const requirements = [
-            { currency: currencyMap['Exalted'], amount: level.cost },
-            ...level.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
+            { currency: currencyMap['Exalted'], amount: currentLevelData.cost },
+            ...currentLevelData.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
         ];
+
+        // Selectors for hover removal (based on current level requirements)
+        const hoverSelectorsToRemove = [
+            '.Exalted',
+            ...currentLevelData.consume.map(req => `.${req.currency}`)
+        ];
+
         handlePurchase({
             requirements,
             onSuccess: () => {
-                this.mappingCurrencyLevel++;
-                setUpgradeDropRate(getUpgradeDropRate() + 1.5);
+                this.mappingCurrencyLevel++; // Increment level state
+                setUpgradeDropRate(getUpgradeDropRate() + 1.5); // Update global drop rate state
+            },
+            uiUpdateConfig: {
+                rowElement: row,
+                costElement: row.querySelector('.upgrade-cost'),
+                benefitElement: row.querySelector('.upgrade-benefit'), // Assuming a standard class
+                getNextLevelData: () => {
+                    const nextLevelIndex = currentLevelIndex + 1;
+                    if (nextLevelIndex >= mapCurrencyUpgradeLevels.length) {
+                        return null; // Signal max level
+                    }
+                    const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
+                    return {
+                        cost: nextLevelData.cost,
+                        benefit: '+1.5' // Benefit seems fixed
+                        // Description and button text are handled in updateUI
+                    };
+                },
+                removeRowOnMaxLevel: true,
+                removeHoverSelectors: hoverSelectorsToRemove
             },
             updateUI: () => {
-                document.getElementsByClassName('UpgradeDropRate')[0].innerHTML = getUpgradeDropRate().toFixed(1);
-                if (this.mappingCurrencyLevel < mapCurrencyUpgradeLevels.length) {
-                    this.showOrUpdateMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate);
-                } else {
-                    $(".Exalted").removeClass("hover");
-                    level.consume.forEach(req => $(`.${req.currency}`).removeClass("hover"));
-                    $('#MapCurrencyMapUpgrade').remove();
+                // 1. Update global drop rate display (always needed)
+                const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+                if (globalRateElem) {
+                    globalRateElem.innerHTML = getUpgradeDropRate().toFixed(1);
                 }
+
+                // 2. Update description and button text if *not* max level
+                const nextLevelIndex = this.mappingCurrencyLevel; // Get the *new* level
+                if (nextLevelIndex < mapCurrencyUpgradeLevels.length) {
+                    const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
+                    const row = document.getElementById(rowId); // Get row again
+                    if (row) {
+                        // Update description (assuming it's the second cell)
+                        const descCell = row.children[1];
+                        if (descCell) descCell.innerHTML = nextLevelData.description;
+                        // Update button text
+                        const btn = row.querySelector('button');
+                        if (btn) btn.textContent = nextLevelData.buttonText;
+
+                        // Re-apply hover listeners for the new requirements
+                        hoverUpgrades(rowId, 'Exalted');
+                        // Manually add the hover class back immediately
+                        document.querySelectorAll('.Exalted').forEach(el => el.classList.add('hover'));
+                    }
+                }
+                // Row removal, cost/benefit update, and hover removal are handled by uiUpdateConfig
             },
             successMessage: "Map strategy upgraded!"
         });
@@ -139,13 +195,13 @@ const MapCurrencyUpgradeSystem = {
             const rowHtml = `<tr id="${rowId}"></tr>`;
             $("#UpgradeTable").append(rowHtml);
             // Use generateUpgradeCellsHTML for initial rendering
-            const requirements = `${level.cost} Exalted`;
+            const requirementsText = `${numeral(level.cost).format('0,0')} Exalted`; // Format cost
             const cellsHTML = generateUpgradeCellsHTML(
                 'MapCurrency',
                 'Map',
                 level.description,
                 '+1.5',
-                requirements,
+                requirementsText,
                 level.buttonText,
                 buttonId
             );
@@ -169,7 +225,8 @@ const MapCurrencyUpgradeSystem = {
                 if (benefitCell) benefitCell.innerHTML = '+1.5';
                 // Update cost
                 const costCell = row.querySelector('.upgrade-cost');
-                if (costCell) costCell.innerHTML = `${level.cost} Exalted`;
+                const formattedCost = `${numeral(level.cost).format('0,0')} Exalted`;
+                if (costCell) costCell.innerHTML = formattedCost;
                 // Update button text
                 const btn = row.querySelector('button');
                 if (btn) btn.textContent = level.buttonText;

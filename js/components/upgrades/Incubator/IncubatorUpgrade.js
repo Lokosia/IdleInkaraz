@@ -50,33 +50,49 @@ const IncubatorUpgradeConfig = {
     benefitClass: 'incDropRate',
     benefit: () => `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`,
     costClass: 'incubatorUpgradeCostDisplay',
-    costText: () => `+${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`,
+    costText: () => `${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`, // Use numeral directly
     requirements: () => [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
     hover: () => hoverUpgrades('incubatorUpgrade', 'Chaos'),
-    buy: () => handlePurchase({
-        requirements: [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
-        onSuccess: () => {
-            UpgradesRef.incubatorCost = Math.floor(UpgradesRef.incubatorCost * 1.2);
-            if (UpgradesRef.incDropRate === 0) {
-                UpgradesRef.incDropRate = 1;
-            } else {
-                UpgradesRef.incDropRate += 0.1;
-            }
-        },
-        updateUI: () => {
-            const row = document.getElementById('incubatorUpgrade');
-            if (!row) return;
-            const costCell = row.querySelector('.incubatorUpgradeCostDisplay');
-            if (costCell) {
-                costCell.innerHTML = `+${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`;
-            }
-            const benefitCell = row.querySelector('.incDropRate');
-            if (benefitCell) {
-                benefitCell.innerHTML = `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`;
-            }
-        },
-        successMessage: 'Incubator upgraded!'
-    })
+    buy: () => {
+        const row = document.getElementById('incubatorUpgrade');
+        if (!row) return false;
+
+        const currentCost = UpgradesRef.incubatorCost;
+        const currentDropRate = UpgradesRef.incDropRate;
+
+        return handlePurchase({
+            requirements: [{ currency: currencyMap['Chaos'], amount: currentCost }],
+            onSuccess: () => {
+                UpgradesRef.incubatorCost = Math.floor(currentCost * 1.2);
+                if (currentDropRate === 0) {
+                    UpgradesRef.incDropRate = 1;
+                } else {
+                    UpgradesRef.incDropRate += 0.1;
+                }
+            },
+            uiUpdateConfig: {
+                rowElement: row,
+                costElement: row.querySelector('.incubatorUpgradeCostDisplay'),
+                benefitElement: row.querySelector('.incDropRate'),
+                getNextLevelData: () => {
+                    const nextCost = Math.floor(currentCost * 1.2);
+                    const nextDropRate = (currentDropRate === 0) ? 1 : currentDropRate + 0.1;
+                    const nextBenefit = `+${formatEfficiency(nextDropRate)}`;
+                    // Return the fully formatted cost string
+                    return { cost: `${numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
+                },
+                // This upgrade doesn't have a max level
+            },
+            updateUI: () => {
+                // All UI updates are now handled by uiUpdateConfig
+                // Re-apply hover effect
+                hoverUpgrades(IncubatorUpgradeConfig.rowId, 'Chaos');
+                // Manually add hover class back
+                document.querySelectorAll('.Chaos').forEach(el => el.classList.add('hover'));
+            },
+            successMessage: 'Incubator upgraded!'
+        });
+    }
 };
 
 export default IncubatorUpgradeConfig;
