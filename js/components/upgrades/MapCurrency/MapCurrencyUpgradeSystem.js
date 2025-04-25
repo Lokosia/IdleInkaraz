@@ -93,87 +93,7 @@ const MapCurrencyUpgradeSystem = {
 
     // buyMapCurrency(): Handles the purchase/upgrade of map currency drop levels, updating state and UI.
     buyMapCurrency(getUpgradeDropRate, setUpgradeDropRate) {
-        const currentLevelIndex = this.mappingCurrencyLevel;
-        const currentLevelData = mapCurrencyUpgradeLevels[currentLevelIndex];
-
-        if (!currentLevelData) {
-            console.warn("Attempted to buy map currency upgrade beyond max level.");
-            return; // Already maxed or invalid level
-        }
-
-        const rowId = 'MapCurrencyMapUpgrade';
-        const row = document.getElementById(rowId);
-        if (!row) {
-            console.error(`Upgrade row with ID ${rowId} not found.`);
-            return;
-        }
-
-        const requirements = [
-            { currency: currencyMap['Exalted'], amount: currentLevelData.cost },
-            ...currentLevelData.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
-        ];
-
-        // Selectors for hover removal (based on current level requirements)
-        const hoverSelectorsToRemove = [
-            '.Exalted',
-            ...currentLevelData.consume.map(req => `.${req.currency}`)
-        ];
-
-        handlePurchase({
-            requirements,
-            onSuccess: () => {
-                this.mappingCurrencyLevel++; // Increment level state
-                setUpgradeDropRate(getUpgradeDropRate() + 1.5); // Update global drop rate state
-            },
-            uiUpdateConfig: {
-                rowElement: row,
-                costElement: row.querySelector('.upgrade-cost'),
-                benefitElement: row.querySelector('.upgrade-benefit'), // Assuming a standard class
-                getNextLevelData: () => {
-                    const nextLevelIndex = currentLevelIndex + 1;
-                    if (nextLevelIndex >= mapCurrencyUpgradeLevels.length) {
-                        return null; // Signal max level
-                    }
-                    const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
-                    return {
-                        cost: nextLevelData.cost,
-                        benefit: '+1.5' // Benefit seems fixed
-                        // Description and button text are handled in updateUI
-                    };
-                },
-                removeRowOnMaxLevel: true,
-                removeHoverSelectors: hoverSelectorsToRemove
-            },
-            updateUI: () => {
-                // 1. Update global drop rate display (always needed)
-                const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-                if (globalRateElem) {
-                    globalRateElem.innerHTML = getUpgradeDropRate().toFixed(1);
-                }
-
-                // 2. Update description and button text if *not* max level
-                const nextLevelIndex = this.mappingCurrencyLevel; // Get the *new* level
-                if (nextLevelIndex < mapCurrencyUpgradeLevels.length) {
-                    const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
-                    const row = document.getElementById(rowId); // Get row again
-                    if (row) {
-                        // Update description (assuming it's the second cell)
-                        const descCell = row.children[1];
-                        if (descCell) descCell.innerHTML = nextLevelData.description;
-                        // Update button text
-                        const btn = row.querySelector('button');
-                        if (btn) btn.textContent = nextLevelData.buttonText;
-
-                        // Re-apply hover listeners for the new requirements
-                        hoverUpgrades(rowId, 'Exalted');
-                        // Manually add the hover class back immediately
-                        document.querySelectorAll('.Exalted').forEach(el => el.classList.add('hover'));
-                    }
-                }
-                // Row removal, cost/benefit update, and hover removal are handled by uiUpdateConfig
-            },
-            successMessage: "Map strategy upgraded!"
-        });
+        handleMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate, this.mappingCurrencyLevel);
     },
 
     // showOrUpdateMapCurrencyUpgrade(): Renders or updates the UI for the next available map currency upgrade.
@@ -241,3 +161,74 @@ const MapCurrencyUpgradeSystem = {
 };
 
 export default MapCurrencyUpgradeSystem;
+
+/**
+ * Generic handler for Map Currency upgrade purchase.
+ */
+function handleMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate, mappingCurrencyLevel) {
+    const currentLevelIndex = mappingCurrencyLevel;
+    const currentLevelData = mapCurrencyUpgradeLevels[currentLevelIndex];
+    if (!currentLevelData) {
+        console.warn("Attempted to buy map currency upgrade beyond max level.");
+        return;
+    }
+    const rowId = 'MapCurrencyMapUpgrade';
+    const row = document.getElementById(rowId);
+    if (!row) {
+        console.error(`Upgrade row with ID ${rowId} not found.`);
+        return;
+    }
+    const requirements = [
+        { currency: currencyMap['Exalted'], amount: currentLevelData.cost },
+        ...currentLevelData.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
+    ];
+    const hoverSelectorsToRemove = [
+        '.Exalted',
+        ...currentLevelData.consume.map(req => `.${req.currency}`)
+    ];
+    handlePurchase({
+        requirements,
+        onSuccess: () => {
+            MapCurrencyUpgradeSystem.mappingCurrencyLevel++;
+            setUpgradeDropRate(getUpgradeDropRate() + 1.5);
+        },
+        uiUpdateConfig: {
+            rowElement: row,
+            costElement: row.querySelector('.upgrade-cost'),
+            benefitElement: row.querySelector('.upgrade-benefit'),
+            getNextLevelData: () => {
+                const nextLevelIndex = currentLevelIndex + 1;
+                if (nextLevelIndex >= mapCurrencyUpgradeLevels.length) {
+                    return null;
+                }
+                const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
+                return {
+                    cost: nextLevelData.cost,
+                    benefit: '+1.5'
+                };
+            },
+            removeRowOnMaxLevel: true,
+            removeHoverSelectors: hoverSelectorsToRemove
+        },
+        updateUI: () => {
+            const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+            if (globalRateElem) {
+                globalRateElem.innerHTML = getUpgradeDropRate().toFixed(1);
+            }
+            const nextLevelIndex = MapCurrencyUpgradeSystem.mappingCurrencyLevel;
+            if (nextLevelIndex < mapCurrencyUpgradeLevels.length) {
+                const nextLevelData = mapCurrencyUpgradeLevels[nextLevelIndex];
+                const row = document.getElementById(rowId);
+                if (row) {
+                    const descCell = row.children[1];
+                    if (descCell) descCell.innerHTML = nextLevelData.description;
+                    const btn = row.querySelector('button');
+                    if (btn) btn.textContent = nextLevelData.buttonText;
+                    hoverUpgrades(rowId, 'Exalted');
+                    document.querySelectorAll('.Exalted').forEach(el => el.classList.add('hover'));
+                }
+            }
+        },
+        successMessage: "Map strategy upgraded!"
+    });
+}
