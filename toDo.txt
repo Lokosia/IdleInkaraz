@@ -1,74 +1,36 @@
 1. Refactor code
-2. Connect telegram methods
-
-some cards have dynamic height, get rid of it
-
-Each second (tick) = 1 minute in game. Make it last a whole season. Or have some kinda real prestige system that is meaningful.
-
-save/load feature. Kinda shit with JS/jQuery but maybe React/Angular would be better for saving states.
-
-scale mirror upgrades (gives increased efficiency per)
-
-fix annulment flipping rate, should be even.
-
-make flipping tab better, somehow allow players to only flip one of the higher currencies, or set a floor/cap.
-
-Change IIQ/Incubator upgrades, more expensive to start but price scales less.
-
-Make currency flipping upgrade price increase slower.
-
-upgrade to consume conquerer's orbs automatically.
-
-probably nerf melvin efficiency.
-
-investigate Augs not flipping properly (pretty sure this is just cause high droprate and low 5:1 sell rate tho)
-
-cannot tell how much currency you have on flipping page, either highlight the text red, or show the currency somehow. Prefer the first option due to clutter.
-
-Communicate the map currency upgrades better.
-
-togger to hide/show purchasable upgrades
-
-https://www.reddit.com/r/pathofexile/comments/gbntna/idle_exile_an_incremental_game_based_on_poe/fp8sd7u/ - investigate this comment, I guess sometimes exiles overlevel and break, not sure how that can happen without cheats though, 99->100 exp is huge.
-
-phone support, low priotiry. too much information to display nicely.
-
-forgot to close "<div class="mdl-layout\_\_header-row">", probably why the upgrade tables broke on FireFox. Need to figure out why that's broken on FF if not.
-
-maybe some kinda global leaderboard, would need a server to be able to write to a .txt or DB tho.
-
-more end game upgrades/scaling.
-
-button that turns off all flips.
-
-clean up some functions, I feel like I got sloppy with upgrades/crafting - these functions can be condensed, lots of repitition here.
-
-add "live" market, where selling currency decrease it's price and increaase price for some other currency, and buying some currency makes it's price higher, while other currencies rates go down
-
-show how much currency each individual exile farmed
-show efficecy of every exile
-
-add trading mini-game, where player can receive buying message which he should react to, and where he can get scammed
-
-make sure the game is working when web page is not in focus
-
-optimize timer intervals, probably change all to event listeners
-
-buying divination stash tab allows currency to be farmed without exile - should it be changed?
-
-rework map upgrades like alch/scour/divstashtab works, by not just giving currency, but be attached to every exile farming and give currency there
-
-add analytics
-
-differ how upgrade flipping speed works - now it increases batch size? we can add upgrade to increase exactly speed
-
-rebalance
-
-leagues as separate mechanics
-
-make more links upgrades - starting at 1 links
-
-Possible refactors:
 - something with upgrades, don't like how they looks like
 - unified table class for main tab? Should make code easier and then working with hover might be easier also
 - get rid of functions for interval where possible, use event listener
+2. Use framework? Make sure looks good on phone
+3. make sure the game is working when web page is not in focus
+4. Connect telegram methods
+5. save/load
+6. offline/idle income ; Also make some exiles go to sleep sometimes?
+7. Improve current systems
+- optimize timer intervals, probably change all to event listeners
+- some cards have dynamic height, get rid of it
+- Each second (tick) = 1 minute in game. Make it last a whole season. Or have some kinda real prestige system that is meaningful.
+- make flipping tab better, somehow allow players to only flip one of the higher currencies, or set a floor/cap.
+- upgrade to consume conquerer's orbs automatically.
+- Communicate the map currency upgrades better.
+- toggler to hide/show purchasable upgrades
+- https://www.reddit.com/r/pathofexile/comments/gbntna/idle_exile_an_incremental_game_based_on_poe/fp8sd7u/ - investigate this comment, I guess sometimes exiles overlevel and break, not sure how that can happen without cheats though, 99->100 exp is huge.
+- maybe some kinda global leaderboard, would need a server to be able to write to a .txt or DB tho.
+- more early and end game upgrades/scaling.
+- button that turns off all flips.
+- add "live" market, where selling currency decrease it's price and increaase price for some other currency, and buying some currency makes it's price higher, while other currencies rates go down
+- show how much currency each individual exile farmed
+- add trading mini-game, where player can receive buying message which he should react to, and where he can get scammed
+- add leagues with own mechanics, where might be unique mini-games
+- buying divination stash tab allows currency to be farmed without exile - should it be changed?
+- rework map upgrades like alch/scour/divstashtab works, by not just giving currency, but be attached to every exile farming and give currency there
+- add analytics
+- differ how upgrade flipping speed works - now it increases batch size? we can add upgrade to increase exactly speed
+- leagues as separate mechanics
+- make more links upgrades - starting at 1 links
+8. Rebalance (game ticks, currency rates and economy, efficiecy, leveling)
+- Change IIQ/Incubator upgrades, more expensive to start but price scales less.
+- scale mirror upgrades (gives increased efficiency per)
+- Make currency flipping upgrade price increase slower.
+- probably nerf melvin efficiency.
