@@ -18,7 +18,7 @@ import { initializeLayout } from './js/components/layout/layoutInitializer.js';
 import { initTestMode } from './js/DebugMode.js';
 import { startGameLoops } from './js/GameLoop.js';
 import { SnackBar, hoverUpgrades } from './js/UIInitializer.js';
-import { addClickListener, processCurrencyOperation } from './js/Utils.js';
+//import { addClickListener, processCurrencyOperation } from './js/Utils.js';
 
 // Initialize exileData and exileMap after all imports
 State.exileData = ExileFactory.createAllExiles();
@@ -35,31 +35,46 @@ document.addEventListener('DOMContentLoaded', function () {
 	initDelvingUI(); // Initialize Delving UI
 
 	// Navigation
-    addClickListener('nav-main', () => {
-        UIManager.show('main');
-        showDefaultCurrencyView();
-    });
-    addClickListener('nav-guild', () => {
-        UIManager.show('guild');
-        showGuild(State.exileData, recruitExile);
-    });
-    addClickListener('nav-flipping', () => {
-        UIManager.show('main');
-        showFlippingView();
-    });
-    addClickListener('nav-delving', () => {
-        UIManager.show('delving');
-        showDelving();
-    });
-    addClickListener('nav-crafting', () => {
-        UIManager.show('crafting');
-        showCrafting(State.exileData, Upgrades);
-    });
-    addClickListener('nav-info', () => {
-        UIManager.show('info');
+    [
+        ['nav-main', () => {
+            UIManager.show('main');
+            showDefaultCurrencyView();
+        }],
+        ['nav-guild', () => {
+            UIManager.show('guild');
+            showGuild(State.exileData, recruitExile);
+        }],
+        ['nav-flipping', () => {
+            UIManager.show('main');
+            showFlippingView();
+        }],
+        ['nav-delving', () => {
+            UIManager.show('delving');
+            showDelving();
+        }],
+        ['nav-crafting', () => {
+            UIManager.show('crafting');
+            showCrafting(State.exileData, Upgrades);
+        }],
+        ['nav-info', () => {
+            UIManager.show('info');
+        }],
+        ['recruit-singularity', () => recruitExile('Singularity')],
+        ['btn-all-upgrades', showAllUpgrades],
+        ['btn-general-upgrades', showGeneralUpgrades],
+        ['btn-gear-upgrades', showGearUpgrades],
+        ['btn-links-upgrades', showLinksUpgrades],
+        ['btn-crusader-upgrade', () => Upgrades.buyConqueror(currencyMap['Crusader'])],
+        ['btn-hunter-upgrade', () => Upgrades.buyConqueror(currencyMap['Hunter'])],
+        ['btn-redeemer-upgrade', () => Upgrades.buyConqueror(currencyMap['Redeemer'])],
+        ['btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord'])],
+    ].forEach(([id, handler]) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handler);
     });
 
     // Recruit Singularity
+	/*
     addClickListener('recruit-singularity', () => recruitExile('Singularity'));
 
     // Main tab upgrade filters
@@ -73,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
     addClickListener('btn-hunter-upgrade', () => Upgrades.buyConqueror(currencyMap['Hunter']));
     addClickListener('btn-redeemer-upgrade', () => Upgrades.buyConqueror(currencyMap['Redeemer']));
     addClickListener('btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord']));
+	*/
 });
 
 //---Main game loop
@@ -148,4 +164,4 @@ function recruitExile(exileName) {
 	}
 }
 
-export { recruitExile, processCurrencyOperation };
+export { recruitExile };

@@ -44,7 +44,7 @@ class UICard {
         
         // Handle both legacy single actions and new multiple action sections
         if (actions) {
-            const actionsSection = this.createActions(actions);
+            const actionsSection = this.createActionSection(actions, UI_CLASSES.card.actions);
             card.appendChild(actionsSection);
         }
         
@@ -94,15 +94,6 @@ class UICard {
         return contentDiv;
     }
 
-    /**
-     * Creates the actions section for a card (legacy single actions).
-     * @param {string|Node} actions - Actions HTML or DOM node.
-     * @returns {HTMLElement} The actions section DOM element.
-     */
-    static createActions(actions) {
-        return this.createActionSection(actions, UI_CLASSES.card.actions);
-    }
-    
     /**
      * Creates an action section for a card.
      * @param {string|Node} content - Action section content.

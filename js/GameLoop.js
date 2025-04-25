@@ -6,9 +6,9 @@ import MapCurrencyUpgradeSystem from './components/upgrades/MapCurrency/MapCurre
 import { renderConquerorUpgrades } from './components/upgrades/Conquerors/ConquerorUpgrades.js';
 import { syncStashTabStateToUpgrades } from './components/upgrades/StashTab/StashTabUpgrades.js';
 import Upgrades from './components/upgrades/Augments.js';
-import { processCurrencyOperation } from '../Main.js';
 import { hoverUpgrades } from '../js/UIInitializer.js';
 import State from './State.js';
+import { currencyData } from './components/currency/CurrencyData.js';
 
 /**
  * Starts all main game loops, including:
@@ -47,8 +47,12 @@ function startGameLoops() {
         State.playTime += 0.1;
         document.getElementById("timePlayed").innerHTML = numeral(State.playTime).format('00:00:00');
         for (let i = 0; i < State.exileData.length; i++) {
-            if (State.exileData[i].dropRate > 0) {
-                processCurrencyOperation('rollCurrency', State.exileData[i]);
+            const exile = State.exileData[i];
+            if (exile.dropRate > 0) {
+                // For each currency, try to roll a drop for this exile
+                for (let j = 0; j < currencyData.length; j++) {
+                    currencyData[j].rollCurrency(exile);
+                }
             }
         }
         updateCurrencyClass();
@@ -100,30 +104,30 @@ function startGameLoops() {
 
     // Upgrade/UI/Flipping Loop
     setInterval(function updateTick() {
-		for (const cfg of upgradeConfigs) {
-			renderUpgradeRow(cfg, State.totalLevel);
-		}
-		MapCurrencyUpgradeSystem.showOrUpdateMapCurrencyUpgrade(
-			MapCurrencyUpgradeSystem.getUpgradeDropRate,
-			MapCurrencyUpgradeSystem.setUpgradeDropRate
-		);
-		renderConquerorUpgrades(Upgrades, hoverUpgrades);
-		// Update Flipping Speed display in the Flipping tab
-		const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
-		if (flipSpeedDisplayElem) {
-			flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
-		}
-		// Run map currency logic
-		MapCurrencyUpgradeSystem.rollMapCurrency(
-			MapCurrencyUpgradeSystem.getUpgradeDropRate,
-			MapCurrencyUpgradeSystem.getDivStashTab
-		);
-		// Flipping logic: process buy/sell every 500ms (flipping speed applies per tick)
-		processCurrencyOperation('sellCurrency');
-		processCurrencyOperation('buyCurrency');
-		// Synchronize tab state for compatibility
-		syncStashTabStateToUpgrades(Upgrades);
-	}, 500);
+        for (const cfg of upgradeConfigs) {
+            renderUpgradeRow(cfg, State.totalLevel);
+        }
+        MapCurrencyUpgradeSystem.showOrUpdateMapCurrencyUpgrade(
+            MapCurrencyUpgradeSystem.getUpgradeDropRate,
+            MapCurrencyUpgradeSystem.setUpgradeDropRate
+        );
+        renderConquerorUpgrades(Upgrades, hoverUpgrades);
+        // Update Flipping Speed display in the Flipping tab
+        const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
+        if (flipSpeedDisplayElem) {
+            flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
+        }
+        // Run map currency logic
+        MapCurrencyUpgradeSystem.rollMapCurrency(
+            MapCurrencyUpgradeSystem.getUpgradeDropRate,
+            MapCurrencyUpgradeSystem.getDivStashTab
+        );
+        // Flipping logic: process buy/sell every 500ms (flipping speed applies per tick)
+        currencyData.forEach(currency => currency.sellCurrency());
+        currencyData.forEach(currency => currency.buyCurrency());
+        // Synchronize tab state for compatibility
+        syncStashTabStateToUpgrades(Upgrades);
+    }, 500);
 }
 
 export { startGameLoops };
