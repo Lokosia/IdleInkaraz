@@ -70,7 +70,7 @@ const IIQUpgradeConfig = {
     benefitClass: 'iiqDropRate',
     benefit: () => `+${formatEfficiency(IIQState.iiqDropRate)}`,
     costClass: 'iiqUpgradeCostDisplay',
-    costText: () => `${numeral(IIQState.iiqCost).format('0,0')} Chaos`, // Use numeral directly
+    costText: () => `${numeral(IIQState.iiqCost).format('0,0')} Chaos`,
     requirements: () => [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
     hover: () => hoverUpgrades('iiqUpgrade', 'Chaos'),
     buy: handleIIQUpgrade
