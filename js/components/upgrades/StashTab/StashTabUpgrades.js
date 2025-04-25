@@ -31,95 +31,26 @@ const StashTabState = {
 };
 
 /**
- * Methods for each tab
+ * Generic handler for stash tab upgrades.
+ * @param {Object} config - The upgrade config object.
+ * @param {Function} [onUpgrade] - Optional callback after upgrade.
  */
-function buyCurrencyTab(onUpgrade) {
-    const row = document.getElementById('currencyTab');
+function handleStashTabUpgrade(config, onUpgrade) {
+    const row = document.getElementById(config.rowId);
     if (!row) return;
     handlePurchase({
-        requirements: [{ currency: currencyMap['StackedDeck'], amount: 5 }],
+        requirements: config.requirements(),
         onSuccess: () => {
-            StashTabState.currencyStashTab = 1;
+            StashTabState[config.key] = 1;
             if (onUpgrade) onUpgrade();
         },
         uiUpdateConfig: {
             rowElement: row,
             getNextLevelData: () => null, // One-time purchase
             removeRowOnMaxLevel: true,
-            hoverClassesToRemoveOnMaxLevel: ['StackedDeck'] // Add currency name
+            hoverClassesToRemoveOnMaxLevel: config.requirements().map(r => r.currency.name)
         },
-        updateUI: () => {
-            // Row removal and hover removal handled by uiUpdateConfig
-        },
-        successMessage: 'Stash tab purchased!'
-    });
-}
-function buyDelveTab(onUpgrade) {
-    const row = document.getElementById('delveTab');
-    if (!row) return;
-    handlePurchase({
-        requirements: [
-            { currency: currencyMap['StackedDeck'], amount: 50 },
-            { currency: currencyMap['Annulment'], amount: 10 }
-        ],
-        onSuccess: () => {
-            StashTabState.delveStashTab = 1;
-            if (onUpgrade) onUpgrade();
-        },
-        uiUpdateConfig: {
-            rowElement: row,
-            getNextLevelData: () => null, // One-time purchase
-            removeRowOnMaxLevel: true,
-            hoverClassesToRemoveOnMaxLevel: ['StackedDeck', 'Annulment'] // Add currency names
-        },
-        updateUI: () => {
-            // Row removal and hover removal handled by uiUpdateConfig
-        },
-        successMessage: 'Stash tab purchased!'
-    });
-}
-function buyQuadTab(onUpgrade) {
-    const row = document.getElementById('quadTab');
-    if (!row) return;
-    handlePurchase({
-        requirements: [{ currency: currencyMap['Eternal'], amount: 1 }],
-        onSuccess: () => {
-            StashTabState.quadStashTab = 1;
-            if (onUpgrade) onUpgrade();
-        },
-        uiUpdateConfig: {
-            rowElement: row,
-            getNextLevelData: () => null, // One-time purchase
-            removeRowOnMaxLevel: true,
-            hoverClassesToRemoveOnMaxLevel: ['Eternal'] // Add currency name
-        },
-        updateUI: () => {
-            // Row removal and hover removal handled by uiUpdateConfig
-        },
-        successMessage: 'Stash tab purchased!'
-    });
-}
-function buyDivTab(onUpgrade) {
-    const row = document.getElementById('divTab');
-    if (!row) return;
-    handlePurchase({
-        requirements: [
-            { currency: currencyMap['Annulment'], amount: 50 },
-            { currency: currencyMap['Exalted'], amount: 1 }
-        ],
-        onSuccess: () => {
-            StashTabState.divStashTab = 1;
-            if (onUpgrade) onUpgrade();
-        },
-        uiUpdateConfig: {
-            rowElement: row,
-            getNextLevelData: () => null, // One-time purchase
-            removeRowOnMaxLevel: true,
-            hoverClassesToRemoveOnMaxLevel: ['Annulment', 'Exalted'] // Add currency names
-        },
-        updateUI: () => {
-            // Row removal and hover removal handled by uiUpdateConfig
-        },
+        updateUI: () => {},
         successMessage: 'Stash tab purchased!'
     });
 }
@@ -132,7 +63,7 @@ function buyDivTab(onUpgrade) {
  */
 const stashTabUpgradeConfigs = [
     {
-        key: 'currencyTab',
+        key: 'currencyStashTab',
         shownFlag: 'currencyTabShown',
         unlock: (totalLevel) => totalLevel >= 250 && StashTabState.currencyStashTab === 0,
         rowId: 'currencyTab',
@@ -146,10 +77,10 @@ const stashTabUpgradeConfigs = [
         costText: () => '5 Stacked Deck',
         requirements: () => [{ currency: currencyMap['StackedDeck'], amount: 5 }],
         hover: () => hoverUpgrades('currencyTab', 'StackedDeck'),
-        buy: (onUpgrade) => buyCurrencyTab(onUpgrade)
+        buy: (onUpgrade) => handleStashTabUpgrade(stashTabUpgradeConfigs[0], onUpgrade)
     },
     {
-        key: 'delveTab',
+        key: 'delveStashTab',
         shownFlag: 'delveTabShown',
         unlock: (totalLevel) => totalLevel >= 500 && StashTabState.delveStashTab === 0,
         rowId: 'delveTab',
@@ -166,10 +97,10 @@ const stashTabUpgradeConfigs = [
             { currency: currencyMap['Annulment'], amount: 10 }
         ],
         hover: () => hoverUpgrades('delveTab', 'StackedDeck', 'Annulment'),
-        buy: (onUpgrade) => buyDelveTab(onUpgrade)
+        buy: (onUpgrade) => handleStashTabUpgrade(stashTabUpgradeConfigs[1], onUpgrade)
     },
     {
-        key: 'quadTab',
+        key: 'quadStashTab',
         shownFlag: 'quadTabShown',
         unlock: (totalLevel) => totalLevel >= 1000 && StashTabState.quadStashTab === 0,
         rowId: 'quadTab',
@@ -183,10 +114,10 @@ const stashTabUpgradeConfigs = [
         costText: () => '1 Eternal Orb',
         requirements: () => [{ currency: currencyMap['Eternal'], amount: 1 }],
         hover: () => hoverUpgrades('quadTab', 'Eternal'),
-        buy: (onUpgrade) => buyQuadTab(onUpgrade)
+        buy: (onUpgrade) => handleStashTabUpgrade(stashTabUpgradeConfigs[2], onUpgrade)
     },
     {
-        key: 'divTab',
+        key: 'divStashTab',
         shownFlag: 'divTabShown',
         unlock: (totalLevel) => totalLevel >= 750 && StashTabState.divStashTab === 0,
         rowId: 'divTab',
@@ -203,7 +134,7 @@ const stashTabUpgradeConfigs = [
             { currency: currencyMap['Exalted'], amount: 1 }
         ],
         hover: () => hoverUpgrades('divTab', 'Exalted', 'Annulment'),
-        buy: (onUpgrade) => buyDivTab(onUpgrade)
+        buy: (onUpgrade) => handleStashTabUpgrade(stashTabUpgradeConfigs[3], onUpgrade)
     }
 ];
 
@@ -224,4 +155,4 @@ function syncStashTabStateToUpgrades(Upgrades) {
     Upgrades.divTabShown = StashTabState.divTabShown;
 }
 
-export { StashTabState, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, stashTabUpgradeConfigs, syncStashTabStateToUpgrades };
+export { StashTabState, stashTabUpgradeConfigs, syncStashTabStateToUpgrades };

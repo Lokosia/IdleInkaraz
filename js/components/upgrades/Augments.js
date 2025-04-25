@@ -4,7 +4,7 @@ import { currencyMap, currencyData } from '../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
-import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';
+import { stashTabUpgradeConfigs, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';
 import { IIQUpgradeConfig, IIQState } from './IIQ/IIQUpgrade.js';
 import IncubatorUpgradeConfig, { setUpgradesRef } from './Incubator/IncubatorUpgrade.js';
 import createFlipSpeedUpgrade from './FlipSpeed/FlipSpeedUpgrade.js';
