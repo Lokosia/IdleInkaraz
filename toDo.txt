@@ -67,3 +67,8 @@ rebalance
 leagues as separate mechanics
 
 make more links upgrades - starting at 1 links
+
+Possible refactors:
+- something with upgrades, don't like how they looks like
+- unified table class for main tab? Should make code easier and then working with hover might be easier also
+- get rid of functions for interval where possible, use event listener
