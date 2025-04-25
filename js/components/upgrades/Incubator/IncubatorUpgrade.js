@@ -1,8 +1,8 @@
 import State from '../../../State.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { formatEfficiency } from '../Augments.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
 // These should be provided by the main Upgrades state
 let UpgradesRef = null;
@@ -53,7 +53,7 @@ const IncubatorUpgradeConfig = {
     costText: () => `+${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`,
     requirements: () => [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
     hover: () => hoverUpgrades('incubatorUpgrade', 'Chaos'),
-    buy: () => handleGenericUpgrade({
+    buy: () => handlePurchase({
         requirements: [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
         onSuccess: () => {
             UpgradesRef.incubatorCost = Math.floor(UpgradesRef.incubatorCost * 1.2);
@@ -74,7 +74,8 @@ const IncubatorUpgradeConfig = {
             if (benefitCell) {
                 benefitCell.innerHTML = `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`;
             }
-        }
+        },
+        successMessage: 'Incubator upgraded!'
     })
 };
 

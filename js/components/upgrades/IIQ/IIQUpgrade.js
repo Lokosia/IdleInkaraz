@@ -2,7 +2,7 @@
 import State from '../../../State.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { formatEfficiency } from '../Augments.js';
 
 /**
@@ -53,10 +53,9 @@ const IIQUpgradeConfig = {
     costText: () => `+${numeral(IIQState.iiqCost).format('0,0')} Chaos`,
     requirements: () => [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
     hover: () => hoverUpgrades('iiqUpgrade', 'Chaos'),
-    buy: () => handleGenericUpgrade({
+    buy: () => handlePurchase({
         requirements: [{ currency: currencyMap['Chaos'], amount: IIQState.iiqCost }],
         onSuccess: () => {
-            // Add efficiency as in original logic, then increment
             if (IIQState.iiqDropRate === 1) {
                 import('../Augments.js').then(({ default: Upgrades }) => {
                     Upgrades.upgradeDropRate += 1;
@@ -87,7 +86,8 @@ const IIQUpgradeConfig = {
                     globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);
                 });
             }
-        }
+        },
+        successMessage: 'IIQ upgraded!'
     })
 };
 

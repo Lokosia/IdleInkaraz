@@ -1,8 +1,8 @@
 // DelveScarabUpgrade.js
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
 let UpgradesRef = null;
 /**
@@ -66,10 +66,8 @@ const DelveScarabUpgradeConfig = {
         const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
         const costs = [1, 5, 10];
         const currentCost = costs[UpgradesRef.nikoScarab];
-
-        handleGenericUpgrade({
+        return handlePurchase({
             requirements: currentCost !== undefined ? [{ currency: currencyMap['Exalted'], amount: currentCost }] : [],
-            check: () => UpgradesRef.nikoScarab < scarabTypes.length, // Ensure not maxed
             onSuccess: () => {
                 UpgradesRef.nikoScarab++;
                 UpgradesRef.sulphiteDropRate += 100;
@@ -78,19 +76,15 @@ const DelveScarabUpgradeConfig = {
             updateUI: () => {
                 const row = document.getElementById('delveScarab');
                 if (!row) return;
-                const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
-                const costs = [1, 5, 10];
-
                 if (UpgradesRef.nikoScarab >= scarabTypes.length) {
                     $(".Exalted").removeClass("hover");
                     $(row).remove();
-                    UpgradesRef.delveScarabShown = true; // Mark as shown only when maxed and removed
+                    UpgradesRef.delveScarabShown = true;
                 } else {
                     const costCell = row.querySelector('.delveScarabCost');
                     if (costCell) costCell.innerHTML = `${costs[UpgradesRef.nikoScarab]} Exalted`;
                     const button = row.querySelector('.nikoScarab');
                     if (button) button.textContent = scarabTypes[UpgradesRef.nikoScarab];
-                    // Update description cell (assume it's the second cell)
                     const descCell = row.children[1];
                     if (descCell) descCell.innerHTML = `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
                 }
@@ -103,7 +97,8 @@ const DelveScarabUpgradeConfig = {
                 } else {
                     SnackBar("Requirements not met.");
                 }
-            }
+            },
+            successMessage: 'Scarab upgraded!'
         });
     }
 };

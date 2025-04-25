@@ -2,7 +2,6 @@ import State from '../../State.js';
 import { SnackBar, hoverUpgrades } from '../../UIInitializer.js';
 import { currencyMap, currencyData } from '../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
-import { handleGenericUpgrade } from '../exile/ExileUtils.js'; // Import the new handler
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './Conquerors/ConquerorUpgrades.js';
 import { stashTabUpgradeConfigs, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, syncStashTabStateToUpgrades } from './StashTab/StashTabUpgrades.js';

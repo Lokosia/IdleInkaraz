@@ -1,6 +1,6 @@
 // ConquerorUpgrades.js
 // Handles conqueror upgrades system logic and UI
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
 
@@ -13,7 +13,7 @@ import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
  * @returns {void}
  */
 export function buyConqueror(upgradesObj, conqueror) {
-	handleGenericUpgrade({
+	handlePurchase({
 		requirements: [{ currency: conqueror, amount: 1 }],
 		onSuccess: () => {
 			upgradesObj.upgradeDropRate += 1;

@@ -1,4 +1,5 @@
-import { handleGenericUpgrade, getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
+import { handlePurchase } from '../shared/PurchaseUtils.js';
+import { getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 // Import the refactored function
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { SnackBar, hoverUpgrades } from '../../UIInitializer.js'; // Import hoverUpgrades
@@ -185,33 +186,28 @@ class Exile {
 
         if (!currentUpgrade) {
             console.warn(`No next ${upgradeType} upgrade found for ${this.name} at level ${currentLevel}`);
-            // Optionally show a message if needed, but likely just means it's maxed or config error
-            // SnackBar(`${upgradeType} upgrades already maxed or unavailable.`);
-            return; // No upgrade available
+            return;
         }
 
-        handleGenericUpgrade({
+        handlePurchase({
             requirements: currentUpgrade.requirements,
             onSuccess: () => {
-                applyUpgrade(currentUpgrade); // Apply benefit (e.g., increase dropRate, update links display)
-                this[propertyName] += currentUpgrade.specialIncrement || 1; // Increment gear/links level
+                applyUpgrade(currentUpgrade);
+                this[propertyName] += currentUpgrade.specialIncrement || 1;
             },
             updateUI: () => {
-                // Always remove hover from previous upgrade's currencies
                 currentUpgrade.requirements.forEach(req => $(`.${req.currency.name}`).removeClass("hover"));
                 const nextUpgrade = getNextUpgrade(this[propertyName], this[upgradesArrayName]);
                 if (nextUpgrade) {
                     this.updateUpgradeUI(upgradeType, nextUpgrade);
                 } else {
-                    // Handle final upgrade UI removal
                     const rowId = `${this.name}${upgradeType}Upgrade`;
-                    $(`#${rowId}`).off('mouseenter mouseleave'); // Remove hover listeners
-                    $(`#${rowId}`).remove(); // Remove the row
-                    SnackBar(`${this.name} ${upgradeType} upgrades completed!`); // Specific completion message
+                    $(`#${rowId}`).off('mouseenter mouseleave');
+                    $(`#${rowId}`).remove();
+                    SnackBar(`${this.name} ${upgradeType} upgrades completed!`);
                 }
             },
-            successMessage: `${this.name} ${upgradeType} upgraded!` // Specific success message
-            // onFailure is handled by the default SnackBar in handleGenericUpgrade
+            successMessage: `${this.name} ${upgradeType} upgraded!`
         });
     }
 

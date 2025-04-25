@@ -2,11 +2,7 @@ import { UICard } from '../ui/Cards.js';
 import { currencyMap } from '../currency/CurrencyData.js';
 import { SnackBar } from '../../UIInitializer.js';
 import { fossilData } from '../delve/Fossil.js';
-
-// Assuming componentHandler, $, and numeral are globally available
-// declare var componentHandler: any;
-// declare var $: any;
-// declare var numeral: any;
+import { handlePurchase } from '../shared/PurchaseUtils.js';
 
 
 /**
@@ -89,27 +85,21 @@ class CraftingItem {
      * @returns {boolean} True if researched, false otherwise.
      */
     buy() {
-        // Check if already researched
         if (this.isActive()) {
             SnackBar("Already researched.");
             return false;
         }
-        // Check cost
-        const chaosCurrency = currencyMap['Chaos'];
-        if (chaosCurrency && chaosCurrency.total >= this.researchCost) {
-            chaosCurrency.total -= this.researchCost;
-            this.level = 0; // Set level to 0 to indicate it's researched/active
-            // Update UI immediately after buying
-            const costElement = document.querySelector(`.craft${this.id.charAt(0).toUpperCase() + this.id.slice(1)}Cost`);
-            if (costElement) costElement.classList.add('hidden'); // Use classList for modern browsers
-            const loaderElement = document.getElementById(`${this.id}Loader`);
-            if (loaderElement) loaderElement.classList.remove('hidden');
-            SnackBar(`${this.displayName} researched!`);
-            return true;
-        } else {
-            SnackBar("Requirements not met.");
-            return false;
-        }
+        return handlePurchase({
+            requirements: [{ currency: 'Chaos', amount: this.researchCost }],
+            onSuccess: () => { this.level = 0; },
+            updateUI: () => {
+                const costElement = document.querySelector(`.craft${this.id.charAt(0).toUpperCase() + this.id.slice(1)}Cost`);
+                if (costElement) costElement.classList.add('hidden');
+                const loaderElement = document.getElementById(`${this.id}Loader`);
+                if (loaderElement) loaderElement.classList.remove('hidden');
+            },
+            successMessage: `${this.displayName} researched!`
+        });
     }
 
     /**
@@ -544,6 +534,5 @@ class MirrorItem extends CraftingItem {
         return card.outerHTML;
     }
 }
-
 
 export { CraftingItem, MirrorItem };

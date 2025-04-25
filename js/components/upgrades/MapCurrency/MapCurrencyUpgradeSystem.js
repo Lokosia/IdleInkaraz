@@ -6,9 +6,9 @@
 import { currencyMap, currencyData } from '../../currency/CurrencyData.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
 import State from '../../../State.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
 /**
  * MapCurrencyUpgradeSystem centralizes all map currency upgrade logic and state for the game.
@@ -96,14 +96,11 @@ const MapCurrencyUpgradeSystem = {
         const idx = this.mappingCurrencyLevel;
         const level = mapCurrencyUpgradeLevels[idx];
         if (!level) return;
-
-        // Map string currency names to currency objects for requirements
         const requirements = [
             { currency: currencyMap['Exalted'], amount: level.cost },
             ...level.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
         ];
-
-        handleGenericUpgrade({
+        handlePurchase({
             requirements,
             onSuccess: () => {
                 this.mappingCurrencyLevel++;
@@ -115,7 +112,6 @@ const MapCurrencyUpgradeSystem = {
                     this.showOrUpdateMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate);
                 } else {
                     $(".Exalted").removeClass("hover");
-                    // Remove hover from consumables as well
                     level.consume.forEach(req => $(`.${req.currency}`).removeClass("hover"));
                     $('#MapCurrencyMapUpgrade').remove();
                 }

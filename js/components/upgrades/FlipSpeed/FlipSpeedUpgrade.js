@@ -1,7 +1,7 @@
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
 import { hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
 /**
  * Creates the configuration object for the Flipping Speed upgrade.
@@ -26,7 +26,7 @@ export default function createFlipSpeedUpgrade(Upgrades) {
     costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`,
     requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
     hover: () => hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
-    buy: () => handleGenericUpgrade({
+    buy: () => handlePurchase({
       requirements: [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
       onSuccess: () => {
         Upgrades.flippingSpeedCost = Math.floor(Upgrades.flippingSpeedCost * 2);
@@ -48,7 +48,8 @@ export default function createFlipSpeedUpgrade(Upgrades) {
         if (benefitCell) {
           benefitCell.innerHTML = `+${formatEfficiency(0.5)}`;
         }
-      }
+      },
+      successMessage: 'Flipping speed upgraded!'
     })
   };
 }

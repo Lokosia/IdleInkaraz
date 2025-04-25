@@ -1,7 +1,7 @@
 // StashTabUpgrades.js
 // Handles logic and configs for stash tab upgrades
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { handleGenericUpgrade } from '../../exile/ExileUtils.js';
+import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
 import { formatEfficiency } from '../Augments.js';
 
@@ -31,52 +31,71 @@ const StashTabState = {
 };
 
 /**
- * Generic handler for stash tab upgrades.
- * Accepts an optional onUpgrade callback to increment efficiency.
- *
- * @param {string} tabType - The type of tab ('currency', 'delve', 'quad', 'div').
- * @param {Object} currency1 - The first currency object required.
- * @param {number} amount1 - Amount of the first currency required.
- * @param {Object} [currency2] - The second currency object required (optional).
- * @param {number} [amount2] - Amount of the second currency required (optional).
- * @param {Function} [extraAction] - Optional extra action to perform on success.
- * @param {Function} [onUpgrade] - Optional callback to increment efficiency.
- * @returns {void}
+ * Methods for each tab
  */
-function handleStashTabUpgrade(tabType, currency1, amount1, currency2, amount2, extraAction, onUpgrade) {
-    const requirements = [{ currency: currency1, amount: amount1 }];
-    if (currency2) {
-        requirements.push({ currency: currency2, amount: amount2 });
-    }
-    handleGenericUpgrade({
-        requirements,
+function buyCurrencyTab(onUpgrade) {
+    handlePurchase({
+        requirements: [{ currency: currencyMap['StackedDeck'], amount: 5 }],
         onSuccess: () => {
-            StashTabState[`${tabType}StashTab`] = 1;
+            StashTabState.currencyStashTab = 1;
             if (onUpgrade) onUpgrade();
-            if (extraAction) extraAction();
         },
         updateUI: () => {
-            $(`.${currency1.name}`).removeClass('hover');
-            if (currency2) $(`.${currency2.name}`).removeClass('hover');
-            $(`#${tabType}Tab`).remove();
+            $(".StackedDeck").removeClass('hover');
+            $("#currencyTab").remove();
         },
         successMessage: 'Stash tab purchased!'
     });
 }
-
-// Methods for each tab
-// Update tab methods to accept onUpgrade
-function buyCurrencyTab(onUpgrade) {
-    handleStashTabUpgrade('currency', currencyMap['StackedDeck'], 5, undefined, undefined, undefined, onUpgrade);
-}
 function buyDelveTab(onUpgrade) {
-    handleStashTabUpgrade('delve', currencyMap['StackedDeck'], 50, currencyMap['Annulment'], 10, undefined, onUpgrade);
+    handlePurchase({
+        requirements: [
+            { currency: currencyMap['StackedDeck'], amount: 50 },
+            { currency: currencyMap['Annulment'], amount: 10 }
+        ],
+        onSuccess: () => {
+            StashTabState.delveStashTab = 1;
+            if (onUpgrade) onUpgrade();
+        },
+        updateUI: () => {
+            $(".StackedDeck").removeClass('hover');
+            $(".Annulment").removeClass('hover');
+            $("#delveTab").remove();
+        },
+        successMessage: 'Stash tab purchased!'
+    });
 }
 function buyQuadTab(onUpgrade) {
-    handleStashTabUpgrade('quad', currencyMap['Eternal'], 1, undefined, undefined, undefined, onUpgrade);
+    handlePurchase({
+        requirements: [{ currency: currencyMap['Eternal'], amount: 1 }],
+        onSuccess: () => {
+            StashTabState.quadStashTab = 1;
+            if (onUpgrade) onUpgrade();
+        },
+        updateUI: () => {
+            $(".Eternal").removeClass('hover');
+            $("#quadTab").remove();
+        },
+        successMessage: 'Stash tab purchased!'
+    });
 }
 function buyDivTab(onUpgrade) {
-    handleStashTabUpgrade('div', currencyMap['Annulment'], 50, currencyMap['Exalted'], 1, undefined, onUpgrade);
+    handlePurchase({
+        requirements: [
+            { currency: currencyMap['Annulment'], amount: 50 },
+            { currency: currencyMap['Exalted'], amount: 1 }
+        ],
+        onSuccess: () => {
+            StashTabState.divStashTab = 1;
+            if (onUpgrade) onUpgrade();
+        },
+        updateUI: () => {
+            $(".Annulment").removeClass('hover');
+            $(".Exalted").removeClass('hover');
+            $("#divTab").remove();
+        },
+        successMessage: 'Stash tab purchased!'
+    });
 }
 
 /**
@@ -179,4 +198,4 @@ function syncStashTabStateToUpgrades(Upgrades) {
     Upgrades.divTabShown = StashTabState.divTabShown;
 }
 
-export { StashTabState, handleStashTabUpgrade, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, stashTabUpgradeConfigs, syncStashTabStateToUpgrades };
+export { StashTabState, buyCurrencyTab, buyDelveTab, buyQuadTab, buyDivTab, stashTabUpgradeConfigs, syncStashTabStateToUpgrades };
