@@ -1,5 +1,5 @@
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { hoverUpgrades } from '../../../UIInitializer.js';
+import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
@@ -27,14 +27,19 @@ function handleFlipSpeedUpgrade(Upgrades) {
         const nextCost = Math.floor(currentCost * 2);
         const nextBenefit = `+${formatEfficiency(currentLevel + 1)}`;
         return { cost: `${numeral(nextCost).format('0,0')} Eternal`, benefit: nextBenefit };
-      }
+      },
+      // This flag tells handlePurchase to keep hover effects active
+      preserveHover: true,
+      // Define hover classes to be used with preserveHover
+      hoverClassesToRemoveOnMaxLevel: ['Eternal']
     },
     updateUI: () => {
       const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
       if (globalUpgradeRateElem) {
         globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
       }
-      document.querySelectorAll('.Eternal').forEach(el => el.classList.add('hover'));
+      // Don't call hoverUpgrades here - it disrupts the existing hover event handlers
+      // The preserveHover flag in uiUpdateConfig will maintain the hover state
     },
     successMessage: 'Flipping speed upgraded!'
   });

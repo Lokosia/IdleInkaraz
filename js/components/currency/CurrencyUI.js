@@ -1,5 +1,6 @@
 import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
+import { hoverUpgrades } from './HoverState.js';
 
 // CurrencyUI.js - Handles all currency-related UI rendering and events
 /**
@@ -66,7 +67,6 @@ function createDisplay(currency) {
 
 /**
  * Sets up the currency UI: switches and value displays for all currencies.
- * Adds event delegation for hover effects on sliders.
  * @returns {void}
  */
 function setupCurrencyUI() {
@@ -81,25 +81,16 @@ function setupCurrencyUI() {
         buyCurrencyContainer.appendChild(buySwitch);
         const currencyDisplay = createDisplay(currency);
         currencyDisplayContainer.appendChild(currencyDisplay);
-    });
-    // Add hover effect using event delegation
-    $('#sellCurrencyContainer, #buyCurrencyContainer').on('mouseenter', '[class*="Slider"]', function () {
-        const sliderClass = $(this).attr('class');
-        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
-        const currency = currencyMap[currencyName];
-        if (currency) {
-            const tradingCurrency = currency.tradingCurrency;
-            $(`.${currencyName}`).addClass('hover-buy-sell');
-            $(`.${tradingCurrency}`).addClass('hover-trade');
+        // Attach robust hover logic to each slider using hoverUpgrades
+        // Sell slider
+        const sellSliderId = `${currency.name}SellSlider`;
+        if (document.getElementById(sellSliderId)) {
+            hoverUpgrades(sellSliderId, currency.name, currency.tradingCurrency);
         }
-    }).on('mouseleave', '[class*="Slider"]', function () {
-        const sliderClass = $(this).attr('class');
-        const currencyName = sliderClass.split(' ')[0].replace('SellSlider', '').replace('BuySlider', '');
-        const currency = currencyMap[currencyName];
-        if (currency) {
-            const tradingCurrency = currency.tradingCurrency;
-            $(`.${currencyName}`).removeClass('hover-buy-sell');
-            $(`.${tradingCurrency}`).removeClass('hover-trade');
+        // Buy slider
+        const buySliderId = `${currency.name}BuySlider`;
+        if (document.getElementById(buySliderId)) {
+            hoverUpgrades(buySliderId, currency.name, currency.tradingCurrency);
         }
     });
 }

@@ -4,6 +4,7 @@
 
 import { SnackBar } from '../../UIInitializer.js';
 import { currencyMap } from '../currency/CurrencyData.js';
+import { removeHoverCurrencies } from '../currency/HoverState.js';
 
 /**
  * Checks if all requirements are met (currencies/ingredients).
@@ -43,6 +44,7 @@ export function deductCosts(requirements) {
  * @param {HTMLElement} [options.uiUpdateConfig.rowElement] - The row element to potentially remove.
  * @param {boolean} [options.uiUpdateConfig.removeRowOnMaxLevel=true] - Remove row if getNextLevelData signals max level.
  * @param {string[]} [options.uiUpdateConfig.hoverClassesToRemoveOnMaxLevel] - CSS class names (without '.') of currency elements to remove 'hover' class from when row is removed.
+ * @param {boolean} [options.uiUpdateConfig.preserveHover=false] - Force preservation of hover effects even at max level or with no next level data.
  * @returns {boolean} True if successful, false otherwise
  */
 export function handlePurchase({
@@ -57,19 +59,6 @@ export function handlePurchase({
         deductCosts(requirements);
         onSuccess(); // Call main success logic first
 
-        // --- Start: Remove hover from spent currencies ---
-        const spentCurrencyClasses = requirements.map(req => {
-            let item = typeof req.currency === 'string' ? currencyMap[req.currency] : req.currency;
-            return item ? item.name : null;
-        }).filter(name => name !== null);
-
-        if (spentCurrencyClasses.length > 0) {
-            spentCurrencyClasses.forEach(className => {
-                document.querySelectorAll('.' + className).forEach(el => el.classList.remove('hover'));
-            });
-        }
-        // --- End: Remove hover from spent currencies ---
-
         // Handle common UI updates based on config
         const {
             costElement,
@@ -78,7 +67,11 @@ export function handlePurchase({
             rowElement,
             removeRowOnMaxLevel = true,
             // New property to get hover classes
-            hoverClassesToRemoveOnMaxLevel = []
+            hoverClassesToRemoveOnMaxLevel = [],
+            // Use explicit selectors if provided
+            removeHoverSelectors = [],
+            // New flag to force preservation of hover effects
+            preserveHover = false
         } = uiUpdateConfig;
 
         let nextLevelData = null;
@@ -88,13 +81,36 @@ export function handlePurchase({
 
         const isMaxLevel = getNextLevelData && (nextLevelData === null || nextLevelData === undefined);
 
+        // --- Start: Remove hover from spent currencies only if appropriate ---
+        // Don't remove hover if:
+        // 1. The upgrade has more levels available (non-null nextLevelData)
+        // 2. preserveHover is explicitly set to true
+        if ((isMaxLevel || !getNextLevelData) && !preserveHover) {
+            // Use removeHoverCurrencies to properly update the internal hover state tracking
+            const spentCurrencyClasses = requirements.map(req => {
+                let item = typeof req.currency === 'string' ? currencyMap[req.currency] : req.currency;
+                return item ? item.name : null;
+            }).filter(name => name !== null);
+
+            if (spentCurrencyClasses.length > 0) {
+                removeHoverCurrencies(...spentCurrencyClasses);
+            }
+
+            // Also handle any explicit hover selectors that should be removed
+            if (removeHoverSelectors.length > 0) {
+                // Extract just the class names without the dot prefix for removeHoverCurrencies
+                const classNames = removeHoverSelectors.map(selector => 
+                    selector.startsWith('.') ? selector.substring(1) : selector
+                );
+                removeHoverCurrencies(...classNames);
+            }
+        }
+        // --- End: Remove hover from spent currencies ---
+
         if (rowElement && removeRowOnMaxLevel && isMaxLevel) {
             // Remove hover effect *before* removing the row
-            if (hoverClassesToRemoveOnMaxLevel.length > 0) {
-                hoverClassesToRemoveOnMaxLevel.forEach(className => {
-                    // Select all elements with the currency class and remove 'hover'
-                    document.querySelectorAll('.' + className).forEach(el => el.classList.remove('hover'));
-                });
+            if (hoverClassesToRemoveOnMaxLevel.length > 0 && !preserveHover) {
+                removeHoverCurrencies(...hoverClassesToRemoveOnMaxLevel);
             }
             rowElement.remove();
         } else {

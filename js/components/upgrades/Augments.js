@@ -1,5 +1,6 @@
 import State from '../../State.js';
-import { SnackBar, hoverUpgrades } from '../../UIInitializer.js';
+import { SnackBar } from '../../UIInitializer.js';
+import { hoverUpgrades } from '../currency/HoverState.js';
 import { currencyMap, currencyData } from '../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import MapCurrencyUpgradeSystem from './MapCurrency/MapCurrencyUpgradeSystem.js';

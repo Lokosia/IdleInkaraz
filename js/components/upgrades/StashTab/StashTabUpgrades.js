@@ -2,11 +2,13 @@
 // Handles logic and configs for stash tab upgrades
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
-import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
+import { SnackBar } from '../../../UIInitializer.js'; //THINK should we remove it?
+import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 
 /**
- * State object for stash tab upgrades, including tab ownership and UI flags.
+ * StashTabState holds the state for stash tab upgrades and UI flags.
+ * Keys are used in upgrade configs for consistency.
  *
  * @typedef {Object} StashTabState
  * @property {number} currencyStashTab - 1 if owned, 0 otherwise.

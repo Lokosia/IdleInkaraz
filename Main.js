@@ -17,8 +17,7 @@ import { showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrad
 import { initializeLayout } from './js/components/layout/layoutInitializer.js';
 import { initTestMode } from './js/DebugMode.js';
 import { startGameLoops } from './js/GameLoop.js';
-import { SnackBar, hoverUpgrades } from './js/UIInitializer.js';
-//import { addClickListener, processCurrencyOperation } from './js/Utils.js';
+import { SnackBar } from './js/UIInitializer.js';
 
 // Initialize exileData and exileMap after all imports
 State.exileData = ExileFactory.createAllExiles();
@@ -72,23 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const el = document.getElementById(id);
         if (el) el.addEventListener('click', handler);
     });
-
-    // Recruit Singularity
-	/*
-    addClickListener('recruit-singularity', () => recruitExile('Singularity'));
-
-    // Main tab upgrade filters
-    addClickListener('btn-all-upgrades', showAllUpgrades);
-    addClickListener('btn-general-upgrades', showGeneralUpgrades);
-    addClickListener('btn-gear-upgrades', showGearUpgrades);
-    addClickListener('btn-links-upgrades', showLinksUpgrades);
-
-    // Upgrade buttons - Pass currencyMap entries instead of exileMap entries
-    addClickListener('btn-crusader-upgrade', () => Upgrades.buyConqueror(currencyMap['Crusader']));
-    addClickListener('btn-hunter-upgrade', () => Upgrades.buyConqueror(currencyMap['Hunter']));
-    addClickListener('btn-redeemer-upgrade', () => Upgrades.buyConqueror(currencyMap['Redeemer']));
-    addClickListener('btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord']));
-	*/
 });
 
 //---Main game loop

@@ -34,3 +34,6 @@
 - scale mirror upgrades (gives increased efficiency per)
 - Make currency flipping upgrade price increase slower.
 - probably nerf melvin efficiency.
+
+BUGS:
+- tabs clickacble before guild creation

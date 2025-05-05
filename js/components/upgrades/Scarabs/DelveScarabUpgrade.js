@@ -1,6 +1,7 @@
 // DelveScarabUpgrade.js
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
+import { SnackBar } from '../../../UIInitializer.js';
+import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
@@ -116,10 +117,8 @@ function handleDelveScarabUpgrade() {
             if (globalUpgradeRateElem) {
                 globalUpgradeRateElem.innerHTML = formatEfficiency(UpgradesRef.upgradeDropRate);
             }
-            if (nextLevel < scarabTypes.length) {
-                hoverUpgrades(DelveScarabUpgradeConfig.rowId, 'Exalted');
-                document.querySelectorAll('.Exalted').forEach(el => el.classList.add('hover'));
-            }
+            // Don't call hover here - it's handled by hoverClassesToRemoveOnMaxLevel when maxed
+            // or preserved by the purchase system when not maxed
         },
         successMessage: 'Scarab upgraded!'
     });

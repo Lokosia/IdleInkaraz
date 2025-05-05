@@ -2,7 +2,11 @@
 // Handles conqueror upgrades system logic and UI
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
+import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
+import { hoverUpgrades, removeHoverCurrencies } from '../../currency/HoverState.js';
+
+// Track which conqueror rows have been rendered to avoid re-applying hover effects
+const renderedRows = new Set();
 
 /**
  * Handles the purchase of a conqueror upgrade.
@@ -13,40 +17,60 @@ import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js'
  * @returns {void}
  */
 export function buyConqueror(upgradesObj, conqueror) {
-	const rowId = `${conqueror.name}Upgrade`;
-	const row = document.getElementById(rowId);
-	if (!row) {
-		console.error(`Conqueror upgrade row ${rowId} not found.`);
-		return;
-	}
+    const rowId = `${conqueror.name}Upgrade`;
+    const row = document.getElementById(rowId);
+    if (!row) {
+        console.error(`Conqueror upgrade row ${rowId} not found.`);
+        return;
+    }
 
-	handlePurchase({
-		requirements: [{ currency: conqueror, amount: 1 }],
-		onSuccess: () => {
-			upgradesObj.upgradeDropRate += 1;
-		},
-		uiUpdateConfig: {
-			rowElement: row,
-			// No cost/benefit elements to update dynamically after purchase
-			getNextLevelData: () => null, // Signal that this is a one-time purchase (per orb)
-			removeRowOnMaxLevel: false, // Don't remove the row, just hide it (handled in updateUI)
-			removeHoverSelectors: [`.${conqueror.name}`] // Remove hover from the specific currency
-		},
-		updateUI: () => {
-			// Update global drop rate display
-			const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
-			if (globalRateElem) {
-				globalRateElem.innerHTML = upgradesObj.upgradeDropRate.toFixed(1);
-			}
-			// Hide the row if the currency is now depleted
-			if (conqueror.total < 1) {
-				row.style.display = 'none'; // Use style.display instead of jQuery .hide()
-                // Manually remove hover effect when hiding
-                document.querySelectorAll('.' + conqueror.name).forEach(el => el.classList.remove('hover'));
-			}
-		},
-		successMessage: 'Conqueror influence consumed!'
-	});
+    // Track if the row is being hovered before purchase
+    const isBeingHovered = row.querySelector(':hover') !== null;
+
+    handlePurchase({
+        requirements: [{ currency: conqueror, amount: 1 }],
+        onSuccess: () => {
+            upgradesObj.upgradeDropRate += 1;
+        },
+        uiUpdateConfig: {
+            rowElement: row,
+            // No cost/benefit elements to update dynamically after purchase
+            getNextLevelData: () => null, // Signal that this is a one-time purchase (per orb)
+            removeRowOnMaxLevel: false, // Don't remove the row, just hide it (handled in updateUI)
+            // Use standard hover cleanup pattern and preserve hover if the row is being hovered
+            preserveHover: isBeingHovered,
+            hoverClassesToRemoveOnMaxLevel: [conqueror.name]
+        },
+        updateUI: () => {
+            // Update global drop rate display
+            const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+            if (globalRateElem) {
+                globalRateElem.innerHTML = upgradesObj.upgradeDropRate.toFixed(1);
+            }
+            // Hide the row if the currency is now depleted
+            if (conqueror.total < 1) {
+                row.style.display = 'none'; // Use style.display instead of jQuery .hide()
+                // Use the standard hover cleanup function rather than manual DOM manipulation
+                removeHoverCurrencies(conqueror.name);
+                // Remove from rendered set when hidden
+                renderedRows.delete(rowId);
+            } 
+            // If the row is still visible and it was being hovered, make sure it stays in rendered set
+            else if (isBeingHovered) {
+                renderedRows.add(rowId);
+            }
+        },
+        successMessage: 'Conqueror influence consumed!'
+    });
+}
+
+/**
+ * Apply hover effects for a conqueror upgrade row
+ * @param {string} rowId - The ID of the row element
+ * @param {string} currencyName - The currency name to hover
+ */
+function applyConquerorHover(rowId, currencyName) {
+    hoverUpgrades(rowId, currencyName);
 }
 
 /**
@@ -54,27 +78,28 @@ export function buyConqueror(upgradesObj, conqueror) {
  * Shows/hides rows based on currency availability and applies hover effects.
  *
  * @param {Object} upgradesObj - The upgrades state object to modify.
- * @param {Function} hoverUpgrades - Function to apply hover effects to upgrade rows.
  * @returns {void}
  */
-export function renderConquerorUpgrades(upgradesObj, hoverUpgrades) {
-	const conquerors = [
-		currencyMap['Crusader'],
-		currencyMap['Hunter'],
-		currencyMap['Redeemer'],
-		currencyMap['Warlord']
-	];
+export function renderConquerorUpgrades(upgradesObj) {
+    const conquerors = [
+        currencyMap['Crusader'],
+        currencyMap['Hunter'],
+        currencyMap['Redeemer'],
+        currencyMap['Warlord']
+    ];
 
-	for (const currency of conquerors) {
-		const name = currency.name;
-		const rowId = `${name}Upgrade`;
-		if (!$(`#${rowId}`).length) {
-			const row = $(`<tr id="${rowId}"></tr>`);
-			const buttonId = `btn-${name.toLowerCase()}-upgrade`;
-			const buttonText = `${name}'s Exalted Orb`;
-			const description = `Use ${name}'s Exalted Orb`;
-			const benefit = '+1';
-			const cost = `1 ${name}'s Exalted Orb`;
+    for (const currency of conquerors) {
+        const name = currency.name;
+        const rowId = `${name}Upgrade`;
+        
+        // Check if the row needs to be created
+        if (!$(`#${rowId}`).length) {
+            const row = $(`<tr id="${rowId}"></tr>`);
+            const buttonId = `btn-${name.toLowerCase()}-upgrade`;
+            const buttonText = `${name}'s Exalted Orb`;
+            const description = `Use ${name}'s Exalted Orb`;
+            const benefit = '+1';
+            const cost = `1 ${name}'s Exalted Orb`;
 
             const cellsHTML = generateUpgradeCellsHTML(
                 name,           // upgradeKey
@@ -86,17 +111,29 @@ export function renderConquerorUpgrades(upgradesObj, hoverUpgrades) {
                 buttonId
             );
 
-			row.html(cellsHTML);
-			const table = $('#UpgradeTable');
-			table.prepend(row);
+            row.html(cellsHTML);
+            const table = $('#UpgradeTable');
+            table.prepend(row);
             
-			document.getElementById(buttonId)?.addEventListener('click', () => buyConqueror(upgradesObj, currency));
-		}
-		if (currency && currency.total >= 1) {
-			$(`#${rowId}`).show();
-			hoverUpgrades(rowId, name);
-		} else {
-			$(`#${rowId}`).hide();
-		}
-	}
+            document.getElementById(buttonId)?.addEventListener('click', () => buyConqueror(upgradesObj, currency));
+        }
+        
+        // Show or hide the row based on currency availability
+        if (currency && currency.total >= 1) {
+            $(`#${rowId}`).show();
+            
+            // Only apply hover effects if this is the first time rendering the row
+            // or if it was previously hidden and now shown again
+            if (!renderedRows.has(rowId)) {
+                applyConquerorHover(rowId, name);
+                renderedRows.add(rowId);
+            }
+        } else {
+            $(`#${rowId}`).hide();
+            // Ensure hover is removed when hidden
+            removeHoverCurrencies(name);
+            // Remove from rendered set when hidden
+            renderedRows.delete(rowId);
+        }
+    }
 }

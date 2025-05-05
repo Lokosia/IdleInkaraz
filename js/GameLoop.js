@@ -6,7 +6,6 @@ import MapCurrencyUpgradeSystem from './components/upgrades/MapCurrency/MapCurre
 import { renderConquerorUpgrades } from './components/upgrades/Conquerors/ConquerorUpgrades.js';
 import { syncStashTabStateToUpgrades } from './components/upgrades/StashTab/StashTabUpgrades.js';
 import Upgrades from './components/upgrades/Augments.js';
-import { hoverUpgrades } from '../js/UIInitializer.js';
 import State from './State.js';
 import { currencyData } from './components/currency/CurrencyData.js';
 
@@ -111,7 +110,7 @@ function startGameLoops() {
             MapCurrencyUpgradeSystem.getUpgradeDropRate,
             MapCurrencyUpgradeSystem.setUpgradeDropRate
         );
-        renderConquerorUpgrades(Upgrades, hoverUpgrades);
+        renderConquerorUpgrades(Upgrades);
         // Update Flipping Speed display in the Flipping tab
         const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
         if (flipSpeedDisplayElem) {

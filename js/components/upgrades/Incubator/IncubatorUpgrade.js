@@ -1,5 +1,6 @@
 import State from '../../../State.js';
-import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
+import { SnackBar } from '../../../UIInitializer.js';
+import { hoverUpgrades } from '../../currency/HoverState.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
@@ -43,17 +44,25 @@ function handleIncubatorUpgrade() {
                 const nextCost = Math.floor(currentCost * 1.2);
                 const nextDropRate = (currentDropRate === 0) ? 1 : currentDropRate + 0.1;
                 const nextBenefit = `+${formatEfficiency(nextDropRate)}`;
-                return { cost: `${numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
-            }
+                // Make sure numeral is defined here - it's likely coming from a global scope
+                return { cost: `${window.numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
+            },
+            // Since this is an infinite upgrade that doesn't max out,
+            // we need to preserve hover state after purchases
+            preserveHover: true,
+            // For consistency, define which hover classes would be removed if it did max out
+            hoverClassesToRemoveOnMaxLevel: ['Chaos']
         },
-        updateUI: () => {
-            hoverUpgrades(IncubatorUpgradeConfig.rowId, 'Chaos');
-            document.querySelectorAll('.Chaos').forEach(el => el.classList.add('hover'));
-        },
+        // Using the standard pattern - no updateUI needed for hover management
+        // The preserveHover flag handles hover state maintenance automatically
         successMessage: 'Incubator upgraded!'
     });
 }
 
+/**
+ * Configuration object for the Incubator upgrade.
+ * Follows standardized upgrade config format used across the game.
+ */
 const IncubatorUpgradeConfig = {
     key: 'incubator',
     shownFlag: 'incubatorUpgradeShown',
@@ -66,7 +75,7 @@ const IncubatorUpgradeConfig = {
     benefitClass: 'incDropRate',
     benefit: () => `+${formatEfficiency(UpgradesRef.incDropRate === 0 ? 1 : UpgradesRef.incDropRate)}`,
     costClass: 'incubatorUpgradeCostDisplay',
-    costText: () => `${numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`, // Use numeral directly
+    costText: () => `${window.numeral(UpgradesRef.incubatorCost).format('0,0')} Chaos`, // Use global numeral
     requirements: () => [{ currency: currencyMap['Chaos'], amount: UpgradesRef.incubatorCost }],
     hover: () => hoverUpgrades('incubatorUpgrade', 'Chaos'),
     buy: handleIncubatorUpgrade

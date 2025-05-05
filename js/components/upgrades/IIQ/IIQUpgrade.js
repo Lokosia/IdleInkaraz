@@ -1,6 +1,7 @@
 // IIQUpgrade.js - Handles the IIQ (Increased Item Quantity) upgrade config and logic
 import State from '../../../State.js';
-import { SnackBar, hoverUpgrades } from '../../../UIInitializer.js';
+import { SnackBar } from '../../../UIInitializer.js';
+import { hoverUpgrades } from '../../currency/HoverState.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { formatEfficiency } from '../Augments.js';
@@ -42,7 +43,12 @@ function handleIIQUpgrade() {
                 const nextCost = Math.floor(currentCost * 1.4);
                 const nextBenefit = `+${formatEfficiency(currentDropRate + 0.1)}`;
                 return { cost: `${numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
-            }
+            },
+            // Since this is an infinite upgrade that doesn't max out,
+            // we need to preserve hover state after purchases
+            preserveHover: true,
+            // For consistency, define which hover classes would be removed if it did max out
+            hoverClassesToRemoveOnMaxLevel: ['Chaos']
         },
         updateUI: () => {
             const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
@@ -51,13 +57,16 @@ function handleIIQUpgrade() {
                     globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);
                 });
             }
-            hoverUpgrades(IIQUpgradeConfig.rowId, 'Chaos');
-            document.querySelectorAll('.Chaos').forEach(el => el.classList.add('hover'));
+            // Don't call hoverUpgrades here - it's handled by preserveHover flag
         },
         successMessage: 'IIQ upgraded!'
     });
 }
 
+/**
+ * Configuration object for the IIQ upgrade.
+ * Follows standardized upgrade config format used across the game.
+ */
 const IIQUpgradeConfig = {
     key: 'iiq',
     shownFlag: 'iiqUpgradeShown',
