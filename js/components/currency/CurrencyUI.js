@@ -137,24 +137,6 @@ function showDefaultCurrencyView() {
 }
 
 /**
- * Debugging helper to verify currency elements in DOM
- * @private
- */
-function _debugVerifyCurrencyElements() {
-    console.log("Verifying currency elements in DOM:");
-    currencyData.forEach(currency => {
-        if (currency.name === 'Sulphite') return;
-        
-        const elements = document.querySelectorAll(`.${currency.name}`);
-        console.log(`${currency.name}: found ${elements.length} elements with class ${currency.name}`);
-        
-        if (elements.length === 0) {
-            console.warn(`No elements found with class ${currency.name} - hover effect won't work`);
-        }
-    });
-}
-
-/**
  * Shows the flipping (currency trading) view.
  * Displays buy/sell panels and the flipping UI.
  * @returns {void}
