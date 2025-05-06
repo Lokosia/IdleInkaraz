@@ -1,6 +1,7 @@
 import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
 import { hoverUpgrades, clearAllHoverCurrencies } from './HoverState.js';
+import { select, selectAll, show, hide, on, off, onHover } from '../../../js/libs/DOMUtils.js';
 // Don't import numeral as it's a global variable
 // import '../../libs/Numerals.js'; 
 
@@ -119,14 +120,17 @@ function updateCurrencyClass() {
  * @returns {void}
  */
 function showDefaultCurrencyView() {
-    $("#divBuyCurrency").hide();
-    $("#divSellCurrency").hide();
-    $("#divTheorycrafting").show();
-    $("#divSingularity").hide();
-    $("#divFlipping").hide();
-    $("#MainCurrency")
-        .removeClass("mdl-cell--4-col mdl-cell--4-col-tablet")
-        .addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
+    hide("#divBuyCurrency");
+    hide("#divSellCurrency");
+    show("#divTheorycrafting");
+    hide("#divSingularity");
+    hide("#divFlipping");
+    
+    const mainCurrency = select("#MainCurrency");
+    if (mainCurrency) {
+        mainCurrency.classList.remove("mdl-cell--4-col", "mdl-cell--4-col-tablet");
+        mainCurrency.classList.add("mdl-cell--3-col", "mdl-cell--3-col-tablet");
+    }
     
     // Clear any currency hover effects from flipping view
     clearAllHoverCurrencies();
@@ -157,21 +161,24 @@ function _debugVerifyCurrencyElements() {
  */
 function showFlippingView() {
     // Show the required UI panels
-    $("#divBuyCurrency").show();
-    $("#divSellCurrency").show();
-    $("#divTheorycrafting").hide();
-    $("#divSingularity").show();
-    $("#divFlipping").show();
-    $("#MainCurrency")
-        .removeClass("mdl-cell--3-col mdl-cell--3-col-tablet")
-        .addClass("mdl-cell--4-col mdl-cell--4-col-tablet");
+    show("#divBuyCurrency");
+    show("#divSellCurrency");
+    hide("#divTheorycrafting");
+    show("#divSingularity");
+    show("#divFlipping");
+    
+    const mainCurrency = select("#MainCurrency");
+    if (mainCurrency) {
+        mainCurrency.classList.remove("mdl-cell--3-col", "mdl-cell--3-col-tablet");
+        mainCurrency.classList.add("mdl-cell--4-col", "mdl-cell--4-col-tablet");
+    }
     
     // Clear any existing hover effects
     clearAllHoverCurrencies();
     
     // Wait until the DOM is fully updated
     setTimeout(() => {
-        // Apply direct hover effects using jQuery event delegation
+        // Apply direct hover effects using vanilla JS event delegation
         currencyData.forEach(currency => {
             if (currency.name === 'Sulphite') return;
             
@@ -179,41 +186,95 @@ function showFlippingView() {
             // - The currency you're selling (main) is outflow (red)
             // - The currency you're receiving (trading) is inflow (green)
             const sellSliderId = `${currency.name}SellSlider`;
-            $(`label[for="${sellSliderId}"]`).off('mouseenter mouseleave') // Remove any existing handlers
-            .on('mouseenter', function() {
-                // Main currency (being sold) = outflow (red)
-                $(`.${currency.name}`).removeClass('hover hover-inflow hover-trade hover-buy-sell')
-                                     .addClass('hover-outflow');
+            const sellSliderLabel = select(`label[for="${sellSliderId}"]`);
+            
+            if (sellSliderLabel) {
+                // Remove any existing handlers (equivalent to jQuery's .off())
+                const oldEnterHandler = sellSliderLabel._enterHandler;
+                const oldLeaveHandler = sellSliderLabel._leaveHandler;
+                if (oldEnterHandler) off(sellSliderLabel, 'mouseenter', oldEnterHandler);
+                if (oldLeaveHandler) off(sellSliderLabel, 'mouseleave', oldLeaveHandler);
                 
-                // Trading currency (being received) = inflow (green)
-                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-trade hover-buy-sell')
-                                                .addClass('hover-inflow');
-            })
-            .on('mouseleave', function() {
-                // Remove all highlight classes
-                $(`.${currency.name}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
-                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
-            });
+                // Create new handlers
+                const enterHandler = function() {
+                    // Main currency (being sold) = outflow (red)
+                    selectAll(`.${currency.name}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                        el.classList.add('hover-outflow');
+                    });
+                    
+                    // Trading currency (being received) = inflow (green)
+                    selectAll(`.${currency.tradingCurrency}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-trade', 'hover-buy-sell');
+                        el.classList.add('hover-inflow');
+                    });
+                };
+                
+                const leaveHandler = function() {
+                    // Remove all highlight classes
+                    selectAll(`.${currency.name}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                    });
+                    selectAll(`.${currency.tradingCurrency}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                    });
+                };
+                
+                // Store handlers for future removal
+                sellSliderLabel._enterHandler = enterHandler;
+                sellSliderLabel._leaveHandler = leaveHandler;
+                
+                // Attach new handlers
+                on(sellSliderLabel, 'mouseenter', enterHandler);
+                on(sellSliderLabel, 'mouseleave', leaveHandler);
+            }
             
             // Process BUY slider - when buying:
             // - The currency you're receiving (main) is inflow (green)
             // - The currency you're spending (trading) is outflow (red)
             const buySliderId = `${currency.name}BuySlider`;
-            $(`label[for="${buySliderId}"]`).off('mouseenter mouseleave') // Remove any existing handlers
-            .on('mouseenter', function() {
-                // Main currency (being bought/received) = inflow (green)
-                $(`.${currency.name}`).removeClass('hover hover-outflow hover-trade hover-buy-sell')
-                                     .addClass('hover-inflow');
+            const buySliderLabel = select(`label[for="${buySliderId}"]`);
+            
+            if (buySliderLabel) {
+                // Remove any existing handlers
+                const oldEnterHandler = buySliderLabel._enterHandler;
+                const oldLeaveHandler = buySliderLabel._leaveHandler;
+                if (oldEnterHandler) off(buySliderLabel, 'mouseenter', oldEnterHandler);
+                if (oldLeaveHandler) off(buySliderLabel, 'mouseleave', oldLeaveHandler);
                 
-                // Trading currency (being spent) = outflow (red)
-                $(`.${currency.tradingCurrency}`).removeClass('hover hover-inflow hover-trade hover-buy-sell')
-                                                .addClass('hover-outflow');
-            })
-            .on('mouseleave', function() {
-                // Remove all highlight classes
-                $(`.${currency.name}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
-                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
-            });
+                // Create new handlers
+                const enterHandler = function() {
+                    // Main currency (being bought/received) = inflow (green)
+                    selectAll(`.${currency.name}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-trade', 'hover-buy-sell');
+                        el.classList.add('hover-inflow');
+                    });
+                    
+                    // Trading currency (being spent) = outflow (red)
+                    selectAll(`.${currency.tradingCurrency}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                        el.classList.add('hover-outflow');
+                    });
+                };
+                
+                const leaveHandler = function() {
+                    // Remove all highlight classes
+                    selectAll(`.${currency.name}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                    });
+                    selectAll(`.${currency.tradingCurrency}`).forEach(el => {
+                        el.classList.remove('hover', 'hover-outflow', 'hover-inflow', 'hover-trade', 'hover-buy-sell');
+                    });
+                };
+                
+                // Store handlers for future removal
+                buySliderLabel._enterHandler = enterHandler;
+                buySliderLabel._leaveHandler = leaveHandler;
+                
+                // Attach new handlers
+                on(buySliderLabel, 'mouseenter', enterHandler);
+                on(buySliderLabel, 'mouseleave', leaveHandler);
+            }
         });
         
         console.log("Intuitive color-coded hover effects applied to currency flipping view");

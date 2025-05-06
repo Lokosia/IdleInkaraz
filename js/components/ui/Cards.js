@@ -3,6 +3,7 @@ import UIManager from './UIManager.js';
 import { showGuild } from '../exile/ExileUI.js';
 import { recruitExile } from '../../../Main.js';
 import State from '../../State.js';
+import { select, hide } from '../../../js/libs/DOMUtils.js';
 
 /**
  * UICard provides static methods to create flexible card UI components.
@@ -141,8 +142,10 @@ function createWelcomeCard(container) {
     createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
     createGuildButton.textContent = 'Create Guild';
     createGuildButton.onclick = function() {
-        // Directly use the logic from welcome()
-        $("#welcomePre").hide();
+        // Replace jQuery with vanilla JS
+        const welcomePre = select("#welcomePre");
+        if (welcomePre) hide(welcomePre);
+        
         UIManager.show('guild');
         showGuild(State.exileData, recruitExile);
     };

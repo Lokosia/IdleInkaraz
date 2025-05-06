@@ -7,6 +7,8 @@
 // When player removes mouse from upgrade, the currencies should be unhighlighted
 // When player hovers over another upgrade, the currencies from the first upgrade should be unhighlighted and the currencies from the second upgrade should be highlighted
 
+import { select, selectAll, on, off } from '../../../js/libs/DOMUtils.js';
+
 // Track which currencies are being hovered by which elements
 const hoverState = {
     // Which elements are hovering which currencies
@@ -32,7 +34,7 @@ function _elementExists(elementId) {
  */
 function _applyHoverClass(currencyName) {
     if (!currencyName) return;
-    document.querySelectorAll(`.${currencyName}`).forEach(el => el.classList.add('hover'));
+    selectAll(`.${currencyName}`).forEach(el => el.classList.add('hover'));
 }
 
 /**
@@ -42,7 +44,7 @@ function _applyHoverClass(currencyName) {
  */
 function _removeHoverClass(currencyName) {
     if (!currencyName) return;
-    document.querySelectorAll(`.${currencyName}`).forEach(el => el.classList.remove('hover'));
+    selectAll(`.${currencyName}`).forEach(el => el.classList.remove('hover'));
 }
 
 /**
@@ -187,8 +189,8 @@ function hoverUpgrades(elementId, currencyClass1, currencyClass2, ...additionalC
     // First clean up any orphaned hover states
     _cleanupOrphanedHoverStates();
     
-    const element = $(`#${elementId}`);
-    if (!element.length) {
+    const element = document.getElementById(elementId);
+    if (!element) {
         console.warn(`Element with ID #${elementId} not found for hover effect.`);
         return;
     }
@@ -202,16 +204,29 @@ function hoverUpgrades(elementId, currencyClass1, currencyClass2, ...additionalC
     }
     
     // Remove any existing hover handlers
-    element.off('mouseenter mouseleave');
+    // Store references to handlers so we can remove them later
+    const enterHandler = element._hoverEnterHandler;
+    const leaveHandler = element._hoverLeaveHandler;
     
-    // Add new hover handlers with checks to prevent race conditions
-    element.on('mouseenter', function() {
+    if (enterHandler) off(element, 'mouseenter', enterHandler);
+    if (leaveHandler) off(element, 'mouseleave', leaveHandler);
+    
+    // Create new handlers
+    const newEnterHandler = function() {
         _addHover(elementId, currencies);
-    });
+    };
     
-    element.on('mouseleave', function() {
+    const newLeaveHandler = function() {
         _removeHover(elementId);
-    });
+    };
+    
+    // Store references to the new handlers
+    element._hoverEnterHandler = newEnterHandler;
+    element._hoverLeaveHandler = newLeaveHandler;
+    
+    // Add new hover handlers
+    on(element, 'mouseenter', newEnterHandler);
+    on(element, 'mouseleave', newLeaveHandler);
 }
 
 // Export the public API

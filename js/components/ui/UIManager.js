@@ -1,3 +1,5 @@
+import { select, selectAll, show, hide } from '../../../js/libs/DOMUtils.js';
+
 const UIManager = {
     sections: {
         main: "#main",
@@ -19,14 +21,14 @@ const UIManager = {
         }
 
         // Hide all other sections first
-        Object.values(this.sections).forEach(id => {
-            if (id !== targetSelector) {
-                $(id).hide(); // Keep using hide for others
+        Object.values(this.sections).forEach(selector => {
+            if (selector !== targetSelector) {
+                hide(selector);
             }
         });
 
-        // Show the target section and remove the 'hidden' class
-        $(targetSelector).removeClass('hidden').show();
+        // Show the target section
+        show(targetSelector);
     }
 };
 

@@ -17,6 +17,8 @@ import { initializeLayout } from './js/components/layout/layoutInitializer.js';
 import { initTestMode } from './js/DebugMode.js';
 import { startGameLoops } from './js/GameLoop.js';
 import { SnackBar } from './js/UIInitializer.js';
+// Import our DOM utilities
+import { bindEvents, select, hide, removeClass } from './js/libs/DOMUtils.js';
 
 // Initialize exileData and exileMap after all imports
 State.exileData = ExileFactory.createAllExiles();
@@ -25,15 +27,15 @@ State.exileMap = Object.fromEntries(State.exileData.map(e => [e.name, e]));
 document.addEventListener('DOMContentLoaded', function () {
     initializeLayout();
 
-	setupCurrencyUI(); // Initialize currency UI
+    setupCurrencyUI(); // Initialize currency UI
 
-	// Initialize the welcome card and add it to the UI
-	createWelcomeCard(document.querySelector('#welcomePre .mdl-grid'));
+    // Initialize the welcome card and add it to the UI
+    createWelcomeCard(select('#welcomePre .mdl-grid'));
 
-	initDelvingUI(); // Initialize Delving UI
+    initDelvingUI(); // Initialize Delving UI
 
-	// Navigation
-    [
+    // Navigation and event bindings using our new utility
+    bindEvents([
         ['nav-main', () => {
             UIManager.show('main');
             showDefaultCurrencyView();
@@ -66,10 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ['btn-hunter-upgrade', () => buyConqueror(currencyMap['Hunter'])],
         ['btn-redeemer-upgrade', () => buyConqueror(currencyMap['Redeemer'])],
         ['btn-warlord-upgrade', () => buyConqueror(currencyMap['Warlord'])],
-    ].forEach(([id, handler]) => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('click', handler);
-    });
+    ]);
 });
 
 //---Main game loop
@@ -83,64 +82,86 @@ startGameLoops();
  * @returns {void}
  */
 function recruitExile(exileName) {
-	const exile = State.exileMap[exileName];
-	if (!exile) {
-		console.error(`Exile ${exileName} not found`);
-		return;
-	}
-	// Check level requirement
-	if (State.totalLevel < exile.levelRequirement) {
-		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${State.totalLevel}`);
-		return;
-	}
-	// Check special requirement (e.g., stash tabs for Melvin)
-	if (exile.specialRequirement) {
-		let [reqType, reqValue] = exile.specialRequirement;
-		if ((State[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
-			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${State[reqType] ?? 0}`);
-			return;
-		}
-	}
+    const exile = State.exileMap[exileName];
+    if (!exile) {
+        console.error(`Exile ${exileName} not found`);
+        return;
+    }
+    // Check level requirement
+    if (State.totalLevel < exile.levelRequirement) {
+        SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${State.totalLevel}`);
+        return;
+    }
+    // Check special requirement (e.g., stash tabs for Melvin)
+    if (exile.specialRequirement) {
+        let [reqType, reqValue] = exile.specialRequirement;
+        if ((State[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
+            SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${State[reqType] ?? 0}`);
+            return;
+        }
+    }
 
-	// Handle specific recruitment logic
-	if (exileName === 'Singularity') {
-		exile.level = 1; // Set level explicitly
-		exile.owned = true; // Mark as owned
-		$(".SingularityHide").remove();
-		$(".SingularityBuy").remove();
-		$('.flip').removeClass('hidden');
-		SnackBar("Singularity recruited!");
-		// No need to call onRecruited as Singularity doesn't have standard upgrades
-		return;
-	} else if (exileName === 'Artificer') {
-		exile.level = 1; // Set level explicitly
-		exile.owned = true; // Mark as owned
-		$(".ArtificerHide").hide();
-		$(".ArtificerBuy").hide();
-		$(".craft").show(); // Show crafting cards
-		SnackBar("Artificer recruited!");
-		// No need to call onRecruited as Artificer doesn't have standard upgrades
-		return;
-	} else if (exileName === 'Melvin') {
-		// Melvin has standard upgrades, so use onRecruited
-		exile.owned = true; // Mark as owned before calling onRecruited
-		exile.onRecruited(); // This now handles level increase, UI updates, and initial upgrade setup
-		$(".MelvinBuy").hide(); // Hide the recruitment button
-		SnackBar("Melvin recruited!");
-		// The specific UI updates previously here are now handled within onRecruited
-		return;
-	}
+    // Handle specific recruitment logic
+    if (exileName === 'Singularity') {
+        exile.level = 1; // Set level explicitly
+        exile.owned = true; // Mark as owned
+        
+        // Replace jQuery with vanilla JS
+        const singularityHideElements = document.querySelectorAll('.SingularityHide');
+        singularityHideElements.forEach(el => el.remove());
+        
+        const singularityBuyElements = document.querySelectorAll('.SingularityBuy');
+        singularityBuyElements.forEach(el => el.remove());
+        
+        const flipElements = document.querySelectorAll('.flip');
+        flipElements.forEach(el => el.classList.remove('hidden'));
+        
+        SnackBar("Singularity recruited!");
+        // No need to call onRecruited as Singularity doesn't have standard upgrades
+        return;
+    } else if (exileName === 'Artificer') {
+        exile.level = 1; // Set level explicitly
+        exile.owned = true; // Mark as owned
+        
+        // Replace jQuery with vanilla JS
+        document.querySelectorAll('.ArtificerHide').forEach(el => {
+            el.style.display = 'none';
+        });
+        document.querySelectorAll('.ArtificerBuy').forEach(el => {
+            el.style.display = 'none';
+        });
+        document.querySelectorAll('.craft').forEach(el => {
+            el.style.display = '';
+        });
+        
+        SnackBar("Artificer recruited!");
+        // No need to call onRecruited as Artificer doesn't have standard upgrades
+        return;
+    } else if (exileName === 'Melvin') {
+        // Melvin has standard upgrades, so use onRecruited
+        exile.owned = true; // Mark as owned before calling onRecruited
+        exile.onRecruited(); // This now handles level increase, UI updates, and initial upgrade setup
+        
+        // Replace jQuery with vanilla JS
+        document.querySelectorAll('.MelvinBuy').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        SnackBar("Melvin recruited!");
+        // The specific UI updates previously here are now handled within onRecruited
+        return;
+    }
 
-	// For all other standard exiles
-	if (!exile.owned) { // Prevent re-recruiting
-		exile.owned = true; // Mark as owned before calling onRecruited
-		exile.onRecruited();
-		// Corrected template literal syntax
-		SnackBar(`${exileName} recruited!`);
-	} else {
-		// Corrected template literal syntax
-		SnackBar(`${exileName} is already recruited.`);
-	}
+    // For all other standard exiles
+    if (!exile.owned) { // Prevent re-recruiting
+        exile.owned = true; // Mark as owned before calling onRecruited
+        exile.onRecruited();
+        // Corrected template literal syntax
+        SnackBar(`${exileName} recruited!`);
+    } else {
+        // Corrected template literal syntax
+        SnackBar(`${exileName} is already recruited.`);
+    }
 }
 
 export { recruitExile };

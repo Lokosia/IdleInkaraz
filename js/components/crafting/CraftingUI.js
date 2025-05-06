@@ -1,6 +1,7 @@
 import { CraftingSystem } from './CraftingSystem.js';
 import UIManager from '../ui/UIManager.js';
 import craftingSystem from './CraftingSystem.js';
+import { select, selectAll, show, hide } from '../../../js/libs/DOMUtils.js';
 
 /**
  * Handles the logic for showing the crafting section.
@@ -20,15 +21,29 @@ function showCrafting(exileData, Upgrades) {
     // Check if the Artificer is owned
     const artificerOwned = exileData.some(e => e.name === 'Artificer' && e.owned);
     if (artificerOwned) {
-        $(".ArtificerBuy, .ArtificerHide").hide();
-        $(".craft").css("display", "block").show();
+        // Replace jQuery with vanilla JS
+        selectAll(".ArtificerBuy, .ArtificerHide").forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        selectAll(".craft").forEach(el => {
+            el.style.display = 'block';
+        });
     } else {
-        $(".craft").hide();
+        selectAll(".craft").forEach(el => {
+            el.style.display = 'none';
+        });
     }
 
     // Check for Quad Stash Tab requirement
     if (Upgrades.quadStashTab !== 1) {
-        $("#heavierCrafting, .advancedCrafting").hide();
+        // Replace jQuery with vanilla JS
+        const heavierCrafting = select("#heavierCrafting");
+        if (heavierCrafting) heavierCrafting.style.display = 'none';
+        
+        selectAll(".advancedCrafting").forEach(el => {
+            el.style.display = 'none';
+        });
     }
 }
 
@@ -39,7 +54,8 @@ export default craftingSystem;
 // Call renderCraftingCards on page load to ensure cards are available for tests
 document.addEventListener('DOMContentLoaded', function() {
     // We'll only render the cards if we're on the crafting tab
-    if (typeof $ !== 'undefined' && $("#crafting").is(":visible")) {
+    // Replace jQuery check with vanilla JS
+    if (select("#crafting") && select("#crafting").style.display !== 'none') {
         craftingSystem.renderCraftingCards();
     }
 });

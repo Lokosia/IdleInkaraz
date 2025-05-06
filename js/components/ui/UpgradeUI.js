@@ -1,3 +1,6 @@
+// Import our DOM utilities
+import { show, hide } from '../../../js/libs/DOMUtils.js';
+
 /**
  * Generates HTML for upgrade button and description cells (TDs).
  *
@@ -33,9 +36,10 @@ function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit,
  * @returns {void}
  */
 function showAllUpgrades() {
-    $("#UpgradeTable").show();
-    $("#UpgradeGearTable").show();
-    $("#UpgradeLinksTable").show();
+    // Replace jQuery with vanilla JS
+    show("#UpgradeTable");
+    show("#UpgradeGearTable");
+    show("#UpgradeLinksTable");
 }
 
 /**
@@ -44,9 +48,10 @@ function showAllUpgrades() {
  * @returns {void}
  */
 function showGeneralUpgrades() {
-    $("#UpgradeTable").show();
-    $("#UpgradeGearTable").hide();
-    $("#UpgradeLinksTable").hide();
+    // Replace jQuery with vanilla JS
+    show("#UpgradeTable");
+    hide("#UpgradeGearTable");
+    hide("#UpgradeLinksTable");
 }
 
 /**
@@ -55,9 +60,10 @@ function showGeneralUpgrades() {
  * @returns {void}
  */
 function showGearUpgrades() {
-    $("#UpgradeTable").hide();
-    $("#UpgradeGearTable").show();
-    $("#UpgradeLinksTable").hide();
+    // Replace jQuery with vanilla JS
+    hide("#UpgradeTable");
+    show("#UpgradeGearTable");
+    hide("#UpgradeLinksTable");
 }
 
 /**
@@ -66,9 +72,10 @@ function showGearUpgrades() {
  * @returns {void}
  */
 function showLinksUpgrades() {
-    $("#UpgradeTable").hide();
-    $("#UpgradeGearTable").hide();
-    $("#UpgradeLinksTable").show();
+    // Replace jQuery with vanilla JS
+    hide("#UpgradeTable");
+    hide("#UpgradeGearTable");
+    show("#UpgradeLinksTable");
 }
 
 export { generateUpgradeCellsHTML, showAllUpgrades, showGeneralUpgrades, showGearUpgrades, showLinksUpgrades };
