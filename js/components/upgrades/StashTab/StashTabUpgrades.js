@@ -1,36 +1,10 @@
 // StashTabUpgrades.js
 // Handles logic and configs for stash tab upgrades
+import State from '../../../State.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
-import { SnackBar } from '../../../UIInitializer.js'; //THINK should we remove it?
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
-
-/**
- * StashTabState holds the state for stash tab upgrades and UI flags.
- * Keys are used in upgrade configs for consistency.
- *
- * @typedef {Object} StashTabState
- * @property {number} currencyStashTab - 1 if owned, 0 otherwise.
- * @property {number} delveStashTab - 1 if owned, 0 otherwise.
- * @property {number} quadStashTab - 1 if owned, 0 otherwise.
- * @property {number} divStashTab - 1 if owned, 0 otherwise.
- * @property {boolean} currencyTabShown - UI flag for currency tab.
- * @property {boolean} delveTabShown - UI flag for delve tab.
- * @property {boolean} quadTabShown - UI flag for quad tab.
- * @property {boolean} divTabShown - UI flag for div tab.
- */
-const StashTabState = {
-    currencyStashTab: 0,
-    delveStashTab: 0,
-    quadStashTab: 0,
-    divStashTab: 0,
-    // UI flags
-    currencyTabShown: false,
-    delveTabShown: false,
-    quadTabShown: false,
-    divTabShown: false,
-};
 
 /**
  * Generic handler for stash tab upgrades.
@@ -43,7 +17,7 @@ function handleStashTabUpgrade(config, onUpgrade) {
     handlePurchase({
         requirements: config.requirements(),
         onSuccess: () => {
-            StashTabState[config.key] = 1;
+            State[config.key] = 1;
             if (onUpgrade) onUpgrade();
         },
         uiUpdateConfig: {
@@ -67,7 +41,7 @@ const stashTabUpgradeConfigs = [
     {
         key: 'currencyStashTab',
         shownFlag: 'currencyTabShown',
-        unlock: (totalLevel) => totalLevel >= 250 && StashTabState.currencyStashTab === 0,
+        unlock: (totalLevel) => totalLevel >= 250 && State.currencyStashTab === 0,
         rowId: 'currencyTab',
         buttonId: 'btn-currency-tab',
         buttonClass: 'currencyTabButton',
@@ -84,7 +58,7 @@ const stashTabUpgradeConfigs = [
     {
         key: 'delveStashTab',
         shownFlag: 'delveTabShown',
-        unlock: (totalLevel) => totalLevel >= 500 && StashTabState.delveStashTab === 0,
+        unlock: (totalLevel) => totalLevel >= 500 && State.delveStashTab === 0,
         rowId: 'delveTab',
         buttonId: 'btn-delve-tab',
         buttonClass: 'delveTabButton',
@@ -104,7 +78,7 @@ const stashTabUpgradeConfigs = [
     {
         key: 'quadStashTab',
         shownFlag: 'quadTabShown',
-        unlock: (totalLevel) => totalLevel >= 1000 && StashTabState.quadStashTab === 0,
+        unlock: (totalLevel) => totalLevel >= 1000 && State.quadStashTab === 0,
         rowId: 'quadTab',
         buttonId: 'btn-quad-tab',
         buttonClass: 'quadTabButton',
@@ -121,7 +95,7 @@ const stashTabUpgradeConfigs = [
     {
         key: 'divStashTab',
         shownFlag: 'divTabShown',
-        unlock: (totalLevel) => totalLevel >= 750 && StashTabState.divStashTab === 0,
+        unlock: (totalLevel) => totalLevel >= 750 && State.divStashTab === 0,
         rowId: 'divTab',
         buttonId: 'btn-div-tab',
         buttonClass: 'divTabButton',
@@ -140,21 +114,4 @@ const stashTabUpgradeConfigs = [
     }
 ];
 
-/**
- * Synchronizes StashTabState with the main Upgrades object for compatibility.
- *
- * @param {Object} Upgrades - The main Upgrades state object.
- * @returns {void}
- */
-function syncStashTabStateToUpgrades(Upgrades) {
-    Upgrades.currencyStashTab = StashTabState.currencyStashTab;
-    Upgrades.delveStashTab = StashTabState.delveStashTab;
-    Upgrades.quadStashTab = StashTabState.quadStashTab;
-    Upgrades.divStashTab = StashTabState.divStashTab;
-    Upgrades.currencyTabShown = StashTabState.currencyTabShown;
-    Upgrades.delveTabShown = StashTabState.delveTabShown;
-    Upgrades.quadTabShown = StashTabState.quadTabShown;
-    Upgrades.divTabShown = StashTabState.divTabShown;
-}
-
-export { StashTabState, stashTabUpgradeConfigs, syncStashTabStateToUpgrades };
+export { stashTabUpgradeConfigs };

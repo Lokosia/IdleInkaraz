@@ -1,20 +1,10 @@
 // DelveScarabUpgrade.js
+import State from '../../../State.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { SnackBar } from '../../../UIInitializer.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
-
-let UpgradesRef = null;
-/**
- * Sets the reference to the main Upgrades state object for use in the delve scarab upgrade config.
- *
- * @param {Object} ref - The Upgrades state object.
- * @returns {void}
- */
-export function setUpgradesRef(ref) {
-    UpgradesRef = ref;
-}
 
 /**
  * Configuration object for the Sulphite Scarab (Delve Scarab) upgrade.
@@ -40,27 +30,27 @@ export function setUpgradesRef(ref) {
 const DelveScarabUpgradeConfig = {
     key: 'delveScarab',
     shownFlag: 'delveScarabShown',
-    unlock: () => UpgradesRef.delveStashTab === 1 && !UpgradesRef.delveScarabShown,
+    unlock: () => State.delveStashTab === 1 && !State.delveScarabShown,
     rowId: 'delveScarab',
     buttonId: 'btn-niko-scarab',
     buttonClass: 'nikoScarab',
     buttonText: 'Sulphite Scarab',
     description: () => {
         const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
-        return `Use ${scarabTypes[UpgradesRef.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
+        return `Use ${scarabTypes[State.nikoScarab] || 'Sulphite Scarab'} to increase Sulphite quantity`;
     },
     benefitClass: '', // No specific class for benefit, handled by description/button text
     benefit: () => `+${formatEfficiency(1)}`, // Benefit is fixed per level
     costClass: 'delveScarabCost',
     costText: () => {
         const costs = [1, 5, 10];
-        const cost = costs[UpgradesRef.nikoScarab];
+        const cost = costs[State.nikoScarab];
         return cost !== undefined ? `${numeral(cost).format('0,0')} Exalted` : 'Maxed'; // Use numeral directly
     },
     requirements: () => {
         const costs = [1, 5, 10];
-        return UpgradesRef.nikoScarab < costs.length
-            ? [{ currency: currencyMap['Exalted'], amount: costs[UpgradesRef.nikoScarab] }]
+        return State.nikoScarab < costs.length
+            ? [{ currency: currencyMap['Exalted'], amount: costs[State.nikoScarab] }]
             : [];
     },
     hover: () => hoverUpgrades('delveScarab', 'Exalted'),
@@ -75,7 +65,7 @@ function handleDelveScarabUpgrade() {
     if (!row) return false;
     const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
     const costs = [1, 5, 10];
-    const currentLevel = UpgradesRef.nikoScarab;
+    const currentLevel = State.nikoScarab;
     if (currentLevel >= costs.length) {
         SnackBar("Scarab upgrades already maxed!");
         return false;
@@ -84,11 +74,11 @@ function handleDelveScarabUpgrade() {
     return handlePurchase({
         requirements: [{ currency: currencyMap['Exalted'], amount: currentCost }],
         onSuccess: () => {
-            UpgradesRef.nikoScarab++;
-            UpgradesRef.sulphiteDropRate += 100;
-            UpgradesRef.upgradeDropRate += 1;
-            if (UpgradesRef.nikoScarab >= scarabTypes.length) {
-                UpgradesRef.delveScarabShown = true;
+            State.nikoScarab++;
+            State.sulphiteDropRate += 100;
+            State.upgradeDropRate += 1;
+            if (State.nikoScarab >= scarabTypes.length) {
+                State.delveScarabShown = true;
             }
         },
         uiUpdateConfig: {
@@ -106,7 +96,7 @@ function handleDelveScarabUpgrade() {
             hoverClassesToRemoveOnMaxLevel: ['Exalted']
         },
         updateUI: () => {
-            const nextLevel = UpgradesRef.nikoScarab;
+            const nextLevel = State.nikoScarab;
             if (nextLevel < scarabTypes.length) {
                 const button = row.querySelector('.nikoScarab');
                 if (button) button.textContent = scarabTypes[nextLevel];
@@ -115,7 +105,7 @@ function handleDelveScarabUpgrade() {
             }
             const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
             if (globalUpgradeRateElem) {
-                globalUpgradeRateElem.innerHTML = formatEfficiency(UpgradesRef.upgradeDropRate);
+                globalUpgradeRateElem.innerHTML = formatEfficiency(State.upgradeDropRate);
             }
             // Don't call hover here - it's handled by hoverClassesToRemoveOnMaxLevel when maxed
             // or preserved by the purchase system when not maxed

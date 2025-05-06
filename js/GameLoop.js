@@ -1,12 +1,10 @@
+import State from './State.js';
 import { currencyMap } from './components/currency/CurrencyData.js';
 import { updateCurrencyClass } from './components/currency/CurrencyUI.js';
 import { getDelveState, setDelveLoadingProgress, delve } from './components/delve/DelveSystem.js';
 import { upgradeConfigs, renderUpgradeRow } from './components/upgrades/Augments.js';
 import MapCurrencyUpgradeSystem from './components/upgrades/MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './components/upgrades/Conquerors/ConquerorUpgrades.js';
-import { syncStashTabStateToUpgrades } from './components/upgrades/StashTab/StashTabUpgrades.js';
-import Upgrades from './components/upgrades/Augments.js';
-import State from './State.js';
 import { currencyData } from './components/currency/CurrencyData.js';
 
 /**
@@ -23,8 +21,8 @@ function startGameLoops() {
     setInterval(function gameTick() {
         let tempLevel = 1000;
         let tempDropRate = 0;
-        if (Upgrades.upgradeDropRate > 0) tempDropRate += Upgrades.upgradeDropRate;
-        if (Upgrades.incDropRate > 0) tempDropRate += Upgrades.incDropRate;
+        if (State.upgradeDropRate > 0) tempDropRate += State.upgradeDropRate;
+        if (State.incDropRate > 0) tempDropRate += State.incDropRate;
         for (let i = 0; i < State.exileData.length; i++) {
             const exile = State.exileData[i];
             if (exile.level >= 1) {
@@ -45,6 +43,7 @@ function startGameLoops() {
         State.snackBarTimer -= 100;
         State.playTime += 0.1;
         document.getElementById("timePlayed").innerHTML = numeral(State.playTime).format('00:00:00');
+        
         for (let i = 0; i < State.exileData.length; i++) {
             const exile = State.exileData[i];
             if (exile.dropRate > 0) {
@@ -60,7 +59,7 @@ function startGameLoops() {
     // Delve system integration
     setInterval(function delveTick() {
         if (State.exileMap['Melvin'] && State.exileMap['Melvin'].level >= 1 && currencyMap['Sulphite']) {
-            delve(currencyMap['Sulphite'], State.exileMap['Melvin'], Upgrades.upgradeDropRate || 0);
+            delve(currencyMap['Sulphite'], State.exileMap['Melvin'], State.upgradeDropRate || 0);
         }
     }, 2500);
 
@@ -110,22 +109,25 @@ function startGameLoops() {
             MapCurrencyUpgradeSystem.getUpgradeDropRate,
             MapCurrencyUpgradeSystem.setUpgradeDropRate
         );
-        renderConquerorUpgrades(Upgrades);
+        renderConquerorUpgrades(State);
+        
         // Update Flipping Speed display in the Flipping tab
         const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
         if (flipSpeedDisplayElem) {
-            flipSpeedDisplayElem.innerHTML = Upgrades.flippingSpeed;
+            flipSpeedDisplayElem.innerHTML = State.flippingSpeed;
         }
+        
         // Run map currency logic
         MapCurrencyUpgradeSystem.rollMapCurrency(
             MapCurrencyUpgradeSystem.getUpgradeDropRate,
             MapCurrencyUpgradeSystem.getDivStashTab
         );
+        
         // Flipping logic: process buy/sell every 500ms (flipping speed applies per tick)
         currencyData.forEach(currency => currency.sellCurrency());
         currencyData.forEach(currency => currency.buyCurrency());
-        // Synchronize tab state for compatibility
-        syncStashTabStateToUpgrades(Upgrades);
+        
+        // No need to synchronize state anymore as we're using a centralized State object
     }, 500);
 }
 

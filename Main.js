@@ -6,8 +6,7 @@ import { initDelvingUI, showDelving } from './js/components/delve/DelveUI.js';
 import { delve, getDelveState, setDelveLoadingProgress } from './js/components/delve/DelveSystem.js';
 import Upgrades, { upgradeConfigs, renderUpgradeRow } from './js/components/upgrades/Augments.js';
 import MapCurrencyUpgradeSystem from './js/components/upgrades/MapCurrency/MapCurrencyUpgradeSystem.js';
-import { renderConquerorUpgrades } from './js/components/upgrades/Conquerors/ConquerorUpgrades.js';
-import { syncStashTabStateToUpgrades } from './js/components/upgrades/StashTab/StashTabUpgrades.js';
+import { renderConquerorUpgrades, buyConqueror } from './js/components/upgrades/Conquerors/ConquerorUpgrades.js';
 import { fossilData } from './js/components/delve/Fossil.js';
 import { createWelcomeCard } from './js/components/ui/Cards.js';
 import { showCrafting } from './js/components/crafting/CraftingUI.js';
@@ -63,10 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ['btn-general-upgrades', showGeneralUpgrades],
         ['btn-gear-upgrades', showGearUpgrades],
         ['btn-links-upgrades', showLinksUpgrades],
-        ['btn-crusader-upgrade', () => Upgrades.buyConqueror(currencyMap['Crusader'])],
-        ['btn-hunter-upgrade', () => Upgrades.buyConqueror(currencyMap['Hunter'])],
-        ['btn-redeemer-upgrade', () => Upgrades.buyConqueror(currencyMap['Redeemer'])],
-        ['btn-warlord-upgrade', () => Upgrades.buyConqueror(currencyMap['Warlord'])],
+        ['btn-crusader-upgrade', () => buyConqueror(currencyMap['Crusader'])],
+        ['btn-hunter-upgrade', () => buyConqueror(currencyMap['Hunter'])],
+        ['btn-redeemer-upgrade', () => buyConqueror(currencyMap['Redeemer'])],
+        ['btn-warlord-upgrade', () => buyConqueror(currencyMap['Warlord'])],
     ].forEach(([id, handler]) => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('click', handler);
@@ -91,16 +90,14 @@ function recruitExile(exileName) {
 	}
 	// Check level requirement
 	if (State.totalLevel < exile.levelRequirement) {
-		// Corrected template literal syntax
 		SnackBar(`Level requirement not met. Required: ${exile.levelRequirement}, Current: ${State.totalLevel}`);
 		return;
 	}
 	// Check special requirement (e.g., stash tabs for Melvin)
 	if (exile.specialRequirement) {
 		let [reqType, reqValue] = exile.specialRequirement;
-		if ((Upgrades[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
-			// Corrected template literal syntax
-			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${Upgrades[reqType] ?? 0}`);
+		if ((State[reqType] ?? 0) < reqValue) { // Use < for cases like needing at least 1 tab
+			SnackBar(`Special requirement not met. Required: ${reqType} >= ${reqValue}, Current: ${State[reqType] ?? 0}`);
 			return;
 		}
 	}

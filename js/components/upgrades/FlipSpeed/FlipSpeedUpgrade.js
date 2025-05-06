@@ -1,3 +1,4 @@
+import State from '../../../State.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
@@ -5,19 +6,18 @@ import { handlePurchase } from '../../shared/PurchaseUtils.js';
 
 /**
  * Generic handler for Flip Speed upgrade purchase.
- * @param {Object} Upgrades - The upgrades state object.
  */
-function handleFlipSpeedUpgrade(Upgrades) {
+function handleFlipSpeedUpgrade() {
   const row = document.getElementById('flipSpeedUpgrade');
   if (!row) return false;
-  const currentCost = Upgrades.flippingSpeedCost;
-  const currentLevel = Upgrades.flippingSpeed;
+  const currentCost = State.flippingSpeedCost;
+  const currentLevel = State.flippingSpeed;
   return handlePurchase({
     requirements: [{ currency: currencyMap['Eternal'], amount: currentCost }],
     onSuccess: () => {
-      Upgrades.flippingSpeedCost = Math.floor(currentCost * 2);
-      Upgrades.flippingSpeed++;
-      Upgrades.upgradeDropRate += 0.5;
+      State.flippingSpeedCost = Math.floor(currentCost * 2);
+      State.flippingSpeed++;
+      State.upgradeDropRate += 0.5;
     },
     uiUpdateConfig: {
       rowElement: row,
@@ -36,16 +36,18 @@ function handleFlipSpeedUpgrade(Upgrades) {
     updateUI: () => {
       const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
       if (globalUpgradeRateElem) {
-        globalUpgradeRateElem.innerHTML = Upgrades.upgradeDropRate.toFixed(1);
+        globalUpgradeRateElem.innerHTML = State.upgradeDropRate.toFixed(1);
       }
-      // Don't call hoverUpgrades here - it disrupts the existing hover event handlers
-      // The preserveHover flag in uiUpdateConfig will maintain the hover state
     },
     successMessage: 'Flipping speed upgraded!'
   });
 }
 
-export default function createFlipSpeedUpgrade(Upgrades) {
+/**
+ * Creates a flip speed upgrade configuration object.
+ * @returns {Object} The upgrade configuration.
+ */
+export default function createFlipSpeedUpgrade() {
   return {
     key: 'flipSpeed',
     shownFlag: 'flipSpeedUpgradeShown',
@@ -56,11 +58,11 @@ export default function createFlipSpeedUpgrade(Upgrades) {
     buttonText: 'Flipping Speed',
     description: 'Increase the rate The Singularity flips currency',
     benefitClass: 'flipSpeedMulti',
-    benefit: () => `+${formatEfficiency(Upgrades.flippingSpeed)}`,
+    benefit: () => `+${formatEfficiency(State.flippingSpeed)}`,
     costClass: 'flipSpeedUpgradeCostDisplay',
-    costText: () => `${numeral(Upgrades.flippingSpeedCost).format('0,0')} Eternal`, // Use numeral directly
-    requirements: () => [{ currency: currencyMap['Eternal'], amount: Upgrades.flippingSpeedCost }],
+    costText: () => `${numeral(State.flippingSpeedCost).format('0,0')} Eternal`,
+    requirements: () => [{ currency: currencyMap['Eternal'], amount: State.flippingSpeedCost }],
     hover: () => hoverUpgrades('flipSpeedUpgrade', 'Eternal'),
-    buy: () => handleFlipSpeedUpgrade(Upgrades)
+    buy: handleFlipSpeedUpgrade
   };
 }

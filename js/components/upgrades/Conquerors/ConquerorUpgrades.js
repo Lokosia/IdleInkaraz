@@ -1,5 +1,6 @@
 // ConquerorUpgrades.js
 // Handles conqueror upgrades system logic and UI
+import State from '../../../State.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
@@ -12,11 +13,10 @@ const renderedRows = new Set();
  * Handles the purchase of a conqueror upgrade.
  * Consumes a conqueror currency, increases upgrade drop rate, updates UI, and shows a success message.
  *
- * @param {Object} upgradesObj - The upgrades state object to modify (should have upgradeDropRate).
  * @param {Object} conqueror - The conqueror currency object (should have name and total).
  * @returns {void}
  */
-export function buyConqueror(upgradesObj, conqueror) {
+export function buyConqueror(conqueror) {
     const rowId = `${conqueror.name}Upgrade`;
     const row = document.getElementById(rowId);
     if (!row) {
@@ -30,7 +30,7 @@ export function buyConqueror(upgradesObj, conqueror) {
     handlePurchase({
         requirements: [{ currency: conqueror, amount: 1 }],
         onSuccess: () => {
-            upgradesObj.upgradeDropRate += 1;
+            State.upgradeDropRate += 1;
         },
         uiUpdateConfig: {
             rowElement: row,
@@ -45,7 +45,7 @@ export function buyConqueror(upgradesObj, conqueror) {
             // Update global drop rate display
             const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
             if (globalRateElem) {
-                globalRateElem.innerHTML = upgradesObj.upgradeDropRate.toFixed(1);
+                globalRateElem.innerHTML = State.upgradeDropRate.toFixed(1);
             }
             // Hide the row if the currency is now depleted
             if (conqueror.total < 1) {
@@ -77,10 +77,9 @@ function applyConquerorHover(rowId, currencyName) {
  * Renders conqueror upgrade rows in the upgrade table and attaches event listeners.
  * Shows/hides rows based on currency availability and applies hover effects.
  *
- * @param {Object} upgradesObj - The upgrades state object to modify.
  * @returns {void}
  */
-export function renderConquerorUpgrades(upgradesObj) {
+export function renderConquerorUpgrades() {
     const conquerors = [
         currencyMap['Crusader'],
         currencyMap['Hunter'],
@@ -115,7 +114,7 @@ export function renderConquerorUpgrades(upgradesObj) {
             const table = $('#UpgradeTable');
             table.prepend(row);
             
-            document.getElementById(buttonId)?.addEventListener('click', () => buyConqueror(upgradesObj, currency));
+            document.getElementById(buttonId)?.addEventListener('click', () => buyConqueror(currency));
         }
         
         // Show or hide the row based on currency availability
