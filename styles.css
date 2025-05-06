@@ -224,6 +224,21 @@ _:-ms-input-placeholder, :root .demo-graph {
   font-weight: bold;  
 }
 
+/* Currency outflow - what you're spending/selling */
+.hover-outflow {
+  color: #ff7070 !important; /* soft red */
+  font-weight: bold;
+  transition: color 0.15s ease-in-out;
+}
+
+/* Currency inflow - what you're gaining/buying */
+.hover-inflow {
+  color: #70ff8f !important; /* soft green */
+  font-weight: bold;
+  transition: color 0.15s ease-in-out;
+}
+
+/* Keeping these for backward compatibility */
 .hover-buy-sell {
   color: #d9ff00 !important;
   font-weight: bold;

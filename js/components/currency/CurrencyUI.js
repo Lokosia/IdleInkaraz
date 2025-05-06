@@ -1,6 +1,8 @@
 import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
-import { hoverUpgrades } from './HoverState.js';
+import { hoverUpgrades, clearAllHoverCurrencies } from './HoverState.js';
+// Don't import numeral as it's a global variable
+// import '../../libs/Numerals.js'; 
 
 // CurrencyUI.js - Handles all currency-related UI rendering and events
 /**
@@ -125,6 +127,27 @@ function showDefaultCurrencyView() {
     $("#MainCurrency")
         .removeClass("mdl-cell--4-col mdl-cell--4-col-tablet")
         .addClass("mdl-cell--3-col mdl-cell--3-col-tablet");
+    
+    // Clear any currency hover effects from flipping view
+    clearAllHoverCurrencies();
+}
+
+/**
+ * Debugging helper to verify currency elements in DOM
+ * @private
+ */
+function _debugVerifyCurrencyElements() {
+    console.log("Verifying currency elements in DOM:");
+    currencyData.forEach(currency => {
+        if (currency.name === 'Sulphite') return;
+        
+        const elements = document.querySelectorAll(`.${currency.name}`);
+        console.log(`${currency.name}: found ${elements.length} elements with class ${currency.name}`);
+        
+        if (elements.length === 0) {
+            console.warn(`No elements found with class ${currency.name} - hover effect won't work`);
+        }
+    });
 }
 
 /**
@@ -133,6 +156,7 @@ function showDefaultCurrencyView() {
  * @returns {void}
  */
 function showFlippingView() {
+    // Show the required UI panels
     $("#divBuyCurrency").show();
     $("#divSellCurrency").show();
     $("#divTheorycrafting").hide();
@@ -141,6 +165,59 @@ function showFlippingView() {
     $("#MainCurrency")
         .removeClass("mdl-cell--3-col mdl-cell--3-col-tablet")
         .addClass("mdl-cell--4-col mdl-cell--4-col-tablet");
+    
+    // Clear any existing hover effects
+    clearAllHoverCurrencies();
+    
+    // Wait until the DOM is fully updated
+    setTimeout(() => {
+        // Apply direct hover effects using jQuery event delegation
+        currencyData.forEach(currency => {
+            if (currency.name === 'Sulphite') return;
+            
+            // Process SELL slider - when selling:
+            // - The currency you're selling (main) is outflow (red)
+            // - The currency you're receiving (trading) is inflow (green)
+            const sellSliderId = `${currency.name}SellSlider`;
+            $(`label[for="${sellSliderId}"]`).off('mouseenter mouseleave') // Remove any existing handlers
+            .on('mouseenter', function() {
+                // Main currency (being sold) = outflow (red)
+                $(`.${currency.name}`).removeClass('hover hover-inflow hover-trade hover-buy-sell')
+                                     .addClass('hover-outflow');
+                
+                // Trading currency (being received) = inflow (green)
+                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-trade hover-buy-sell')
+                                                .addClass('hover-inflow');
+            })
+            .on('mouseleave', function() {
+                // Remove all highlight classes
+                $(`.${currency.name}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
+                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
+            });
+            
+            // Process BUY slider - when buying:
+            // - The currency you're receiving (main) is inflow (green)
+            // - The currency you're spending (trading) is outflow (red)
+            const buySliderId = `${currency.name}BuySlider`;
+            $(`label[for="${buySliderId}"]`).off('mouseenter mouseleave') // Remove any existing handlers
+            .on('mouseenter', function() {
+                // Main currency (being bought/received) = inflow (green)
+                $(`.${currency.name}`).removeClass('hover hover-outflow hover-trade hover-buy-sell')
+                                     .addClass('hover-inflow');
+                
+                // Trading currency (being spent) = outflow (red)
+                $(`.${currency.tradingCurrency}`).removeClass('hover hover-inflow hover-trade hover-buy-sell')
+                                                .addClass('hover-outflow');
+            })
+            .on('mouseleave', function() {
+                // Remove all highlight classes
+                $(`.${currency.name}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
+                $(`.${currency.tradingCurrency}`).removeClass('hover hover-outflow hover-inflow hover-trade hover-buy-sell');
+            });
+        });
+        
+        console.log("Intuitive color-coded hover effects applied to currency flipping view");
+    }, 150); // Slightly longer delay to ensure DOM is fully ready
 }
 
 export { setupCurrencyUI, updateCurrencyClass, showDefaultCurrencyView, showFlippingView };
