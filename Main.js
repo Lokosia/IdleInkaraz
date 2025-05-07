@@ -18,7 +18,7 @@ import { initTestMode } from './js/DebugMode.js';
 import { startGameLoops } from './js/GameLoop.js';
 import { SnackBar } from './js/UIInitializer.js';
 // Import our DOM utilities
-import { bindEvents, select, hide, removeClass } from './js/libs/DOMUtils.js';
+import { bindEvents, select, selectAll, hide, removeClass, show } from './js/libs/DOMUtils.js';
 
 // Initialize exileData and exileMap after all imports
 State.exileData = ExileFactory.createAllExiles();
@@ -106,14 +106,14 @@ function recruitExile(exileName) {
         exile.level = 1; // Set level explicitly
         exile.owned = true; // Mark as owned
         
-        // Replace jQuery with vanilla JS
-        const singularityHideElements = document.querySelectorAll('.SingularityHide');
+        // Use selectAll instead of document.querySelectorAll
+        const singularityHideElements = selectAll('.SingularityHide');
         singularityHideElements.forEach(el => el.remove());
         
-        const singularityBuyElements = document.querySelectorAll('.SingularityBuy');
+        const singularityBuyElements = selectAll('.SingularityBuy');
         singularityBuyElements.forEach(el => el.remove());
         
-        const flipElements = document.querySelectorAll('.flip');
+        const flipElements = selectAll('.flip');
         flipElements.forEach(el => el.classList.remove('hidden'));
         
         SnackBar("Singularity recruited!");
@@ -123,14 +123,10 @@ function recruitExile(exileName) {
         exile.level = 1; // Set level explicitly
         exile.owned = true; // Mark as owned
         
-        // Replace jQuery with vanilla JS
-        document.querySelectorAll('.ArtificerHide').forEach(el => {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('.ArtificerBuy').forEach(el => {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('.craft').forEach(el => {
+        // Use selectAll and hide instead of direct DOM manipulation
+        selectAll('.ArtificerHide').forEach(el => hide(el));
+        selectAll('.ArtificerBuy').forEach(el => hide(el));
+        selectAll('.craft').forEach(el => {
             el.style.display = '';
         });
         
@@ -142,10 +138,8 @@ function recruitExile(exileName) {
         exile.owned = true; // Mark as owned before calling onRecruited
         exile.onRecruited(); // This now handles level increase, UI updates, and initial upgrade setup
         
-        // Replace jQuery with vanilla JS
-        document.querySelectorAll('.MelvinBuy').forEach(el => {
-            el.style.display = 'none';
-        });
+        // Use selectAll and hide instead of direct DOM manipulation
+        selectAll('.MelvinBuy').forEach(el => hide(el));
         
         SnackBar("Melvin recruited!");
         // The specific UI updates previously here are now handled within onRecruited

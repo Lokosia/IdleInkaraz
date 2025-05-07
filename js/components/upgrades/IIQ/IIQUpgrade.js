@@ -5,6 +5,7 @@ import { hoverUpgrades } from '../../currency/HoverState.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { formatEfficiency } from '../Augments.js';
+import { select, findByClass } from '../../../../js/libs/DOMUtils.js';
 
 /**
  * State object for the IIQ (Increased Item Quantity) upgrade.
@@ -22,7 +23,7 @@ const IIQState = {
  * Generic handler for IIQ upgrade purchase.
  */
 function handleIIQUpgrade() {
-    const row = document.getElementById(IIQUpgradeConfig.rowId);
+    const row = select(`#${IIQUpgradeConfig.rowId}`);
     if (!row) return false;
     const currentCost = IIQState.iiqCost;
     const currentDropRate = IIQState.iiqDropRate;
@@ -51,7 +52,7 @@ function handleIIQUpgrade() {
             hoverClassesToRemoveOnMaxLevel: ['Chaos']
         },
         updateUI: () => {
-            const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+            const globalUpgradeRateElem = findByClass('UpgradeDropRate')[0];
             if (globalUpgradeRateElem) {
                 import('../Augments.js').then(({ default: Upgrades }) => {
                     globalUpgradeRateElem.innerHTML = formatEfficiency(Upgrades.upgradeDropRate);

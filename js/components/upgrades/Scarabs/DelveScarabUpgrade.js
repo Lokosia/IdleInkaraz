@@ -5,6 +5,7 @@ import { SnackBar } from '../../../UIInitializer.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
+import { select, findByClass } from '../../../../js/libs/DOMUtils.js';
 
 /**
  * Configuration object for the Sulphite Scarab (Delve Scarab) upgrade.
@@ -61,7 +62,7 @@ const DelveScarabUpgradeConfig = {
  * Generic handler for Delve Scarab upgrade purchase.
  */
 function handleDelveScarabUpgrade() {
-    const row = document.getElementById(DelveScarabUpgradeConfig.rowId);
+    const row = select(`#${DelveScarabUpgradeConfig.rowId}`);
     if (!row) return false;
     const scarabTypes = ['Rusted Sulphite Scarab', 'Polished Sulphite Scarab', 'Gilded Sulphite Scarab'];
     const costs = [1, 5, 10];
@@ -103,7 +104,7 @@ function handleDelveScarabUpgrade() {
                 const descCell = row.children[1];
                 if (descCell) descCell.innerHTML = `Use ${scarabTypes[nextLevel]} to increase Sulphite quantity`;
             }
-            const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+            const globalUpgradeRateElem = findByClass('UpgradeDropRate')[0];
             if (globalUpgradeRateElem) {
                 globalUpgradeRateElem.innerHTML = formatEfficiency(State.upgradeDropRate);
             }

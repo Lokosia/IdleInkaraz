@@ -1,7 +1,7 @@
 import { UISwitch } from '../ui/UISwitch.js';
 import { currencyData, currencyMap } from './CurrencyData.js';
 import { hoverUpgrades, clearAllHoverCurrencies } from './HoverState.js';
-import { select, selectAll, show, hide, on, off, onHover } from '../../../js/libs/DOMUtils.js';
+import { select, selectAll, show, hide, on, off, onHover, findByClass } from '../../../js/libs/DOMUtils.js';
 // Don't import numeral as it's a global variable
 // import '../../libs/Numerals.js'; 
 
@@ -14,7 +14,7 @@ import { select, selectAll, show, hide, on, off, onHover } from '../../../js/lib
 function toggleCurrencyOperation(currency, operation) {
     const method = operation === 'sell' ? 'sellSetCurrency' : 'buySetCurrency';
     const sliderId = `${currency.name}${operation.charAt(0).toUpperCase() + operation.slice(1)}Slider`;
-    const isChecked = document.getElementById(sliderId).checked;
+    const isChecked = select(`#${sliderId}`).checked;
     currency[method](isChecked ? 1 : 0);
 }
 
@@ -73,9 +73,10 @@ function createDisplay(currency) {
  * @returns {void}
  */
 function setupCurrencyUI() {
-    const sellCurrencyContainer = document.getElementById('sellCurrencyContainer');
-    const buyCurrencyContainer = document.getElementById('buyCurrencyContainer');
-    const currencyDisplayContainer = document.getElementById('currencyDisplayContainer');
+    const sellCurrencyContainer = select('#sellCurrencyContainer');
+    const buyCurrencyContainer = select('#buyCurrencyContainer');
+    const currencyDisplayContainer = select('#currencyDisplayContainer');
+    
     currencyData.forEach(currency => {
         if (currency.name === 'Sulphite') return;
         const sellSwitch = createSwitch(currency, 'sell');
@@ -87,12 +88,12 @@ function setupCurrencyUI() {
         // Attach robust hover logic to each slider using hoverUpgrades
         // Sell slider
         const sellSliderId = `${currency.name}SellSlider`;
-        if (document.getElementById(sellSliderId)) {
+        if (select(`#${sellSliderId}`)) {
             hoverUpgrades(sellSliderId, currency.name, currency.tradingCurrency);
         }
         // Buy slider
         const buySliderId = `${currency.name}BuySlider`;
-        if (document.getElementById(buySliderId)) {
+        if (select(`#${buySliderId}`)) {
             hoverUpgrades(buySliderId, currency.name, currency.tradingCurrency);
         }
     });
@@ -104,7 +105,7 @@ function setupCurrencyUI() {
  */
 function updateCurrencyClass() {
     for (let i = 0; i < currencyData.length; i++) {
-        const el = document.getElementsByClassName(currencyData[i].name)[0];
+        const el = findByClass(currencyData[i].name)[0];
         if (el) {
             el.innerHTML = numeral(currencyData[i].total).format('0,0', Math.floor);
         } else {

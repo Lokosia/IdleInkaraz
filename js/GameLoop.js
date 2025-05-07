@@ -6,6 +6,8 @@ import { upgradeConfigs, renderUpgradeRow } from './components/upgrades/Augments
 import MapCurrencyUpgradeSystem from './components/upgrades/MapCurrency/MapCurrencyUpgradeSystem.js';
 import { renderConquerorUpgrades } from './components/upgrades/Conquerors/ConquerorUpgrades.js';
 import { currencyData } from './components/currency/CurrencyData.js';
+// Import DOM utilities
+import { select, selectAll, findByClass } from './libs/DOMUtils.js';
 
 /**
  * Starts all main game loops, including:
@@ -21,8 +23,14 @@ function startGameLoops() {
     setInterval(function gameTick() {
         let tempLevel = 1000;
         let tempDropRate = 0;
+        let totalGearAndLinksBonus = 0;
+        
+        // Add global upgrade rate
         if (State.upgradeDropRate > 0) tempDropRate += State.upgradeDropRate;
+        
+        // Add incubator bonus - ensure it's always counted
         if (State.incDropRate > 0) tempDropRate += State.incDropRate;
+        
         for (let i = 0; i < State.exileData.length; i++) {
             const exile = State.exileData[i];
             if (exile.level >= 1) {
@@ -36,13 +44,28 @@ function startGameLoops() {
                 }
             }
         }
+        
         State.totalLevel = tempLevel;
         State.dropRate = tempDropRate;
-        document.getElementsByClassName('TotalLevel')[0].innerHTML = "Levels: " + numeral(tempLevel).format('0,0');
-        document.getElementsByClassName('TotalDR')[0].innerHTML = "Efficiency: x" + numeral(tempDropRate).format('0,0.0');
+        
+        // Use findByClass instead of getElementsByClassName
+        const totalLevelElement = findByClass('TotalLevel')[0];
+        if (totalLevelElement) {
+            totalLevelElement.innerHTML = "Levels: " + numeral(tempLevel).format('0,0');
+        }
+        const totalDRElement = findByClass('TotalDR')[0];
+        if (totalDRElement) {
+            totalDRElement.innerHTML = "Efficiency: x" + numeral(tempDropRate).format('0,0.0');
+        }
+        
+        // Use select instead of getElementById
+        const timePlayedElement = select('#timePlayed');
+        if (timePlayedElement) {
+            timePlayedElement.innerHTML = numeral(State.playTime).format('00:00:00');
+        }
+        
         State.snackBarTimer -= 100;
         State.playTime += 0.1;
-        document.getElementById("timePlayed").innerHTML = numeral(State.playTime).format('00:00:00');
         
         for (let i = 0; i < State.exileData.length; i++) {
             const exile = State.exileData[i];
@@ -66,7 +89,8 @@ function startGameLoops() {
     // Delve loading bar animation
     setInterval(function delveLoadingBarAnimate() {
         const { delveLoadingProgress, isDelving } = getDelveState();
-        const delveLoader = document.querySelector('#delveLoader');
+        // Use select instead of querySelector
+        const delveLoader = select('#delveLoader');
         if (!isDelving) {
             if (delveLoader && delveLoader.MaterialProgress) {
                 delveLoader.MaterialProgress.setProgress(0);
@@ -112,7 +136,8 @@ function startGameLoops() {
         renderConquerorUpgrades(State);
         
         // Update Flipping Speed display in the Flipping tab
-        const flipSpeedDisplayElem = document.querySelector('#divFlipping .flipSpeedMulti');
+        // Use select instead of querySelector
+        const flipSpeedDisplayElem = select('#divFlipping .flipSpeedMulti');
         if (flipSpeedDisplayElem) {
             flipSpeedDisplayElem.innerHTML = State.flippingSpeed;
         }

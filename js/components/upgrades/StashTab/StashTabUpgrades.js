@@ -5,6 +5,7 @@ import { currencyMap } from '../../currency/CurrencyData.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
+import { select } from '../../../../js/libs/DOMUtils.js';
 
 /**
  * Generic handler for stash tab upgrades.
@@ -12,7 +13,7 @@ import { formatEfficiency } from '../Augments.js';
  * @param {Function} [onUpgrade] - Optional callback after upgrade.
  */
 function handleStashTabUpgrade(config, onUpgrade) {
-    const row = document.getElementById(config.rowId);
+    const row = select(`#${config.rowId}`);
     if (!row) return;
     handlePurchase({
         requirements: config.requirements(),

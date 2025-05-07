@@ -3,6 +3,7 @@ import { createHeaderHTML } from './Header.js';
 import { createSidePanelHTML } from './SidePanel.js';
 import { createGrid } from './Grid.js'; // Import the new Grid function
 import { mainGridConfig } from './GridConfig.js'; // Import the grid config
+import { select } from '../../../js/libs/DOMUtils.js';
 
 /**
  * Initializes the main application layout: header, side panel, and main grid.
@@ -11,9 +12,9 @@ import { mainGridConfig } from './GridConfig.js'; // Import the grid config
  * @returns {void}
  */
 export function initializeLayout() {
-    const headerPlaceholder = document.getElementById('header-placeholder');
-    const sidePanelPlaceholder = document.getElementById('side-panel-placeholder');
-    const mainGridContainer = document.getElementById('mainGrid'); // Get the main grid container
+    const headerPlaceholder = select('#header-placeholder');
+    const sidePanelPlaceholder = select('#side-panel-placeholder');
+    const mainGridContainer = select('#mainGrid'); // Get the main grid container
 
     if (headerPlaceholder) {
         headerPlaceholder.innerHTML = createHeaderHTML();
@@ -37,7 +38,7 @@ export function initializeLayout() {
         }
 
         // Hide the loader now that MDL has processed it
-        const loaderElement = document.getElementById('loader');
+        const loaderElement = select('#loader');
         if (loaderElement) {
             loaderElement.style.display = 'none';
         }

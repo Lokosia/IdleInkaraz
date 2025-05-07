@@ -1,5 +1,6 @@
 import { currencyData } from './components/currency/CurrencyData.js';
 import { fossilData } from './components/delve/Fossil.js';
+import { findByClass } from './libs/DOMUtils.js';
 
 /**
  * Initializes test mode by setting all currencies and fossils to 99,999.
@@ -18,7 +19,7 @@ function initTestMode() {
 	fossilData.forEach(fossil => {
 		fossil.total = 99999;
 		// Update the UI if the element exists
-		const el = document.getElementsByClassName(fossil.name + 'Total')[0];
+		const el = findByClass(fossil.name + 'Total')[0];
 		if (el) {
 			el.innerHTML = numeral(fossil.total).format('0,0', Math.floor);
 		}

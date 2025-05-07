@@ -1,4 +1,5 @@
 import State from './State.js';
+import { select } from './libs/DOMUtils.js';
 
 /**
  * Displays a Material Design snackbar notification with the given message.
@@ -10,9 +11,11 @@ import State from './State.js';
 export function SnackBar(input) {
 	if (State.snackBarTimer <= 0) {
 		'use strict';
-		var snackbarContainer = document.querySelector('#snackBar');
-		var data = { message: input, timeout: 1500 };
-		snackbarContainer.MaterialSnackbar.showSnackbar(data);
-		State.snackBarTimer = 1500;
+		var snackbarContainer = select('#snackBar');
+		if (snackbarContainer && snackbarContainer.MaterialSnackbar) {
+			var data = { message: input, timeout: 1500 };
+			snackbarContainer.MaterialSnackbar.showSnackbar(data);
+			State.snackBarTimer = 1500;
+		}
 	}
 }

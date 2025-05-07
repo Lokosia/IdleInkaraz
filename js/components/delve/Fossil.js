@@ -1,4 +1,5 @@
 // Fossil.js - Contains the Fossil class and fossilData array
+import { findByClass } from '../../../js/libs/DOMUtils.js';
 
 /**
  * Represents a fossil item that can be found while delving.
@@ -44,7 +45,7 @@ class Fossil {
         let f = this.rollFossilRNG();
         if (f <= this.rate * (dropRate + upgradeDropRate)) {
             this.total += 1 + (this.rate * (dropRate + upgradeDropRate));
-            const el = document.getElementsByClassName(this.name + 'Total')[0];
+            const el = findByClass(this.name + 'Total')[0];
             if (el) {
                 el.innerHTML = numeral(this.total).format('0,0', Math.floor);
             }

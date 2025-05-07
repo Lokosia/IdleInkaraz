@@ -10,6 +10,8 @@ import { generateUpgradeCellsHTML } from '../../ui/UpgradeUI.js';
 import { mapCurrencyUpgradeLevels } from './MapCurrencyUpgradeLevels.js';
 import State from '../../../State.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
+// Import DOMUtils functions
+import { select, selectAll, findByClass, on, off } from '../../../../js/libs/DOMUtils.js';
 
 // Constants for IDs to maintain consistency
 const ROW_ID = 'MapCurrencyMapUpgrade';
@@ -118,21 +120,30 @@ const MapCurrencyUpgradeSystem = {
         
         const idx = this.mappingCurrencyLevel;
         if (idx >= mapCurrencyUpgradeLevels.length) {
-            $('#MapCurrencyMapUpgrade').remove();
+            // Use DOM utils instead of jQuery
+            const rowElement = select(`#${ROW_ID}`);
+            if (rowElement) {
+                rowElement.remove();
+            }
             return;
         }
         
         const level = mapCurrencyUpgradeLevels[idx];
         
         // Check if the row exists but needs initialization
-        const rowExists = $(`#${ROW_ID}`).length > 0;
-        const rowNeedsInit = rowExists && !document.getElementById(BUTTON_ID);
+        const rowElement = select(`#${ROW_ID}`);
+        const rowExists = !!rowElement;
+        const rowNeedsInit = rowExists && !select(`#${BUTTON_ID}`);
         
         // Only create the row if it doesn't exist
         if (!rowExists) {
             const rowHtml = `<tr id="${ROW_ID}"></tr>`;
-            $("#UpgradeTable").append(rowHtml);
-            this._renderMapCurrencyRow(level, getUpgradeDropRate, setUpgradeDropRate);
+            const upgradeTable = select("#UpgradeTable");
+            if (upgradeTable) {
+                // Append new row using insertAdjacentHTML
+                upgradeTable.insertAdjacentHTML('beforeend', rowHtml);
+                this._renderMapCurrencyRow(level, getUpgradeDropRate, setUpgradeDropRate);
+            }
         } 
         // If row exists but button doesn't, re-initialize it
         else if (rowNeedsInit) {
@@ -156,14 +167,19 @@ const MapCurrencyUpgradeSystem = {
             BUTTON_ID
         );
         
-        $(`#${ROW_ID}`).html(cellsHTML);
+        const rowElement = select(`#${ROW_ID}`);
+        if (rowElement) {
+            rowElement.innerHTML = cellsHTML;
+        }
         
         // Attach the click handler
         const boundHandler = this.buyMapCurrency.bind(this, getUpgradeDropRate, setUpgradeDropRate);
-        const btn = document.getElementById(BUTTON_ID);
+        const btn = select(`#${BUTTON_ID}`);
         if (btn) {
             // Remove any previous click handlers to avoid duplicates
-            $(btn).off('click').on('click', boundHandler);
+            // Since we don't have direct access to jQuery's off(), we'll use our own method
+            // to attach a new handler (previous handler will be overwritten)
+            on(btn, 'click', boundHandler);
         }
         
         // Apply hover effect using the standardized approach
@@ -188,11 +204,13 @@ function handleMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate, mappin
         console.warn("Attempted to buy map currency upgrade beyond max level.");
         return;
     }
-    const row = document.getElementById(ROW_ID);
+    
+    const row = select(`#${ROW_ID}`);
     if (!row) {
         console.error(`Upgrade row with ID ${ROW_ID} not found.`);
         return;
     }
+    
     const requirements = [
         { currency: currencyMap['Exalted'], amount: currentLevelData.cost },
         ...currentLevelData.consume.map(req => ({ currency: currencyMap[req.currency], amount: req.amount }))
@@ -223,7 +241,7 @@ function handleMapCurrencyUpgrade(getUpgradeDropRate, setUpgradeDropRate, mappin
             hoverClassesToRemoveOnMaxLevel: ['Exalted']
         },
         updateUI: () => {
-            const globalRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+            const globalRateElem = findByClass('UpgradeDropRate')[0];
             if (globalRateElem) {
                 globalRateElem.innerHTML = getUpgradeDropRate().toFixed(1);
             }

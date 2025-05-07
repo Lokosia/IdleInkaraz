@@ -10,6 +10,7 @@ import { IIQUpgradeConfig } from './IIQ/IIQUpgrade.js';
 import IncubatorUpgradeConfig from './Incubator/IncubatorUpgrade.js';
 import createFlipSpeedUpgrade from './FlipSpeed/FlipSpeedUpgrade.js';
 import DelveScarabUpgradeConfig from './Scarabs/DelveScarabUpgrade.js';
+import { select, on } from '../../../js/libs/DOMUtils.js';
 
 /**
  * Formats an efficiency value as an integer if whole, or as a float otherwise.
@@ -76,14 +77,15 @@ function renderUpgradeRow(cfg, totalLevel) {
     if (!cfg.unlock(totalLevel)) return;
 
     // Only create and append the row if it does not already exist
-    let row = document.getElementById(cfg.rowId);
+    let row = select(`#${cfg.rowId}`);
     if (!row) {
         row = document.createElement('tr');
         row.id = cfg.rowId;
         // Append the row to the table
-        document.getElementById('UpgradeTable').appendChild(row);
-    } else {
-        row = $(row)[0]; // Ensure it's a DOM element
+        const upgradeTable = select('#UpgradeTable');
+        if (upgradeTable) {
+            upgradeTable.appendChild(row);
+        }
     }
 
     // Evaluate dynamic values
@@ -104,21 +106,24 @@ function renderUpgradeRow(cfg, totalLevel) {
     );
 
     // Set the inner HTML of the row
-    $(row).html(cellsHTML);
+    row.innerHTML = cellsHTML;
 
-    // Add CSS classes to specific cells if needed (using the generated HTML structure)
-    if (cfg.benefitClass) {
-        $(row).children().eq(2).addClass(cfg.benefitClass);
+    // Add CSS classes to specific cells if needed (using the row's children)
+    if (cfg.benefitClass && row.children[2]) {
+        row.children[2].classList.add(cfg.benefitClass);
     }
-    if (cfg.costClass) {
-        $(row).children().eq(3).addClass(cfg.costClass);
+    if (cfg.costClass && row.children[3]) {
+        row.children[3].classList.add(cfg.costClass);
     }
 
     // Apply hover effects
     cfg.hover();
 
     // Attach the click listener to the button using its ID
-    document.getElementById(cfg.buttonId)?.addEventListener('click', cfg.buy);
+    const button = select(`#${cfg.buttonId}`);
+    if (button) {
+        on(button, 'click', cfg.buy);
+    }
 
     // Mark as shown
     State[cfg.shownFlag] = true;

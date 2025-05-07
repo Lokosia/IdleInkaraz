@@ -3,12 +3,13 @@ import { currencyMap } from '../../currency/CurrencyData.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
+import { select, findByClass } from '../../../../js/libs/DOMUtils.js';
 
 /**
  * Generic handler for Flip Speed upgrade purchase.
  */
 function handleFlipSpeedUpgrade() {
-  const row = document.getElementById('flipSpeedUpgrade');
+  const row = select('#flipSpeedUpgrade');
   if (!row) return false;
   const currentCost = State.flippingSpeedCost;
   const currentLevel = State.flippingSpeed;
@@ -34,7 +35,7 @@ function handleFlipSpeedUpgrade() {
       hoverClassesToRemoveOnMaxLevel: ['Eternal']
     },
     updateUI: () => {
-      const globalUpgradeRateElem = document.getElementsByClassName('UpgradeDropRate')[0];
+      const globalUpgradeRateElem = findByClass('UpgradeDropRate')[0];
       if (globalUpgradeRateElem) {
         globalUpgradeRateElem.innerHTML = State.upgradeDropRate.toFixed(1);
       }

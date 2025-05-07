@@ -4,12 +4,13 @@ import { hoverUpgrades } from '../../currency/HoverState.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { formatEfficiency } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
+import { select } from '../../../../js/libs/DOMUtils.js';
 
 /**
  * Generic handler for Incubator upgrade purchase.
  */
 function handleIncubatorUpgrade() {
-    const row = document.getElementById(IncubatorUpgradeConfig.rowId);
+    const row = select(`#${IncubatorUpgradeConfig.rowId}`);
     if (!row) return false;
     const currentCost = State.incubatorCost;
     const currentDropRate = State.incDropRate;
