@@ -31,6 +31,9 @@ function startGameLoops() {
         // Add incubator bonus - ensure it's always counted
         if (State.incDropRate > 0) tempDropRate += State.incDropRate;
         
+        // Note: We no longer need to add stash tab bonuses here as they're already 
+        // included in State.upgradeDropRate when purchased
+        
         for (let i = 0; i < State.exileData.length; i++) {
             const exile = State.exileData[i];
             if (exile.level >= 1) {

@@ -10,7 +10,7 @@ import { select } from '../../../../js/libs/DOMUtils.js';
 /**
  * Generic handler for stash tab upgrades.
  * @param {Object} config - The upgrade config object.
- * @param {Function} [onUpgrade] - Optional callback after upgrade.
+ * @param {Function} [onUpgrade] - Optional callback after upgrade (no longer used).
  */
 function handleStashTabUpgrade(config, onUpgrade) {
     const row = select(`#${config.rowId}`);
@@ -18,8 +18,18 @@ function handleStashTabUpgrade(config, onUpgrade) {
     handlePurchase({
         requirements: config.requirements(),
         onSuccess: () => {
+            // Set the stash tab state to 1 (purchased)
             State[config.key] = 1;
-            if (onUpgrade) onUpgrade();
+            
+            // Directly increment the upgradeDropRate here to ensure it's reflected in currency calculations
+            // This is the ONLY place where we increment upgradeDropRate for stash tabs
+            State.upgradeDropRate += 1;
+            
+            // Update the efficiency display in the Upgrades table
+            const upgradeDropRateElem = document.querySelector('.UpgradeDropRate');
+            if (upgradeDropRateElem) {
+                upgradeDropRateElem.innerHTML = State.upgradeDropRate.toFixed(1);
+            }
         },
         uiUpdateConfig: {
             rowElement: row,

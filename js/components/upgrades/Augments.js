@@ -57,9 +57,10 @@ const upgradeConfigs = [
     IncubatorUpgradeConfig,
     createFlipSpeedUpgrade(),
     // Stash tab upgrades (imported)
+    // We're not using incUpgradeDropRate here because StashTabUpgrades.js already handles this
     ...stashTabUpgradeConfigs.map(cfg => ({
         ...cfg,
-        buy: () => cfg.buy(incUpgradeDropRate)
+        buy: () => cfg.buy(null) // Pass null instead of incUpgradeDropRate to avoid double incrementing
     })),
     DelveScarabUpgradeConfig
 ];
