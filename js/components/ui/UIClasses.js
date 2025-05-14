@@ -42,5 +42,13 @@ export const UI_CLASSES = {
         imgBG: 'imgBG',
         layout: 'demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header',
         avatar: 'demo-avatar'
+    },
+    snackbar: {
+        icon: 'mdl-snackbar__icon',
+        text: 'mdl-snackbar__text',
+        action: 'mdl-snackbar__action'
+    },
+    icon: {
+        base: 'material-icons'
     }
 };
