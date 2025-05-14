@@ -13,15 +13,20 @@ function handleIncubatorUpgrade() {
     const row = select(`#${IncubatorUpgradeConfig.rowId}`);
     if (!row) return false;
     const currentCost = State.incubatorCost;
-    const currentDropRate = State.incDropRate;
     return handlePurchase({
         requirements: [{ currency: currencyMap['Chaos'], amount: currentCost }],
         onSuccess: () => {
             State.incubatorCost = Math.floor(currentCost * 1.2);
-            if (currentDropRate === 0) {
+            if (State.incDropRate === 0) {
                 State.incDropRate = 1;
             } else {
                 State.incDropRate += 0.1;
+            }
+            // Update the Theorycrafting string (Upgrade Efficiency) to include Incubator value
+            const globalUpgradeRateElem = document.querySelector('.UpgradeDropRate');
+            if (globalUpgradeRateElem) {
+                const total = State.upgradeDropRate + State.incDropRate;
+                globalUpgradeRateElem.innerHTML = formatEfficiency(total);
             }
         },
         uiUpdateConfig: {
@@ -30,7 +35,7 @@ function handleIncubatorUpgrade() {
             benefitElement: row.querySelector('.incDropRate'),
             getNextLevelData: () => {
                 const nextCost = Math.floor(currentCost * 1.2);
-                const nextDropRate = (currentDropRate === 0) ? 1 : currentDropRate + 0.1;
+                const nextDropRate = (State.incDropRate === 0) ? 1 : State.incDropRate + 0.1;
                 const nextBenefit = `+${formatEfficiency(nextDropRate)}`;
                 return { cost: `${window.numeral(nextCost).format('0,0')} Chaos`, benefit: nextBenefit };
             },
