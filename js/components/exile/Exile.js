@@ -4,6 +4,7 @@ import { getMirrorUpgrade } from './ExileUtils.js'; // Import the new handler
 import { generateUpgradeCellsHTML } from '../ui/UpgradeUI.js';
 import { SnackBar } from '../../UIInitializer.js';
 import { hoverUpgrades } from '../currency/HoverState.js';
+import { updateTheorycraftingEfficiencyUI } from '../upgrades/Augments.js';
 
 /**
  * Represents an Exile character in the game.
@@ -236,6 +237,9 @@ class Exile {
                     $(`#${rowId}`).off('mouseenter mouseleave'); // Clean up potential jQuery listeners if any remain
                     SnackBar(`${this.name} ${upgradeType} upgrades completed!`);
                 }
+
+                // --- Update Theorycrafting (Upgrade Efficiency) string ---
+                updateTheorycraftingEfficiencyUI();
             },
             successMessage: `${this.name} ${upgradeType} upgraded!`
         });

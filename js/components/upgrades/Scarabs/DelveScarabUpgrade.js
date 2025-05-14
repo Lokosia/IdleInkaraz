@@ -3,7 +3,7 @@ import State from '../../../State.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
 import { SnackBar } from '../../../UIInitializer.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
-import { formatEfficiency } from '../Augments.js';
+import { formatEfficiency, updateTheorycraftingEfficiencyUI } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { select, findByClass } from '../../../../js/libs/DOMUtils.js';
 
@@ -104,6 +104,7 @@ function handleDelveScarabUpgrade() {
                 const descCell = row.children[1];
                 if (descCell) descCell.innerHTML = `Use ${scarabTypes[nextLevel]} to increase Sulphite quantity`;
             }
+            updateTheorycraftingEfficiencyUI();
             const globalUpgradeRateElem = findByClass('UpgradeDropRate')[0];
             if (globalUpgradeRateElem) {
                 globalUpgradeRateElem.innerHTML = formatEfficiency(State.upgradeDropRate);

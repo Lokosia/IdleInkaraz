@@ -130,7 +130,22 @@ function renderUpgradeRow(cfg, totalLevel) {
     State[cfg.shownFlag] = true;
 }
 
-export { upgradeConfigs, renderUpgradeRow, formatEfficiency, incUpgradeDropRate };
+/**
+ * Updates the Theorycrafting (Upgrade Efficiency) UI string to reflect the sum of all sources.
+ * Includes global upgrades, incubator, and all owned exiles' dropRate.
+ */
+function updateTheorycraftingEfficiencyUI() {
+    const elem = document.querySelector('.UpgradeDropRate');
+    if (!elem || !State.exileMap) return;
+    let totalExileEfficiency = 0;
+    for (const exile of Object.values(State.exileMap)) {
+        if (exile && exile.level > 0) totalExileEfficiency += exile.dropRate;
+    }
+    const total = State.upgradeDropRate + (State.incDropRate || 0) + totalExileEfficiency;
+    elem.innerHTML = formatEfficiency(total);
+}
+
+export { upgradeConfigs, renderUpgradeRow, formatEfficiency, incUpgradeDropRate, updateTheorycraftingEfficiencyUI };
 
 // For backward compatibility, re-export State as Upgrades
 export default State;

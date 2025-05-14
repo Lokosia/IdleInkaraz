@@ -2,7 +2,7 @@ import State from '../../../State.js';
 import { SnackBar } from '../../../UIInitializer.js';
 import { hoverUpgrades } from '../../currency/HoverState.js';
 import { currencyMap } from '../../currency/CurrencyData.js';
-import { formatEfficiency } from '../Augments.js';
+import { formatEfficiency, updateTheorycraftingEfficiencyUI } from '../Augments.js';
 import { handlePurchase } from '../../shared/PurchaseUtils.js';
 import { select } from '../../../../js/libs/DOMUtils.js';
 
@@ -23,11 +23,7 @@ function handleIncubatorUpgrade() {
                 State.incDropRate += 0.1;
             }
             // Update the Theorycrafting string (Upgrade Efficiency) to include Incubator value
-            const globalUpgradeRateElem = document.querySelector('.UpgradeDropRate');
-            if (globalUpgradeRateElem) {
-                const total = State.upgradeDropRate + State.incDropRate;
-                globalUpgradeRateElem.innerHTML = formatEfficiency(total);
-            }
+            updateTheorycraftingEfficiencyUI();
         },
         uiUpdateConfig: {
             rowElement: row,
