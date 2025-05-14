@@ -66,13 +66,13 @@ export const mainGridConfig = [
         cssClasses: 'cardBG imgBG',
         title: 'Theorycrafting (Upgrade Efficiency:&nbsp;x<span class="UpgradeDropRate">0.0</span>)',
         contentTemplate: `
-            <table class="mdl-data-table mdl-js-data-table cardBG">
+            <table class="${UI_CLASSES.table.table} cardBG">
                 <thead>
                     <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Upgrade</th>
-                        <th class="mdl-data-table__cell--non-numeric">Description</th>
-                        <th class="mdl-data-table__cell--non-numeric">Efficiency</th>
-                        <th class="mdl-data-table__cell--non-numeric">Cost</th>
+                        <th class="${UI_CLASSES.table.cellNonNumeric}">Upgrade</th>
+                        <th class="${UI_CLASSES.table.cellNonNumeric}">Description</th>
+                        <th class="${UI_CLASSES.table.cellNonNumeric}">Efficiency</th>
+                        <th class="${UI_CLASSES.table.cellNonNumeric}">Cost</th>
                     </tr>
                 </thead>
                 <tbody id="UpgradeTable">

@@ -27,5 +27,9 @@ export const UI_CLASSES = {
         container: 'mdl-switch mdl-js-switch mdl-js-ripple-effect',
         input: 'mdl-switch__input',
         label: 'mdl-switch__label'
+    },
+    table: {
+        table: 'mdl-data-table mdl-js-data-table',
+        cellNonNumeric: 'mdl-data-table__cell--non-numeric'
     }
 };

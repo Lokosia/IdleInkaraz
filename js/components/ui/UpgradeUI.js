@@ -19,14 +19,14 @@ function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit,
     // Use provided buttonId or generate one
     const finalButtonId = buttonId || `${upgradeKey}${upgradeType}Btn`;
     const html = `
-        <td class="mdl-data-table__cell--non-numeric">
+        <td class="${UI_CLASSES.table.cellNonNumeric}">
             <button class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')} ${upgradeKey}${upgradeType}Button" id="${finalButtonId}">
                 ${btnLabel}
             </button>
         </td>
-        <td class="mdl-data-table__cell--non-numeric">${description}</td>
-        <td class="mdl-data-table__cell--non-numeric">${benefit}</td>
-        <td class="mdl-data-table__cell--non-numeric">${requirements}</td>
+        <td class="${UI_CLASSES.table.cellNonNumeric}">${description}</td>
+        <td class="${UI_CLASSES.table.cellNonNumeric}">${benefit}</td>
+        <td class="${UI_CLASSES.table.cellNonNumeric}">${requirements}</td>
     `;
     // Removed DOM manipulation and event listener attachment
     return html;
