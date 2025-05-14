@@ -1,5 +1,6 @@
 // Import our DOM utilities
 import { show, hide } from '../../../js/libs/DOMUtils.js';
+import { UI_CLASSES } from './UIClasses.js';
 
 /**
  * Generates HTML for upgrade button and description cells (TDs).
@@ -19,7 +20,7 @@ function generateUpgradeCellsHTML(upgradeKey, upgradeType, description, benefit,
     const finalButtonId = buttonId || `${upgradeKey}${upgradeType}Btn`;
     const html = `
         <td class="mdl-data-table__cell--non-numeric">
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${upgradeKey}${upgradeType}Button" id="${finalButtonId}">
+            <button class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')} ${upgradeKey}${upgradeType}Button" id="${finalButtonId}">
                 ${btnLabel}
             </button>
         </td>

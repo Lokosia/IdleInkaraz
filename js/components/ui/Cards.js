@@ -139,7 +139,11 @@ function createWelcomeCard(container) {
 
     // Initialize the button inside the card
     const createGuildButton = document.createElement('button');
-    createGuildButton.className = 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored';
+    createGuildButton.className = [
+        UI_CLASSES.button.base,
+        UI_CLASSES.button.raised,
+        UI_CLASSES.button.colored
+    ].join(' ');
     createGuildButton.textContent = 'Create Guild';
     createGuildButton.onclick = function() {
         // Replace jQuery with vanilla JS

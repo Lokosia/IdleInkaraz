@@ -1,6 +1,7 @@
 // Exile UI utilities for rendering and updating Exile-related UI
 import { UICard } from '../ui/Cards.js';
 import UIManager from '../ui/UIManager.js';
+import { UI_CLASSES } from '../ui/UIClasses.js';
 
 /**
  * Generates cards for all standard exiles to populate the Guild section.
@@ -26,7 +27,7 @@ function generateExileCards(container, exileData, recruitExile) {
         if (exile.level < 1) {
             actionSections.push({
                 content: `
-                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton">
+                    <button id="${exile.name}ActionButton" class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')} ${exile.name}ActionButton">
                         Recruit ${exile.name}</button>
                 `,
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
@@ -40,7 +41,7 @@ function generateExileCards(container, exileData, recruitExile) {
             // At max level, include reroll button markup (no inline onclick)
             actionSections.push({
                 content: `
-                    <button id="${exile.name}ActionButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ${exile.name}ActionButton">
+                    <button id="${exile.name}ActionButton" class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')} ${exile.name}ActionButton">
                         Reroll ${exile.name}</button>
                 `,
                 className: `mdl-card__actions mdl-card--border ${exile.name}ActionSection`
