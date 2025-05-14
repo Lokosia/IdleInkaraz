@@ -48,14 +48,14 @@ export function createSidePanelHTML(avatarPath = 'images/exalted.png', title = '
     `;
 
     return `
-        <header class="demo-drawer-header">
-            <img src="${avatarPath}" class="demo-avatar">
-            <div class="demo-avatar-dropdown">
+        <header class="demo-drawer-header" data-ui-class="drawer-header">
+            <img src="${avatarPath}" class="${UI_CLASSES.util.avatar}" data-ui-class="avatar">
+            <div class="demo-avatar-dropdown" data-ui-class="avatar-dropdown">
                 <span>${title}</span>
-                <div class="mdl-layout-spacer"></div>
+                <div class="mdl-layout-spacer" data-ui-class="spacer"></div>
             </div>
         </header>
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+        <nav class="${UI_CLASSES.navigation.container}" data-ui-class="navigation-container">
             ${navLinks}
             ${infoLink}
         </nav>

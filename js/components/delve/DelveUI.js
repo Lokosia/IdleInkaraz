@@ -24,11 +24,11 @@ function createMelvinSection(recruitExileFn, melvinObj) {
     const actionSections = [];
     // Only show recruit button if Melvin is not owned
     if (!melvinObj?.owned) {
-        actionSections.push({ content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRecruitBtn">Recruit Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinBuy' });
-        actionSections.push({ content: '500 Total Levels Required<br>Delve Stash Tab Required', className: 'mdl-card__actions mdl-card--border MelvinHide' });
+        actionSections.push({ content: `<button class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')}" id="MelvinRecruitBtn">Recruit Melvin</button>`, className: `${UI_CLASSES.card.actions} MelvinBuy` });
+        actionSections.push({ content: '500 Total Levels Required<br>Delve Stash Tab Required', className: `${UI_CLASSES.card.actions} MelvinHide` });
     }
     // Always show reroll button (but keep hidden if not available)
-    actionSections.push({ content: `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="MelvinRerollBtn">Reroll Melvin</button>`, className: 'mdl-card__actions mdl-card--border MelvinRerollButton hidden' });
+    actionSections.push({ content: `<button class="${[UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ')}" id="MelvinRerollBtn">Reroll Melvin</button>`, className: `${UI_CLASSES.card.actions} MelvinRerollButton ${UI_CLASSES.util.hidden}` });
     const card = UICard.create({
         id: 'melvin-card',
         title: "Delvin' Melvin",
