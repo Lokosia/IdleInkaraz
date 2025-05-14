@@ -1,5 +1,7 @@
 'use strict';
 
+import { UI_CLASSES } from '../ui/UIClasses.js';
+
 /**
  * Defines navigation items for the side panel
  * @type {Array<{id: string, icon: string, label: string}>}
@@ -21,8 +23,8 @@ const navigationItems = [
  */
 function createNavigationLink(id, icon, label) {
     return `
-        <a class="mdl-navigation__link menuHover" href="#" id="${id}">
-            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">${icon}</i>${label}
+        <a class="${UI_CLASSES.navigation.link}" href="#" id="${id}">
+            <i class="${UI_CLASSES.navigation.icon}" role="presentation">${icon}</i>${label}
         </a>
     `;
 }

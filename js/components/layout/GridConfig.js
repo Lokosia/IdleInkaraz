@@ -1,3 +1,5 @@
+import { UI_CLASSES } from '../ui/UIClasses.js';
+
 /**
  * mainGridConfig defines the configuration for the main UI grid layout.
  * Each object in the array represents a card with its own layout, content, and actions.
@@ -18,7 +20,7 @@ export const mainGridConfig = [
         title: 'The Singularity',
         contentTemplate: `Beep beep boop.`,
         actions: [
-            { type: 'button', id: 'recruit-singularity', text: 'Recruit The Singularity', classes: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored SingularityBuy' },
+            { type: 'button', id: 'recruit-singularity', text: 'Recruit The Singularity', classes: [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored, 'SingularityBuy'].join(' ') },
             { type: 'text', content: '250 Total Levels Required<br>Currency Stash Tab Required', classes: 'SingularityHide' }
         ]
     },
@@ -83,10 +85,10 @@ export const mainGridConfig = [
             </table>
         `,
         actions: [
-            { type: 'button', id: 'btn-all-upgrades', text: 'All', classes: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored' },
-            { type: 'button', id: 'btn-general-upgrades', text: 'General', classes: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored' },
-            { type: 'button', id: 'btn-gear-upgrades', text: 'Gear', classes: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored' },
-            { type: 'button', id: 'btn-links-upgrades', text: 'Links', classes: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored' }
+            { type: 'button', id: 'btn-all-upgrades', text: 'All', classes: [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ') },
+            { type: 'button', id: 'btn-general-upgrades', text: 'General', classes: [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ') },
+            { type: 'button', id: 'btn-gear-upgrades', text: 'Gear', classes: [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ') },
+            { type: 'button', id: 'btn-links-upgrades', text: 'Links', classes: [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ') }
         ]
     }
 ];

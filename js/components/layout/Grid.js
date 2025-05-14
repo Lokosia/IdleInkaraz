@@ -1,3 +1,5 @@
+import { UI_CLASSES } from '../ui/UIClasses.js';
+
 /**
  * Renders a grid of card components into the given container based on the provided configuration.
  * Handles Material Design Lite (MDL) upgrades and dynamic button event wiring.
@@ -12,13 +14,18 @@ export function createGrid(container, cardConfigs) {
     cardConfigs.forEach(config => {
         const card = document.createElement('div');
         card.id = config.id;
-        card.className = `mdl-card mdl-shadow--2dp mdl-cell ${config.gridCols} mdl-cell--8-col-tablet ${config.cssClasses || ''}`; // Added mdl-cell--8-col-tablet as a default, adjust if needed
+        card.className = [
+            UI_CLASSES.card.container,
+            UI_CLASSES.card.cell[config.size || 'third'] || '',
+            config.gridCols || '',
+            config.cssClasses || ''
+        ].join(' ').trim();
 
         // Title
         const titleDiv = document.createElement('div');
-        titleDiv.className = 'mdl-card__title';
+        titleDiv.className = UI_CLASSES.card.title;
         const titleText = document.createElement('h2');
-        titleText.className = 'mdl-card__title-text';
+        titleText.className = UI_CLASSES.card.titleText;
         titleText.innerHTML = config.title; // Use innerHTML for potential spans
         titleDiv.appendChild(titleText);
         card.appendChild(titleDiv);
@@ -26,7 +33,7 @@ export function createGrid(container, cardConfigs) {
         // Supporting Text (Content)
         if (config.contentTemplate) {
             const contentDiv = document.createElement('div');
-            contentDiv.className = 'mdl-card__supporting-text mdl-card--expand';
+            contentDiv.className = UI_CLASSES.card.supporting;
             contentDiv.innerHTML = config.contentTemplate;
             card.appendChild(contentDiv);
         }
@@ -34,13 +41,13 @@ export function createGrid(container, cardConfigs) {
         // Actions
         if (config.actions && config.actions.length > 0) {
             const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'mdl-card__actions mdl-card--border';
+            actionsDiv.className = UI_CLASSES.card.actions;
 
             config.actions.forEach(action => {
                 if (action.type === 'button') {
                     const button = document.createElement('button');
                     button.id = action.id;
-                    button.className = action.classes || 'mdl-button mdl-js-button';
+                    button.className = action.classes || [UI_CLASSES.button.base, UI_CLASSES.button.raised, UI_CLASSES.button.colored].join(' ');
                     button.textContent = action.text;
                     actionsDiv.appendChild(button);
                 } else if (action.type === 'text') {
