@@ -375,3 +375,13 @@ _:-ms-input-placeholder, :root .demo-graph {
   background-image: url("images/guardian.png");
   background-repeat: no-repeat;
 }
+
+.mdl-layout__header-row {
+  margin-left: 240px; /* match drawer width */
+}
+
+@media (max-width: 1024px) {
+  .mdl-layout__header-row {
+    margin-left: 0;
+  }
+}

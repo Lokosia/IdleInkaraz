@@ -41,7 +41,7 @@ export const mainGridConfig = [
         gridCols: 'mdl-cell--4-col',
         cssClasses: 'cardBG imgBG',
         title: 'Sell Currency',
-        contentTemplate: `<div class="flip hidden" id="sellCurrencyContainer"></div>`,
+        contentTemplate: `<div class="flip ${UI_CLASSES.util.hidden}" id="sellCurrencyContainer"></div>`,
         actions: []
     },
     {
@@ -57,7 +57,7 @@ export const mainGridConfig = [
         gridCols: 'mdl-cell--4-col',
         cssClasses: 'cardBG imgBG',
         title: 'Buy Currency',
-        contentTemplate: `<div class="flip hidden" id="buyCurrencyContainer"></div>`,
+        contentTemplate: `<div class="flip ${UI_CLASSES.util.hidden}" id="buyCurrencyContainer"></div>`,
         actions: []
     },
     {
