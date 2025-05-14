@@ -31,5 +31,16 @@ export const UI_CLASSES = {
     table: {
         table: 'mdl-data-table mdl-js-data-table',
         cellNonNumeric: 'mdl-data-table__cell--non-numeric'
+    },
+    progress: {
+        bar: 'mdl-progress mdl-js-progress',
+        indeterminate: 'mdl-progress__indeterminate'
+    },
+    util: {
+        hidden: 'hidden',
+        cardBG: 'cardBG',
+        imgBG: 'imgBG',
+        layout: 'demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header',
+        avatar: 'demo-avatar'
     }
 };

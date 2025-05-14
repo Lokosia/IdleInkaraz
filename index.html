@@ -24,38 +24,38 @@
 
 <body>
     <!-- Layout Wrapper -->
-    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header" data-ui-class="layout">
         <!-- Header (Injected by JS) -->
         <header id="header-placeholder"
-            class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200" role="banner">
+            class="demo-header mdl-layout__header mdl-color--blue-grey-900 mdl-color-text--blue-grey-200" role="banner" data-ui-class="header">
         </header>
         <!-- Side Navigation (Injected by JS) -->
         <nav id="side-panel-placeholder"
             class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50"
-            role="navigation"></nav>
+            role="navigation" data-ui-class="drawer"></nav>
         <!-- Main Content Area -->
-        <main id="main-content" class="mdl-layout__content mdl-color--blue-grey-200" role="main">
+        <main id="main-content" class="mdl-layout__content mdl-color--blue-grey-200" role="main" data-ui-class="main-content">
             <section id="welcomePre">
-                <div class="mdl-grid center-items">
+                <div class="mdl-grid center-items" data-ui-class="grid">
                     <div id="welcome-card"></div>
                 </div>
             </section>
-            <section id="main" class="hidden">
-                <div id="mainGrid" class="mdl-grid center-items"></div>
+            <section id="main" class="hidden" data-ui-class="section-main">
+                <div id="mainGrid" class="mdl-grid center-items" data-ui-class="grid"></div>
             </section>
-            <section id="guild" class="hidden">
-                <div class="mdl-grid center-items"></div>
+            <section id="guild" class="hidden" data-ui-class="section-guild">
+                <div class="mdl-grid center-items" data-ui-class="grid"></div>
             </section>
-            <section id="delving" class="hidden">
-                <div id="delving-container" class="mdl-grid center-items"></div>
+            <section id="delving" class="hidden" data-ui-class="section-delve">
+                <div id="delving-container" class="mdl-grid center-items" data-ui-class="grid"></div>
             </section>
-            <section id="crafting" class="hidden">
-                <div id="crafting-main-container" class="mdl-grid center-items"></div>
-                <div id="crafting-cards-container" class="mdl-grid center-items"></div>
+            <section id="crafting" class="hidden" data-ui-class="section-crafting">
+                <div id="crafting-main-container" class="mdl-grid center-items" data-ui-class="grid"></div>
+                <div id="crafting-cards-container" class="mdl-grid center-items" data-ui-class="grid"></div>
             </section>
-            <section id="info" class="hidden">
-                <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet cardBG">
-                    <div class="mdl-card__supporting-text mdl-card--expand">
+            <section id="info" class="hidden" data-ui-class="section-info">
+                <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet cardBG" data-ui-class="card info-card">
+                    <div class="mdl-card__supporting-text mdl-card--expand" data-ui-class="card-supporting">
                         <p>Idle Exile is an incremental game based within the Path of Exile universe.</p>
                         <p>The goal is to dominate the economy within a league by recruiting players to your guild.</p>
                         <p><b>General Mechanics Info:</b><br>

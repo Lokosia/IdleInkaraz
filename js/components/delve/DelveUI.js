@@ -4,6 +4,7 @@ import { UICard } from '../ui/Cards.js';
 import { recruitExile } from '../../../Main.js';
 import UIManager from '../ui/UIManager.js';
 import State from '../../State.js';
+import { UI_CLASSES } from '../ui/UIClasses.js';
 
 /**
  * Creates the Melvin exile card section for the delving UI.
@@ -58,7 +59,7 @@ function createDeepDelvingSection() {
     const content = `
         <p>Spend Sulphite to traverse the mines.</p>
         <p>Collect currency and fossils.</p>
-        <div id="delveLoader" class="mdl-progress mdl-js-progress hidden"></div>
+        <div id="delveLoader" class="${UI_CLASSES.progress.bar} ${UI_CLASSES.util.hidden}"></div>
         <br>
         Total Sulphite: <span class="Sulphite">0</span><br>
         Delve Depth: <span class="SulphiteDepth">1</span><br>
