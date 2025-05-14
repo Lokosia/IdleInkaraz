@@ -31,9 +31,11 @@ function handleIIQUpgrade() {
     return handlePurchase({
         requirements: [{ currency: currencyMap['Chaos'], amount: currentCost }],
         onSuccess: () => {
-            import('../Augments.js').then(({ default: Upgrades }) => {
-                Upgrades.upgradeDropRate += (currentDropRate === 1) ? 1 : 0.1;
-            });
+            // Update global upgrade rate directly
+            const incrementAmount = (currentDropRate === 1) ? 1 : 0.1;
+            State.upgradeDropRate += incrementAmount;
+            
+            // Update IIQ state
             IIQState.iiqCost = Math.floor(currentCost * 1.4);
             IIQState.iiqDropRate += 0.1;
         },
@@ -53,7 +55,12 @@ function handleIIQUpgrade() {
             hoverClassesToRemoveOnMaxLevel: ['Chaos']
         },
         updateUI: () => {
-            updateTheorycraftingEfficiencyUI();
+            // Update global display
+            const globalRateElem = findByClass('UpgradeDropRate')[0];
+            if (globalRateElem) {
+                globalRateElem.innerHTML = formatEfficiency(State.upgradeDropRate);
+            }
+            
             // Don't call hoverUpgrades here - it's handled by preserveHover flag
         },
         successMessage: 'IIQ upgraded!'
