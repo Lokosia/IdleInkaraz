@@ -132,16 +132,39 @@ function renderUpgradeRow(cfg, totalLevel) {
 
 /**
  * Updates the Theorycrafting (Upgrade Efficiency) UI string to reflect the sum of all sources.
- * Includes global upgrades, incubator, and all owned exiles' dropRate.
+ * Includes global upgrades, incubator, and only the gear/links upgrades of exiles (excluding level bonuses).
  */
 function updateTheorycraftingEfficiencyUI() {
     const elem = document.querySelector('.UpgradeDropRate');
     if (!elem || !State.exileMap) return;
-    let totalExileEfficiency = 0;
-    for (const exile of Object.values(State.exileMap)) {
-        if (exile && exile.level > 0) totalExileEfficiency += exile.dropRate;
-    }
-    const total = State.upgradeDropRate + (State.incDropRate || 0) + totalExileEfficiency;
+    
+    // Calculate total upgrade efficiency only (excluding level-based bonuses)
+    // Start with global upgrade rate + incubator bonus
+    let total = State.upgradeDropRate + (State.incDropRate || 0);
+    
+    // Add the contribution from gear and links upgrades (not the base levels)
+    Object.values(State.exileMap).forEach(exile => {
+        if (exile && exile.owned) {
+            // Count benefits from gear upgrades
+            if (exile.gear > 0 && exile.gearUpgrades) {
+                exile.gearUpgrades.forEach(upgrade => {
+                    if (upgrade.level < exile.gear) {
+                        total += upgrade.benefit;
+                    }
+                });
+            }
+            
+            // Count benefits from links upgrades
+            if (exile.links > 0 && exile.linksUpgrades) {
+                exile.linksUpgrades.forEach(upgrade => {
+                    if (upgrade.level < exile.links) {
+                        total += upgrade.benefit;
+                    }
+                });
+            }
+        }
+    });
+    
     elem.innerHTML = formatEfficiency(total);
 }
 

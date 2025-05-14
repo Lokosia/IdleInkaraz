@@ -9,20 +9,6 @@ import { updateTheorycraftingEfficiencyUI } from '../upgrades/Augments.js';
 /**
  * Represents an Exile character in the game.
  * Handles progression, upgrades, and UI interactions for a specific character.
- *
- * @class
- * @property {string} name - The name of the exile.
- * @property {number} level - Current level of the exile.
- * @property {number} exp - Current experience points.
- * @property {number} expToLevel - Experience required for next level.
- * @property {number} dropRate - Efficiency multiplier for the exile.
- * @property {number} gear - Current gear upgrade level.
- * @property {number} links - Current links upgrade level.
- * @property {number} rerollLevel - Number of times the exile has been rerolled (prestiged).
- * @property {number} levelRequirement - Total level required to recruit this exile.
- * @property {Array|null} specialRequirement - Special requirement for recruitment (e.g., stash tab).
- * @property {Array} gearUpgrades - List of gear upgrade configurations.
- * @property {Array} linksUpgrades - List of links upgrade configurations.
  */
 class Exile {
     /**
@@ -73,9 +59,7 @@ class Exile {
                 }
             }
         }
-    }
-
-    /**
+    }    /**
      * Update the exile's UI elements based on current state.
      * Handles level 100 cap and reroll button display.
      * @returns {void}
@@ -89,6 +73,9 @@ class Exile {
             if (expElem) expElem.innerHTML = numeral(this.exp).format('0,0') + "/" + numeral(this.expToLevel).format('0,0');
             const effElem = document.getElementsByClassName(this.name + 'Efficiency')[0];
             if (effElem) effElem.innerHTML = "x" + numeral(this.dropRate).format('0,0.0');
+            
+            // Update theorycrafting efficiency UI when exile levels up
+            updateTheorycraftingEfficiencyUI();
         }
         if (this.level == 100) {
             const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
@@ -149,26 +136,40 @@ class Exile {
         const currentIndex = upgrades.findIndex(upgrade => upgrade.level === level);
         if (currentIndex === -1) return null;
         return upgrades[currentIndex];
-    }
-
-    /**
+    }    /**
      * Apply a gear upgrade's benefit to this exile.
      * @param {Object} upgrade - Gear upgrade config.
      * @returns {void}
      */
     applyGearUpgrade(upgrade) {
+        // Increase exile's dropRate (efficiency) by the upgrade benefit
         this.dropRate += upgrade.benefit;
-    }
-
-    /**
+        
+        // Update the exile's efficiency display
+        const effElem = document.getElementsByClassName(this.name + 'Efficiency')[0];
+        if (effElem) effElem.innerHTML = "x" + numeral(this.dropRate).format('0,0.0');
+        
+        // Update the theorycrafting UI with the new total efficiency
+        updateTheorycraftingEfficiencyUI();
+    }    /**
      * Apply a links upgrade's benefit to this exile and update UI.
      * @param {Object} upgrade - Links upgrade config.
      * @returns {void}
      */
     applyLinksUpgrade(upgrade) {
+        // Increase exile's dropRate (efficiency) by the upgrade benefit
         this.dropRate += upgrade.benefit;
+        
+        // Update the links display value
         const linksElem = document.getElementsByClassName(this.name + 'Links')[0];
         if (linksElem) linksElem.innerHTML = upgrade.displayValue;
+        
+        // Update the exile's efficiency display
+        const effElem = document.getElementsByClassName(this.name + 'Efficiency')[0];
+        if (effElem) effElem.innerHTML = "x" + numeral(this.dropRate).format('0,0.0');
+        
+        // Update the UI with the new total efficiency
+        updateTheorycraftingEfficiencyUI();
         // Final upgrade UI removal logic moved to upgradeExile's updateUI callback
     }
 
@@ -236,9 +237,8 @@ class Exile {
                     // We might still want the SnackBar message.
                     $(`#${rowId}`).off('mouseenter mouseleave'); // Clean up potential jQuery listeners if any remain
                     SnackBar(`${this.name} ${upgradeType} upgrades completed!`);
-                }
-
-                // --- Update Theorycrafting (Upgrade Efficiency) string ---
+                }                // --- Update Theorycrafting (Upgrade Efficiency) string ---
+                // This ensures the global efficiency calculation includes the new exile upgrade
                 updateTheorycraftingEfficiencyUI();
             },
             successMessage: `${this.name} ${upgradeType} upgraded!`
@@ -380,11 +380,13 @@ class Exile {
         }
         $('.' + this.name + 'Reroll').removeClass('hidden');
         const rerollElem = document.getElementsByClassName(this.name + 'Reroll')[0];
-        if (rerollElem) rerollElem.innerHTML = '(+' + this.rerollLevel + ')';
-        const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
+        if (rerollElem) rerollElem.innerHTML = '(+' + this.rerollLevel + ')';        const expElem = document.getElementsByClassName(this.name + 'EXP')[0];
         if (expElem) expElem.innerHTML = "0/525";
         const levelElem = document.getElementsByClassName(this.name + 'Level')[0];
         if (levelElem) levelElem.innerHTML = "1";
+        
+        // Update theorycrafting efficiency UI after rerolling
+        updateTheorycraftingEfficiencyUI();
     }
 }
 
